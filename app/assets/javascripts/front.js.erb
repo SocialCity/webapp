@@ -4,73 +4,75 @@
 
 
 $(document).ready(function (){
-	var map = new OpenLayers.Map('map');
-    var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
-    var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
-	var position       = new OpenLayers.LonLat(-0.11,51.51).transform( fromProjection, toProjection);
-    var zoom           = 12; 
-
-
+    var map = new OpenLayers.Map('map');
+    var fromProjection  = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
+    var toProjection    = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+    var position        = new OpenLayers.LonLat(-0.11,51.51).transform( fromProjection, toProjection);
+    var zoom            = 12; 
+    var lonLat          = new Array();
+    //var markers         = new OpenLayers.Layer.Markers( "Markers" );
 
     map.addLayer(new OpenLayers.Layer.OSM());
-   // map.setCenter(position, zoom);
+    //map.addLayer(markers);
 
- //    p1 = OpenLayers.Geometry.Point(470000.1, 206910.3);
- //    p2 = OpenLayers.Geometry.Point(460000.4, 205503.8);
- //    p3 = OpenLayers.Geometry.Point(450000.7, 206663.7);
+    var style_green = {
+        strokeColor: "#000000",
+        strokeWidth: 1,
+        strokeDashstyle: "dashdot",
+        pointRadius: 6,
+        pointerEvents: "visiblePainted",
+        title: "this is a green line"
+    };
 
- //    bounds = new OpenLayers.Bounds();
-	// bounds.extend(p1);
-	// bounds.extend(p2);
-	// bounds.extend(p3);
-	// bounds.toBBOX(); // returns 4,5,5,6
+        /*
+     * Layer style
+     */
+    // we want opaque external graphics and non-opaque internal graphics
+    var layer_style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+    layer_style.fillOpacity = 0.2;
+    layer_style.graphicOpacity = 1;
 
-	// var markers = new OpenLayers.Layer.Markers("Markers")
-	// map.addLayer(markers);
-	// markers.addMarker(new OpenLayers.Marker.Box(bounds));
 
-  var lonLat = new Array();
+    var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
+    renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
 
- var markers = new OpenLayers.Layer.Markers( "Markers" );
-  map.addLayer(markers);
+    var vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+        style: layer_style,
+        renderers: renderer
+    });
 
-  for(var j = 0; j < 20; j++)
-  {
-    count = 0;
-    for (var i = 0; i < gon.objects[j]['shape'].length; i += 100)
+    map.addLayer(vectorLayer);
+    map.setCenter(position, zoom);
+    for(var j = 0; j < gon.objects.length; j++)
     {
-        //console.log(obj['shape'][i]['long'], obj['shape'][i]['lat']);
-        lonLat.push(new OpenLayers.LonLat(gon.objects[j]['shape'][i]['long'], gon.objects[j]['shape'][i]['lat']).transform(
-                new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-                map.getProjectionObject() // to Spherical Mercator Projection
-              ));
-
-
-        markers.addMarker(new OpenLayers.Marker(lonLat[count]));
-        count++;
+        var pointList = [];
+        for(var i = 0; i < gon.objects[j]['shape'].length; i += 5) 
+        {
+            var point = new OpenLayers.Geometry.Point(gon.objects[j]['shape'][i]['long'], gon.objects[j]['shape'][i]['lat']).transform( fromProjection, toProjection);
+            pointList.push(point);
+        }
+        pointList.push(pointList[0]);
+        //console.log(pointList);
+        var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
+        var polygonFeature = new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.Polygon([linearRing]));
+        var lineFeature = new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.LineString(pointList),null,style_green);
+        vectorLayer.addFeatures(polygonFeature);
+        vectorLayer.addFeatures(lineFeature);
     }
-  }
-
- 
-    
- 
-    map.setCenter (lonLat[0], zoom);
 
     //This is a hack, and I don't like it, but whatever
     //It's necessary because OpenLayers flatly refuses to load into a % width div
     $('.front .map-container').css('height', $(window).height() * 0.8);
-
-    //For each 
-
-
 });
 
 //Resizes the map after a short delay.
-window.onresize = function()
-{
-  setTimeout( 
-  	function() { 
-  		$('.front .map-container').css('height', $(window).height() * 0.8);
-  		map.updateSize();
-  	}, 200);
-}
+//window.onresize = function()
+//{
+// setTimeout( 
+//  	function() { 
+//  		$('.front .map-container').css('height', $(window).height() * 0.8);
+//  		map.updateSize();
+//  	}, 200);
+//}
