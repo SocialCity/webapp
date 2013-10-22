@@ -32,6 +32,8 @@ gem 'openlayers-rails'
 gem "mongoid", github: 'mongoid/mongoid'
 gem "bson_ext", "~> 1.4"
 
+gem "gon"
+
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
