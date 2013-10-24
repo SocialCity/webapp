@@ -16,7 +16,7 @@ $(document).ready(function (){
     map.addLayer(new OpenLayers.Layer.OSM());
     //map.addLayer(markers);
 
-    var style_green = {
+    var borough_line = {
         strokeColor: "#000000",
         strokeWidth: 1,
         strokeDashstyle: "dashdot",
@@ -25,25 +25,78 @@ $(document).ready(function (){
         title: "this is a green line"
     };
 
-    var style_1 = {
-        fillColor: "#FF00FF",
-        fillOpacity: 0.2,
+    var ward_line = {
+        strokeColor: "#0000FF",
+        strokeWidth: 1,
+        strokeDashstyle: "dashdot",
+        pointRadius: 6,
+        pointerEvents: "visiblePainted",
+        title: "this is a green line"
     };
 
-    var style_2 = {
+    var style_1 = new OpenLayers.Style({
+        'fillColor': "#FF00FF",
+        'fillOpacity': 0.2,
+        'label' : "${name}",
+        
+        'fontColor': 'black',
+        'fontSize': "12px",
+        'fontFamily': "Courier New, monospace",
+        'fontWeight': "bold",
+//            labelAlign: "${align}",
+//           labelXOffset: "${xOffset}",
+//           labelYOffset: "${yOffset}",
+        'labelOutlineColor': "white",
+        'labelOutlineWidth': 3
+    });
+
+    var style_2 = new OpenLayers.Style({
         fillColor: "#FF0000",
         fillOpacity: 0.2,
-    };
+        label : "${name}",
+            
+        fontColor: 'black',
+        fontSize: "12px",
+        fontFamily: "Courier New, monospace",
+        fontWeight: "bold",
+//            labelAlign: "${align}",
+//           labelXOffset: "${xOffset}",
+//           labelYOffset: "${yOffset}",
+        labelOutlineColor: "white",
+        labelOutlineWidth: 3
+    });
 
-    var style_3 = {
+    var style_3 = new OpenLayers.Style({
         fillColor: "#0000FF",
         fillOpacity: 0.2,
-    };
+        label : "${name}",
+            
+        fontColor: 'black',
+        fontSize: "12px",
+        fontFamily: "Courier New, monospace",
+        fontWeight: "bold",
+//            labelAlign: "${align}",
+//           labelXOffset: "${xOffset}",
+//           labelYOffset: "${yOffset}",
+        labelOutlineColor: "white",
+        labelOutlineWidth: 3
+    });
 
-    var style_4 = {
+    var style_4 = new OpenLayers.Style({
         fillColor: "#00FF00",
         fillOpacity: 0.2,
-    };
+        label : "${name}",
+            
+        fontColor: 'black',
+        fontSize: "12px",
+        fontFamily: "Courier New, monospace",
+        fontWeight: "bold",
+//            labelAlign: "${align}",
+//           labelXOffset: "${xOffset}",
+//           labelYOffset: "${yOffset}",
+        labelOutlineColor: "white",
+        labelOutlineWidth: 3
+    });
 
         /*
      * Layer style
@@ -58,18 +111,39 @@ $(document).ready(function (){
     renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
 
     var vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
-        style: layer_style,
+        styleMap: new OpenLayers.StyleMap({'default':{
+            strokeColor: "#00FF00",
+            strokeOpacity: 1,
+            strokeWidth: 3,
+            fillColor: "#FF5500",
+            fillOpacity: 0.5,
+            pointRadius: 6,
+            pointerEvents: "visiblePainted",
+            // label with \n linebreaks
+            label : "${name}",
+            
+            fontColor: 'black',
+            fontSize: "12px",
+            fontFamily: "Courier New, monospace",
+            fontWeight: "bold",
+//            labelAlign: "${align}",
+ //           labelXOffset: "${xOffset}",
+ //           labelYOffset: "${yOffset}",
+            labelOutlineColor: "white",
+            labelOutlineWidth: 3
+        }}),
         renderers: renderer
     });
 
     map.addLayer(vectorLayer);
     map.setCenter(position, zoom);
-    for(var j = 0; j < gon.objects.length; j++)
+
+    for(var j = 0; j < gon.boroughs.length; j++)
     {
         var pointList = [];
-        for(var i = 0; i < gon.objects[j]['shape'].length; i += 5) 
+        for(var i = 0; i < gon.boroughs[j]['shape'].length; i++) 
         {
-            var point = new OpenLayers.Geometry.Point(gon.objects[j]['shape'][i]['long'], gon.objects[j]['shape'][i]['lat']).transform( fromProjection, toProjection);
+            var point = new OpenLayers.Geometry.Point(gon.boroughs[j]['shape'][i]['long'], gon.boroughs[j]['shape'][i]['lat']).transform( fromProjection, toProjection);
             pointList.push(point);
         }
         pointList.push(pointList[0]);
@@ -83,10 +157,46 @@ $(document).ready(function (){
           case 2: style = style_3; break;
           case 3: style = style_4; break;
         }
+        console.log(gon.boroughs[j]['record']);
         var polygonFeature = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Polygon([linearRing]), null, style);
+            new OpenLayers.Geometry.Polygon([linearRing]), 
+            null,
+        	style);
+        polygonFeature.attributes = {
+            name: gon.boroughs[j]['record']['DeletionFlag'].replace("London Boro", ""),
+            //align: 'rt'
+        };
+        var numPoints = gon.boroughs[j]['shape'].length;
+        var vertMid = Math.abs(gon.boroughs[j]['shape'][Math.floor(numPoints/2)] - gon.boroughs[j]['shape'][0]) / 2;
+        var horizMid = Math.abs(gon.boroughs[j]['shape'][Math.floor(numPoints/4)] + gon.boroughs[j]['shape'][Math.floor(3*numPoints/4)]) / 2;
+        var textPoint = new OpenLayers.Geometry.Point(vertMid, horizMid).transform( fromProjection, toProjection);
+
+        //polygonFeature.attributes = 
+
         var lineFeature = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.LineString(pointList),null,style_green);
+            new OpenLayers.Geometry.LineString(pointList),null, borough_line);
+        vectorLayer.addFeatures(polygonFeature);
+        vectorLayer.addFeatures(lineFeature);
+
+
+
+    }
+
+    for(var j = 0; j < gon.wards.length; j++)
+    {
+        var pointList = [];
+        for(var i = 0; i < gon.wards[j]['shape'].length; i++) 
+        {
+            var point = new OpenLayers.Geometry.Point(gon.wards[j]['shape'][i]['long'], gon.wards[j]['shape'][i]['lat']).transform( fromProjection, toProjection);
+            pointList.push(point);
+        }
+        pointList.push(pointList[0]);
+        //console.log(pointList);
+        var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
+        var style;
+
+        var lineFeature = new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.LineString(pointList),null, ward_line);
         vectorLayer.addFeatures(polygonFeature);
         vectorLayer.addFeatures(lineFeature);
     }
@@ -94,7 +204,7 @@ $(document).ready(function (){
     //This is a hack, and I don't like it, but whatever
     //It's necessary because OpenLayers flatly refuses to load into a % width div
     $('.front .map-container').css('height', $(window).height() * 0.8);
-    map.updateSize();
+    globalMap.updateSize();
 });
 
 //Resizes the map after a short delay.
@@ -103,8 +213,8 @@ window.onresize = function()
  setTimeout( 
   	function() { 
       
-  		$('.front .map-container').css('height', $(window).height() * 0.8);
-      globalMap.updateSize();
+  	$('.front .map-container').css('height', $(window).height() * 0.8);
+     globalMap.updateSize();
 //  		map.updateSize();
   	}, 200);
 }
