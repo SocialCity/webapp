@@ -4,18 +4,143 @@
 
 var globalMap;
 $(document).ready(function (){
+<<<<<<< HEAD
 
 
     borough_fill_style.addRules([rule1, rule2, rule3, rule4]);
+=======
+    var map = new OpenLayers.Map('map');
+    globalMap = map;
+    var fromProjection  = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
+    var toProjection    = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+    var position        = new OpenLayers.LonLat(-0.11,51.51).transform( fromProjection, toProjection);
+    var zoom            = 12; 
+    var lonLat          = new Array();
+    //var markers         = new OpenLayers.Layer.Markers( "Markers" );
+
+    map.addLayer(new OpenLayers.Layer.OSM());
+    //map.addLayer(markers);
+
+    var borough_line = {
+        strokeColor: "#000000",
+        strokeWidth: 1,
+        strokeDashstyle: "dashdot",
+        pointRadius: 6,
+        pointerEvents: "visiblePainted",
+        title: "this is a green line"
+    };
+
+    var ward_line = {
+        strokeColor: "#0000FF",
+        strokeWidth: 1,
+        strokeDashstyle: "dashdot",
+        pointRadius: 6,
+        pointerEvents: "visiblePainted",
+        title: "this is a green line"
+    };
+
+    var style_1 = new OpenLayers.Style({
+        'fillColor': "#FF00FF",
+        'fillOpacity': 0.2,
+        'label' : "${name}",
+        
+        'fontColor': 'black',
+        'fontSize': "12px",
+        'fontFamily': "Courier New, monospace",
+        'fontWeight': "bold",
+//            labelAlign: "${align}",
+//           labelXOffset: "${xOffset}",
+//           labelYOffset: "${yOffset}",
+        'labelOutlineColor': "white",
+        'labelOutlineWidth': 3
+    });
+
+    var style_2 = new OpenLayers.Style({
+        fillColor: "#FF0000",
+        fillOpacity: 0.2,
+        label : "${name}",
+            
+        fontColor: 'black',
+        fontSize: "12px",
+        fontFamily: "Courier New, monospace",
+        fontWeight: "bold",
+//            labelAlign: "${align}",
+//           labelXOffset: "${xOffset}",
+//           labelYOffset: "${yOffset}",
+        labelOutlineColor: "white",
+        labelOutlineWidth: 3
+    });
+
+    var style_3 = new OpenLayers.Style({
+        fillColor: "#0000FF",
+        fillOpacity: 0.2,
+        label : "${name}",
+            
+        fontColor: 'black',
+        fontSize: "12px",
+        fontFamily: "Courier New, monospace",
+        fontWeight: "bold",
+//            labelAlign: "${align}",
+//           labelXOffset: "${xOffset}",
+//           labelYOffset: "${yOffset}",
+        labelOutlineColor: "white",
+        labelOutlineWidth: 3
+    });
+
+    var style_4 = new OpenLayers.Style({
+        fillColor: "#00FF00",
+        fillOpacity: 0.2,
+        label : "${name}",
+            
+        fontColor: 'black',
+        fontSize: "12px",
+        fontFamily: "Courier New, monospace",
+        fontWeight: "bold",
+//            labelAlign: "${align}",
+//           labelXOffset: "${xOffset}",
+//           labelYOffset: "${yOffset}",
+        labelOutlineColor: "white",
+        labelOutlineWidth: 3
+    });
+
+        /*
+     * Layer style
+     */
+    // we want opaque external graphics and non-opaque internal graphics
+    var layer_style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+    layer_style.fillOpacity = 0.2;
+    layer_style.graphicOpacity = 1;
+
+>>>>>>> parent of 429a867... Cleaned up the JS a bit
 
     var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
     renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
 
     var vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
-        styleMap: new OpenLayers.StyleMap({'default': borough_fill_style}),
+        styleMap: new OpenLayers.StyleMap({'default':{
+            strokeColor: "#00FF00",
+            strokeOpacity: 1,
+            strokeWidth: 3,
+            fillColor: "#FF5500",
+            fillOpacity: 0.5,
+            pointRadius: 6,
+            pointerEvents: "visiblePainted",
+            // label with \n linebreaks
+            label : "${name}",
+            
+            fontColor: 'black',
+            fontSize: "12px",
+            fontFamily: "Courier New, monospace",
+            fontWeight: "bold",
+//            labelAlign: "${align}",
+ //           labelXOffset: "${xOffset}",
+ //           labelYOffset: "${yOffset}",
+            labelOutlineColor: "white",
+            labelOutlineWidth: 3
+        }}),
         renderers: renderer
     });
-    console.log(borough_fill_style);
+
     map.addLayer(vectorLayer);
     map.setCenter(position, zoom);
 
@@ -30,18 +155,23 @@ $(document).ready(function (){
         pointList.push(pointList[0]);
         //console.log(pointList);
         var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
-
+        var style;
+        switch(i % 4)
+        {
+          case 0: style = style_1; break;
+          case 1: style = style_2; break;
+          case 2: style = style_3; break;
+          case 3: style = style_4; break;
+        }
+        console.log(gon.boroughs[j]['record']);
         var polygonFeature = new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Polygon([linearRing]), 
-            {
-                'name': gon.boroughs[j]['record']['DeletionFlag'].replace("London Boro", ""),
-                'styleNum': Math.floor((Math.random() * 10)) % 4 + 1,
-                'align': 'rt'
-            });
-        //console.log(polygonFeature);
-            //borough_fill_style);//,
-        	//style);
-
+            null,
+        	style);
+        polygonFeature.attributes = {
+            name: gon.boroughs[j]['record']['DeletionFlag'].replace("London Boro", ""),
+            //align: 'rt'
+        };
         var numPoints = gon.boroughs[j]['shape'].length;
         var vertMid = Math.abs(gon.boroughs[j]['shape'][Math.floor(numPoints/2)] - gon.boroughs[j]['shape'][0]) / 2;
         var horizMid = Math.abs(gon.boroughs[j]['shape'][Math.floor(numPoints/4)] + gon.boroughs[j]['shape'][Math.floor(3*numPoints/4)]) / 2;
@@ -50,7 +180,7 @@ $(document).ready(function (){
         //polygonFeature.attributes = 
 
         var lineFeature = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.LineString(pointList),null, basic_line);
+            new OpenLayers.Geometry.LineString(pointList),null, borough_line);
         vectorLayer.addFeatures(polygonFeature);
         vectorLayer.addFeatures(lineFeature);
 
