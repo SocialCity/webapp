@@ -14,7 +14,6 @@ $(document).ready(function (){
     //var markers         = new OpenLayers.Layer.Markers( "Markers" );
 
     map.addLayer(new OpenLayers.Layer.OSM());
-    //map.addLayer(markers);
 
     var basic_line = {
         'strokeColor': "#000000",
@@ -29,20 +28,36 @@ $(document).ready(function (){
     var borough_fill_style = new OpenLayers.Style({
         'fillOpacity': 0.2,
         'label' : "${name}",
+
+        'strokeColor': "#000000",
+        'strokeWidth': 2.5,
+        'strokeDashstyle': "solid",
         
         'fontColor': 'black',
         'fontSize': "12px",
         'fontFamily': "Courier New, monospace",
         'fontWeight': "bold",
-//            labelAlign: "${align}",
-//           labelXOffset: "${xOffset}",
-//          labelYOffset: "${yOffset}",
         'labelOutlineColor': "white",
         'labelOutlineWidth': 3
     });
 
- 
- 
+    var ward_fill_style = new OpenLayers.Style({
+        'fillOpacity': 0,
+        'fillColor': "#FFFFFF",
+        'label' : "${name}",
+
+        'strokeColor': "#0000FF",
+        'strokeWidth': 1,
+        'strokeDashstyle': "dashdot",
+
+        'fontColor': 'black',
+        'fontSize': "12px",
+        'fontFamily': "Courier New, monospace",
+        'fontWeight': "bold",
+        'labelOutlineColor': "white",
+        'labelOutlineWidth': 3
+    });
+
     var rule1 = new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Comparison({
             type: OpenLayers.Filter.Comparison.EQUAL_TO,
@@ -90,12 +105,12 @@ $(document).ready(function (){
     var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
     renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
 
-    var vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+    var borough_layer = new OpenLayers.Layer.Vector("Simple Geometry", {
         styleMap: new OpenLayers.StyleMap({'default': borough_fill_style}),
         renderers: renderer
     });
 
-    map.addLayer(vectorLayer);
+    map.addLayer(borough_layer);
     map.setCenter(position, zoom);
 
     for(var j = 0; j < gon.boroughs.length; j++)
@@ -107,7 +122,7 @@ $(document).ready(function (){
             pointList.push(point);
         }
         pointList.push(pointList[0]);
-        //console.log(pointList);
+
         var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
 
         var polygonFeature = new OpenLayers.Feature.Vector(
@@ -118,22 +133,17 @@ $(document).ready(function (){
                 'align': 'rt'
             });
 
-        var numPoints = gon.boroughs[j]['shape'].length;
-        var vertMid = Math.abs(gon.boroughs[j]['shape'][Math.floor(numPoints/2)] - gon.boroughs[j]['shape'][0]) / 2;
-        var horizMid = Math.abs(gon.boroughs[j]['shape'][Math.floor(numPoints/4)] + gon.boroughs[j]['shape'][Math.floor(3*numPoints/4)]) / 2;
-        var textPoint = new OpenLayers.Geometry.Point(vertMid, horizMid).transform( fromProjection, toProjection);
-
-        //polygonFeature.attributes = 
-
-        var lineFeature = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.LineString(pointList),null, basic_line);
-        vectorLayer.addFeatures(polygonFeature);
-        vectorLayer.addFeatures(lineFeature);
-
-
-
+       //var lineFeature = new OpenLayers.Feature.Vector(
+        //    new OpenLayers.Geometry.LineString(pointList),null, basic_line);
+        borough_layer.addFeatures(polygonFeature);
+       // borough_layer.addFeatures(lineFeature);
     }
 
+    var ward_layer = new OpenLayers.Layer.Vector("Simple Geometry", {
+         styleMap: new OpenLayers.StyleMap({'default': ward_fill_style}),
+        renderers: renderer
+    });
+    map.addLayer(ward_layer);
     for(var j = 0; j < gon.wards.length; j++)
     {
         var pointList = [];
@@ -146,12 +156,31 @@ $(document).ready(function (){
         //console.log(pointList);
         var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
         var style;
+        console.log(gon.wards[j]['record']);
+        var polygonFeature = new OpenLayers.Feature.Vector(
+           new OpenLayers.Geometry.Polygon([linearRing]), 
+           {
+                'name': gon.wards[j]['record']['DeletionFlag'].replace("Ward", "")
+           });
 
-        var lineFeature = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.LineString(pointList),null, ward_line);
-        vectorLayer.addFeatures(polygonFeature);
-        vectorLayer.addFeatures(lineFeature);
+       ward_layer.addFeatures(polygonFeature);
+
     }
+    
+
+    var highlightCtrl = new OpenLayers.Control.SelectFeature(ward_layer, {
+        hover: true,
+        highlightOnly: true,
+        renderIntent: "temporary",
+        selectStyle: {
+            'fillOpacity': 0.5,
+  
+        }
+    });
+    map.addControl(highlightCtrl);
+    highlightCtrl.activate();
+
+
 
     //This is a hack, and I don't like it, but whatever
     //It's necessary because OpenLayers flatly refuses to load into a % width div
