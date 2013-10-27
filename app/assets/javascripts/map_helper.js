@@ -19,6 +19,7 @@ function setup_controls(map, layer) {
     });
     map.addControl(highlightCtrl);
     highlightCtrl.activate();
+    highlightCtrl.handlers.feature.stopDown = false;
 }
 
 function setup_layers(map, borough_style, ward_style, ward_select) {
