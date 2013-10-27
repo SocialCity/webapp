@@ -4,184 +4,28 @@
 
 var globalMap;
 $(document).ready(function (){
-      var map = new OpenLayers.Map('map');
-    globalMap = map;
     var fromProjection  = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
     var toProjection    = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
-    var position        = new OpenLayers.LonLat(-0.11,51.51).transform( fromProjection, toProjection);
-    var zoom            = 12; 
-    var lonLat          = new Array();
-    //var markers         = new OpenLayers.Layer.Markers( "Markers" );
 
-    map.addLayer(new OpenLayers.Layer.OSM());
+    globalMap = intialise_map();
 
-    var basic_line = {
-        'strokeColor': "#000000",
-        'strokeWidth': 1,
-        'strokeDashstyle': "dashdot",
-    };
+    //Initialise styles, rules and layers
+    var style_array = setup_styles();
+    var borough_fill_style = style_array['borough_fill_style'];
+    var ward_fill_style = style_array['ward_fill_style'];
 
-    var ward_line = OpenLayers.Util.extend({}, basic_line);
-    ward_line.strokeColor = "#0000FF";
-    ward_line.strokeWidth = 1;
-
-    var borough_fill_style = new OpenLayers.Style({
-        'fillOpacity': 0.2,
-        'label' : "${name}",
-
-        'strokeColor': "#000000",
-        'strokeWidth': 2.5,
-        'strokeDashstyle': "solid",
-        
-        'fontColor': 'black',
-        'fontSize': "12px",
-        'fontFamily': "Courier New, monospace",
-        'fontWeight': "bold",
-        'labelOutlineColor': "white",
-        'labelOutlineWidth': 3
-    });
-
-    var ward_fill_style = new OpenLayers.Style({
-        'fillOpacity': 0,
-        'fillColor': "#FFFFFF",
-        'label' : "${name}",
-
-        'strokeColor': "#0000FF",
-        'strokeWidth': 1,
-        'strokeDashstyle': "dashdot",
-
-        'fontColor': 'black',
-        'fontSize': "12px",
-        'fontFamily': "Courier New, monospace",
-        'fontWeight': "bold",
-        'labelOutlineColor': "white",
-        'labelOutlineWidth': 3
-    });
-
-    var rule1 = new OpenLayers.Rule({
-        filter: new OpenLayers.Filter.Comparison({
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "styleNum",
-            value: 1,
-        }),
-        symbolizer: {
-            fillColor : "#FF00FF",
-        },
-    });
-    var rule2 = new OpenLayers.Rule({
-        filter: new OpenLayers.Filter.Comparison({
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "styleNum",
-            value: 2,
-        }),
-        symbolizer: {
-            fillColor : "#FF0000",
-        },
-    });
-    var rule3 = new OpenLayers.Rule({
-        filter: new OpenLayers.Filter.Comparison({
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "styleNum",
-            value: 3,
-        }),
-        symbolizer: {
-            fillColor : "#0000FF",
-       },
-    });
-    var rule4 = new OpenLayers.Rule({
-        filter: new OpenLayers.Filter.Comparison({
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "styleNum",
-            value: 4,
-        }),
-        symbolizer: {
-            fillColor : "#00FF00",
-        },
-    });
-
-
-    borough_fill_style.addRules([rule1, rule2, rule3, rule4]);
-
-    var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
-    renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
-
-    var borough_layer = new OpenLayers.Layer.Vector("Simple Geometry", {
-        styleMap: new OpenLayers.StyleMap({'default': borough_fill_style}),
-        renderers: renderer
-    });
-
-    map.addLayer(borough_layer);
-    map.setCenter(position, zoom);
-
-    for(var j = 0; j < gon.boroughs.length; j++)
-    {
-        var pointList = [];
-        for(var i = 0; i < gon.boroughs[j]['shape'].length; i++) 
-        {
-            var point = new OpenLayers.Geometry.Point(gon.boroughs[j]['shape'][i]['long'], gon.boroughs[j]['shape'][i]['lat']).transform( fromProjection, toProjection);
-            pointList.push(point);
-        }
-        pointList.push(pointList[0]);
-
-        var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
-
-        var polygonFeature = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Polygon([linearRing]), 
-            {
-                'name': gon.boroughs[j]['record']['DeletionFlag'].replace("London Boro", ""),
-                'styleNum': Math.floor((Math.random() * 10)) % 4 + 1,
-                'align': 'rt'
-            });
-
-       //var lineFeature = new OpenLayers.Feature.Vector(
-        //    new OpenLayers.Geometry.LineString(pointList),null, basic_line);
-        borough_layer.addFeatures(polygonFeature);
-       // borough_layer.addFeatures(lineFeature);
-    }
-
-    var ward_layer = new OpenLayers.Layer.Vector("Simple Geometry", {
-         styleMap: new OpenLayers.StyleMap({'default': ward_fill_style}),
-        renderers: renderer
-    });
-    map.addLayer(ward_layer);
-    for(var j = 0; j < gon.wards.length; j++)
-    {
-        var pointList = [];
-        for(var i = 0; i < gon.wards[j]['shape'].length; i++) 
-        {
-            var point = new OpenLayers.Geometry.Point(gon.wards[j]['shape'][i]['long'], gon.wards[j]['shape'][i]['lat']).transform( fromProjection, toProjection);
-            pointList.push(point);
-        }
-        pointList.push(pointList[0]);
-        //console.log(pointList);
-        var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
-        var style;
-        console.log(gon.wards[j]['record']);
-        var polygonFeature = new OpenLayers.Feature.Vector(
-           new OpenLayers.Geometry.Polygon([linearRing]), 
-           {
-                'name': gon.wards[j]['record']['DeletionFlag'].replace("Ward", "")
-           });
-
-       ward_layer.addFeatures(polygonFeature);
-
-    }
+    var rule_array = setup_rules();
+    borough_fill_style.addRules([rule_array['rule1'], rule_array['rule2'], rule_array['rule3'], rule_array['rule4']]); 
     
+    var layers = setup_layers(globalMap, borough_fill_style, ward_fill_style);
+    var borough_layer = layers['borough_layer'];
+    var ward_layer = layers['ward_layer'];
 
-    var highlightCtrl = new OpenLayers.Control.SelectFeature(ward_layer, {
-        hover: true,
-        highlightOnly: true,
-        renderIntent: "temporary",
-        selectStyle: {
-            'fillOpacity': 0.5,
-  
-        }
-    });
-    map.addControl(highlightCtrl);
-    highlightCtrl.activate();
+    plot_regions(globalMap, borough_layer, gon.boroughs, "London Boro", fromProjection, toProjection);
+    plot_regions(globalMap, ward_layer, gon.wards, "Ward", fromProjection, toProjection);
 
-
-
+    
+    setup_controls(globalMap, ward_layer);
     //This is a hack, and I don't like it, but whatever
     //It's necessary because OpenLayers flatly refuses to load into a % width div
     $('.front .map-container').css('height', $(window).height() * 0.8);
@@ -193,9 +37,8 @@ window.onresize = function()
 {
  setTimeout( 
   	function() { 
-      
-  	$('.front .map-container').css('height', $(window).height() * 0.8);
-     globalMap.updateSize();
-//  		map.updateSize();
-  	}, 200);
+      	$('.front .map-container').css('height', $(window).height() * 0.8);
+        globalMap.updateSize();
+  	}, 
+    200);
 }
