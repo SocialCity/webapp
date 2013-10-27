@@ -16,31 +16,27 @@ function setup_controls(map, layer) {
     var highlightCtrl = new OpenLayers.Control.SelectFeature(layer, {
         hover: true,
         highlightOnly: true,
-        renderIntent: "temporary",
-        selectStyle: new OpenLayers.Style({
-            'fillOpacity': 0.5,
-
-        })
     });
     map.addControl(highlightCtrl);
     highlightCtrl.activate();
 }
 
-function setup_layers(map, borough_style, ward_style) {
+function setup_layers(map, borough_style, ward_style, ward_select) {
     var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
     renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
 
     var layers = [];
 
-    layers['borough_layer'] = new OpenLayers.Layer.Vector("Simple Geometry", {
+    layers['borough_layer'] = new OpenLayers.Layer.Vector("Boroughs", {
         styleMap: new OpenLayers.StyleMap({'default': borough_style}),
         renderers: renderer
     });
 
     map.addLayer(layers['borough_layer']);
 
-    layers['ward_layer'] = new OpenLayers.Layer.Vector("Simple Geometry", {
-        styleMap: new OpenLayers.StyleMap({'default': ward_style}),
+    layers['ward_layer'] = new OpenLayers.Layer.Vector("Wards", {
+        styleMap: new OpenLayers.StyleMap({'default': ward_style,
+                                            'select': ward_select}),
         renderers: renderer
     });
 
@@ -70,6 +66,23 @@ function setup_styles() {
 
     rtn['ward_fill_style'] = new OpenLayers.Style({
         'fillOpacity': 0,
+        'fillColor': "#FFFFFF",
+        'label' : "",
+
+        'strokeColor': "#0000FF",
+        'strokeWidth': 1,
+        'strokeDashstyle': "dashdot",
+
+        'fontColor': 'black',
+        'fontSize': "12px",
+        'fontFamily': "Courier New, monospace",
+        'fontWeight': "bold",
+        'labelOutlineColor': "white",
+        'labelOutlineWidth': 3
+    });
+
+    rtn['ward_select_style'] = new OpenLayers.Style({
+        'fillOpacity': 0.5,
         'fillColor': "#FFFFFF",
         'label' : "${name}",
 
@@ -163,7 +176,6 @@ function plot_regions(map, layer, data, nameTrim, fromProj, toProj)
             {
                 'name': data[j]['record']['DeletionFlag'].replace(nameTrim, ""),
                 'styleNum': Math.floor((Math.random() * 10)) % 4 + 1,
-                'align': 'rt'
             });
 
         layer.addFeatures(polygonFeature);

@@ -13,11 +13,12 @@ $(document).ready(function (){
     var style_array = setup_styles();
     var borough_fill_style = style_array['borough_fill_style'];
     var ward_fill_style = style_array['ward_fill_style'];
+    var ward_select_style = style_array['ward_select_style'];
 
     var rule_array = setup_rules();
     borough_fill_style.addRules([rule_array['rule1'], rule_array['rule2'], rule_array['rule3'], rule_array['rule4']]); 
     
-    var layers = setup_layers(globalMap, borough_fill_style, ward_fill_style);
+    var layers = setup_layers(globalMap, borough_fill_style, ward_fill_style, ward_select_style);
     var borough_layer = layers['borough_layer'];
     var ward_layer = layers['ward_layer'];
 
@@ -26,6 +27,8 @@ $(document).ready(function (){
 
     
     setup_controls(globalMap, ward_layer);
+
+    console.log(ward_layer);
     //This is a hack, and I don't like it, but whatever
     //It's necessary because OpenLayers flatly refuses to load into a % width div
     $('.front .map-container').css('height', $(window).height() * 0.8);
