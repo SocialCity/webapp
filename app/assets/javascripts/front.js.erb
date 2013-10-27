@@ -3,6 +3,7 @@
 // You can use CoffeeScript in this file: http://coffeescript.org/
 
 var globalMap;
+var globalLayers = [];
 $(document).ready(function (){
     var fromProjection  = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
     var toProjection    = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
@@ -20,13 +21,17 @@ $(document).ready(function (){
     
     var layers = setup_layers(globalMap, borough_fill_style, ward_fill_style, ward_select_style);
     var borough_layer = layers['borough_layer'];
+    globalLayers['borough_layer'] = borough_layer;
+
     var ward_layer = layers['ward_layer'];
+    globalLayers['ward_layer'] = ward_layer;
 
     plot_regions(globalMap, borough_layer, gon.boroughs, "London Boro", fromProjection, toProjection);
     plot_regions(globalMap, ward_layer, gon.wards, "Ward", fromProjection, toProjection);
 
-    
     setup_controls(globalMap, ward_layer);
+
+    globalMap.events.register("zoomend", globalMap, zoom_level_changed);
 
     console.log(ward_layer);
     //This is a hack, and I don't like it, but whatever
@@ -34,6 +39,20 @@ $(document).ready(function (){
     $('.front .map-container').css('height', $(window).height() * 0.8);
     globalMap.updateSize();
 });
+
+function zoom_level_changed()
+{
+    zoom = globalMap.getZoom();
+    console.log(zoom);
+    if(zoom <= 12)
+    {
+        globalLayers['ward_layer'].setVisibility(false);
+    }
+    else
+    {
+        globalLayers['ward_layer'].setVisibility(true);
+    }
+}
 
 //Resizes the map after a short delay.
 window.onresize = function()

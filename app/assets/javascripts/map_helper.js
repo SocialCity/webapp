@@ -171,11 +171,31 @@ function plot_regions(map, layer, data, nameTrim, fromProj, toProj)
         pointList.push(pointList[0]);
 
         var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
+        var rawName = data[j]['record']['DeletionFlag'].replace(nameTrim, "");
+        var placeName = "";
+        if(rawName.length > 15)
+        {
+            for(c in rawName)
+            {
+                //console.log(c);
+                if(rawName[c] == " " && c >= 15 && placeName == "")
+                {
+                    //console.log(rawName.slice(0, c));
+                    var latter =  rawName.substr(c);
+                    var initial = rawName.substr(0, c);
+                    
+                    placeName = initial + "\n" + latter;
+                    console.log(c + " " + rawName.length + " " + latter + " " + placeName);
+                }
+            }
+        }
+        if(placeName == "")
+            placeName = rawName;
 
         var polygonFeature = new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Polygon([linearRing]), 
             {
-                'name': data[j]['record']['DeletionFlag'].replace(nameTrim, ""),
+                'name': placeName,
                 'styleNum': Math.floor((Math.random() * 10)) % 4 + 1,
             });
 
