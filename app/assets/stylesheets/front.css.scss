@@ -2,15 +2,22 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-.front .map-container
+.front
 {
-	background-color:rgba(208,208,208,0.8);
-	padding: 10px;
-	border-radius: 5px;
-	height: 400px;
-}
+	.map-container
+	{
+		height: 400px;
+	}
 
-.front #map 
-{
-	height:100%;
+	#map 
+	{
+		height:100%;
+	}
+
+	.container 
+	{
+		background-color:rgba(208,208,208,0.8);
+		padding: 10px;
+		border-radius: 5px;
+	}
 }

@@ -5,6 +5,10 @@ class LondonReducedBoroughRegion
   	LondonReducedBoroughRegion.where("record.DESCRIPTIO" => borough_name)
   end
 
+  def self.get_by_system_id(system_id)
+  	LondonReducedBoroughRegion.where("record.SystemID" => Regexp.new(system_id)).entries
+  end
+
   def get_first
   	LondonReducedBoroughRegion.findOne()
   end

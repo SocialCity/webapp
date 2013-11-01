@@ -50,7 +50,7 @@ function setup_layers(map, borough_style, ward_style, ward_select) {
 function setup_styles() {
     var rtn = [];
     rtn['borough_fill_style'] = new OpenLayers.Style({
-        'fillOpacity': 0.2,
+        'fillOpacity': 0.5,
         'label' : "${name}",
 
         'strokeColor': "#000000",
@@ -112,7 +112,41 @@ function setup_styles() {
     return rtn;
 }
 
-function setup_rules () {
+function setup_rules (num_rules) 
+{
+    var rtn = new Array;
+    var start_color = "0x0000FF00";
+    var end_color = "0x00FF0000";
+    var steps = Math.floor((parseInt(end_color, 16) - parseInt(start_color, 16)) / num_rules);
+    var current_color = parseInt(start_color, 16);
+
+
+    console.log((current_color + steps).toString(16) + " " + (current_color + steps));
+
+    for(var i = 0; i <= num_rules; i++)
+    {
+    	var hex_section = current_color.toString(16);
+    	while(hex_section.length < 6)
+    		hex_section = "0" + hex_section;
+    	var color_string = "#" + hex_section;
+	    rtn.push(new OpenLayers.Rule({
+	        filter: new OpenLayers.Filter.Comparison({
+	            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+	            property: "rank",
+	            value: i,
+	        }),
+	        symbolizer: {
+	            fillColor : color_string,
+	            fillOpacity: 0.5,
+	        },
+	    }));
+	   current_color += steps;
+	}
+    return rtn;
+}
+
+
+function _setup_rules () {
     var rtn = [];
     rtn['rule1'] = new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Comparison({
@@ -163,7 +197,7 @@ function plot_regions(map, layer, data, nameTrim, fromProj, toProj)
     for(var j = 0; j < data.length; j++)
     {
         var pointList = [];
-        for(var i = 0; i < data[j]['shape'].length; i++) 
+        for(var i = 0; i < data[j]['shape'].length; i++)
         {
             var point = new OpenLayers.Geometry.Point(data[j]['shape'][i]['long'], data[j]['shape'][i]['lat']).transform( fromProj, toProj);
             pointList.push(point);
@@ -180,12 +214,12 @@ function plot_regions(map, layer, data, nameTrim, fromProj, toProj)
                 //console.log(c);
                 if(rawName[c] == " " && c >= 15 && placeName == "")
                 {
-                    //console.log(rawName.slice(0, c));
+
                     var latter =  rawName.substr(c);
                     var initial = rawName.substr(0, c);
                     
                     placeName = initial + "\n" + latter;
-                    console.log(c + " " + rawName.length + " " + latter + " " + placeName);
+                    //console.log(c + " " + rawName.length + " " + latter + " " + placeName);
                 }
             }
         }
@@ -201,4 +235,71 @@ function plot_regions(map, layer, data, nameTrim, fromProj, toProj)
 
         layer.addFeatures(polygonFeature);
     }
+}
+
+function _plot_regions(map, layer, data, nameTrim, fromProj, toProj)
+{
+	for(set in data)
+	{
+		var current_loc_group = data[set];
+		var factors 		= current_loc_group["factors"];
+		var locations 		= current_loc_group["locations"];
+		var primary_factor 	= current_loc_group["primary_factor"];
+		var rank		 	= current_loc_group["rank"];
+
+		//console.log(current_loc_group);
+	    for(var j = 0; j < locations.length; j++)
+	    {	
+	        var pointList = [];
+	       //console.log(locations);
+	        for(var i = 0; i < locations[j]['shape'].length; i++) 
+	        {
+	        	//console.log(locations[j]);
+	            var point = new OpenLayers.Geometry.Point(locations[j]['shape'][i]['long'], locations[j]['shape'][i]['lat']).transform( fromProj, toProj);
+	            pointList.push(point);
+	        }
+	        pointList.push(pointList[0]);
+
+	        var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
+	        //var rawName = locations[j]['record']['DeletionFlag'].replace(nameTrim, "");
+	        var placeName = _name_trimmer(locations[j]['record']['DeletionFlag'].replace(nameTrim, ""));
+	        
+	        var polygonFeature = new OpenLayers.Feature.Vector(
+	            new OpenLayers.Geometry.Polygon([linearRing]), 
+	            {
+	                'name': placeName,
+	                'styleNum': Math.floor((Math.random() * 10)) % 4 + 1,
+	                'rank': rank
+	            });
+
+	        //console.log(polygonFeature);
+
+	        layer.addFeatures(polygonFeature);
+	    }
+	}
+}
+
+function _name_trimmer(rawName)
+{
+	var placeName = "";
+	if(rawName.length > 15)
+    {
+        for(c in rawName)
+        {
+            //console.log(c);
+            if(rawName[c] == " " && c >= 15 && placeName == "")
+            {
+
+                var latter =  rawName.substr(c);
+                var initial = rawName.substr(0, c);
+                
+                placeName = initial + "\n" + latter;
+                //console.log(c + " " + rawName.length + " " + latter + " " + placeName);
+            }
+        }
+    }
+    if(placeName == "")
+        placeName = rawName;
+
+    return placeName
 }
