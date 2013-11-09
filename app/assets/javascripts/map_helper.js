@@ -51,7 +51,7 @@ function setup_styles() {
     var rtn = [];
     rtn['borough_fill_style'] = new OpenLayers.Style({
         'fillOpacity': 0.5,
-        'label' : "${name}",
+        'label' : "${name}\n${stat}",
 
         'strokeColor': "#000000",
         'strokeWidth': 2.5,
@@ -245,7 +245,17 @@ function _plot_regions(map, layer, data, nameTrim, fromProj, toProj)
 		var factors 		= current_loc_group["factors"];
 		var locations 		= current_loc_group["locations"];
 		var primary_factor 	= current_loc_group["primary_factor"];
+
+        var primary_value   = 0;
 		var rank		 	= current_loc_group["rank"];
+
+        var count = 0;
+        for(i in factors)
+        {
+            if(count == primary_factor)
+                primary_value = factors[i];
+            count++;
+        }
 
 		//console.log(current_loc_group);
 	    for(var j = 0; j < locations.length; j++)
@@ -269,7 +279,8 @@ function _plot_regions(map, layer, data, nameTrim, fromProj, toProj)
 	            {
 	                'name': placeName,
 	                'styleNum': Math.floor((Math.random() * 10)) % 4 + 1,
-	                'rank': rank
+	                'rank': rank,
+                    'stat': primary_value,
 	            });
 
 	        //console.log(polygonFeature);
