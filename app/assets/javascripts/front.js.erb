@@ -8,8 +8,6 @@ $(document).ready(function (){
     var fromProjection  = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
     var toProjection    = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
 
-    //console.log(gon.display_arrays);
-
     globalMap = intialise_map();
 
     //Initialise styles, rules and layers
@@ -18,14 +16,17 @@ $(document).ready(function (){
     var ward_fill_style = style_array['ward_fill_style'];
     var ward_select_style = style_array['ward_select_style'];
 
-    var rule_array = setup_rules(gon.display_arrays.length);
-    //borough_fill_style.addRules([rule_array['rule1'], rule_array['rule2'], rule_array['rule3'], rule_array['rule4']]); 
+    console.log(gon.feature_groups);
+
+    //Initialise and add rules
+    var rule_array = setup_rules(gon.feature_groups['boroughs'].length);
     for(i in rule_array)
     {
     	 borough_fill_style.addRules([rule_array[i]]);
     }
 
     
+    //Initialise and store layer objects
     var layers = setup_layers(globalMap, borough_fill_style, ward_fill_style, ward_select_style);
     var borough_layer = layers['borough_layer'];
     globalLayers['borough_layer'] = borough_layer;
@@ -33,14 +34,15 @@ $(document).ready(function (){
     var ward_layer = layers['ward_layer'];
     globalLayers['ward_layer'] = ward_layer;
 
-    _plot_regions(globalMap, borough_layer, gon.display_arrays, "London Boro", fromProjection, toProjection);
-    plot_regions(globalMap, ward_layer, gon.wards, "Ward", fromProjection, toProjection);
+    //Plot region features on map
+    plot_regions(globalMap, borough_layer, gon.feature_groups['boroughs'], "London Boro", fromProjection, toProjection);
+    plot_regions(globalMap, ward_layer, gon.feature_groups['wards'], "Ward", fromProjection, toProjection);
 
+    //Set up scroll level controls
     setup_controls(globalMap, ward_layer);
 
     globalMap.events.register("zoomend", globalMap, zoom_level_changed);
 
-    console.log(borough_layer);
     //This is a hack, and I don't like it, but whatever
     //It's necessary because OpenLayers flatly refuses to load into a % width div
     $('.front .map-container').css('height', $(window).height() * 0.8);

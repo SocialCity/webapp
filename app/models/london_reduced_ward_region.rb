@@ -6,7 +6,7 @@ class LondonReducedWardRegion
   end
 
   def self.get_by_system_id_list(list)
-    LondonReducedBoroughRegion.in("record.SystemID" => list).entries
+    LondonReducedWardRegion.in("record.SystemID" => list).entries
   end
 
   def get_first
