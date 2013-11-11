@@ -1,2 +1,3 @@
 module FrontHelper
+	
 end

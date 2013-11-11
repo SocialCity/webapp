@@ -85,7 +85,7 @@ function setup_styles() {
     rtn['ward_select_style'] = new OpenLayers.Style({
         'fillOpacity': 0.5,
         'fillColor': "#FFFFFF",
-        'label' : "${name}",
+        'label' : "${name}\n${stat}",
 
         'strokeColor': "#0000FF",
         'strokeWidth': 1,
@@ -125,6 +125,8 @@ function setup_rules (num_rules)
 
     for(var i = 0; i <= num_rules; i++)
     {
+        if(current_color < 0)
+            current_color = parseInt("0x00FFFFFF", 16);
     	var hex_section = current_color.toString(16);
     	while(hex_section.length < 6)
     		hex_section = "0" + hex_section;
@@ -140,154 +142,86 @@ function setup_rules (num_rules)
 	            fillOpacity: 0.5,
 	        },
 	    }));
-	   current_color += steps;
+	   current_color -= steps;
 	}
     return rtn;
 }
 
-
-function _setup_rules () {
-    var rtn = [];
-    rtn['rule1'] = new OpenLayers.Rule({
-        filter: new OpenLayers.Filter.Comparison({
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "styleNum",
-            value: 1,
-        }),
-        symbolizer: {
-            fillColor : "#FF00FF",
-        },
-    });
-    rtn['rule2'] = new OpenLayers.Rule({
-        filter: new OpenLayers.Filter.Comparison({
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "styleNum",
-            value: 2,
-        }),
-        symbolizer: {
-            fillColor : "#FF0000",
-        },
-    });
-    rtn['rule3'] = new OpenLayers.Rule({
-        filter: new OpenLayers.Filter.Comparison({
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "styleNum",
-            value: 3,
-        }),
-        symbolizer: {
-            fillColor : "#0000FF",
-       },
-    });
-    rtn['rule4'] = new OpenLayers.Rule({
-        filter: new OpenLayers.Filter.Comparison({
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "styleNum",
-            value: 4,
-        }),
-        symbolizer: {
-            fillColor : "#00FF00",
-        },
-    });
-
-    return rtn;
-}
-
-function plot_regions(map, layer, data, nameTrim, fromProj, toProj)
+function plot_features(map, layer, featureList, nameTrim, fromProj, toProj)
 {
-    for(var j = 0; j < data.length; j++)
-    {
+    var locations       = featureList;
+
+    //console.log(current_loc_group);
+    for(var j = 0; j < locations.length; j++)
+    {   
         var pointList = [];
-        for(var i = 0; i < data[j]['shape'].length; i++)
+       //console.log(locations);
+        for(var i = 0; i < locations[j]['shape'].length; i++) 
         {
-            var point = new OpenLayers.Geometry.Point(data[j]['shape'][i]['long'], data[j]['shape'][i]['lat']).transform( fromProj, toProj);
+            //console.log(locations[j]);
+            var point = new OpenLayers.Geometry.Point(locations[j]['shape'][i]['long'], locations[j]['shape'][i]['lat']).transform( fromProj, toProj);
             pointList.push(point);
         }
         pointList.push(pointList[0]);
 
         var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
-        var rawName = data[j]['record']['DeletionFlag'].replace(nameTrim, "");
-        var placeName = "";
-        if(rawName.length > 15)
-        {
-            for(c in rawName)
-            {
-                //console.log(c);
-                if(rawName[c] == " " && c >= 15 && placeName == "")
-                {
-
-                    var latter =  rawName.substr(c);
-                    var initial = rawName.substr(0, c);
-                    
-                    placeName = initial + "\n" + latter;
-                    //console.log(c + " " + rawName.length + " " + latter + " " + placeName);
-                }
-            }
-        }
-        if(placeName == "")
-            placeName = rawName;
-
+        //var rawName = locations[j]['record']['DeletionFlag'].replace(nameTrim, "");
+        var placeName = _name_trimmer(locations[j]['record']['DeletionFlag'].replace(nameTrim, ""));
+        
         var polygonFeature = new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Polygon([linearRing]), 
             {
                 'name': placeName,
-                'styleNum': Math.floor((Math.random() * 10)) % 4 + 1,
+                'sysid': locations[j]['record']['SystemID'],
+                'rank': 0,
+                'stat': -1
             });
+
+        //console.log(polygonFeature);
 
         layer.addFeatures(polygonFeature);
     }
 }
 
-function _plot_regions(map, layer, data, nameTrim, fromProj, toProj)
+function insert_stats(map, layer, data)
 {
-	for(set in data)
-	{
-		var current_loc_group = data[set];
-		var factors 		= current_loc_group["factors"];
-		var locations 		= current_loc_group["locations"];
-		var primary_factor 	= current_loc_group["primary_factor"];
+    var factors           = data[0]["factors"];
+    var primary_factor    = data[0]["primary_factor"];
 
-        var primary_value   = 0;
-		var rank		 	= current_loc_group["rank"];
+    var statIndex = "", count = 0;
+    for(i in factors) 
+    {
+        if(count == primary_factor)
+            statIndex = i;
+        count++;
+    }
 
-        var count = 0;
-        for(i in factors)
+    //console.log(current_loc_group);
+    for(var i = 0; i < layer.features.length; i++)
+    {   
+        var found = false;
+        var j = 0;
+        while(j < data.length && !found)
         {
-            if(count == primary_factor)
-                primary_value = factors[i];
-            count++;
+            var current_loc_group = data[j];
+            var locations         = current_loc_group["locations"];
+
+            //The trim is necessary to shake an annoying carriage return that I don't seem to be able to shake
+            //in the python script
+
+            for(var k = 0; k < locations.length; k++)
+            {
+                if(locations[k] == layer.features[i].attributes['sysid'].trim())
+                {
+                    layer.features[i].attributes['stat'] = current_loc_group["factors"][statIndex];
+                    layer.features[i].attributes['rank'] = current_loc_group["rank"];
+                    layer.drawFeature(layer.features[i], "");
+                    found = true;
+                }
+            }
+            j++;
         }
-
-		//console.log(current_loc_group);
-	    for(var j = 0; j < locations.length; j++)
-	    {	
-	        var pointList = [];
-	       //console.log(locations);
-	        for(var i = 0; i < locations[j]['shape'].length; i++) 
-	        {
-	        	//console.log(locations[j]);
-	            var point = new OpenLayers.Geometry.Point(locations[j]['shape'][i]['long'], locations[j]['shape'][i]['lat']).transform( fromProj, toProj);
-	            pointList.push(point);
-	        }
-	        pointList.push(pointList[0]);
-
-	        var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
-	        //var rawName = locations[j]['record']['DeletionFlag'].replace(nameTrim, "");
-	        var placeName = _name_trimmer(locations[j]['record']['DeletionFlag'].replace(nameTrim, ""));
-	        
-	        var polygonFeature = new OpenLayers.Feature.Vector(
-	            new OpenLayers.Geometry.Polygon([linearRing]), 
-	            {
-	                'name': placeName,
-	                'styleNum': Math.floor((Math.random() * 10)) % 4 + 1,
-	                'rank': rank,
-                    'stat': primary_value,
-	            });
-
-	        //console.log(polygonFeature);
-
-	        layer.addFeatures(polygonFeature);
-	    }
-	}
+    }
 }
 
 function _name_trimmer(rawName)
