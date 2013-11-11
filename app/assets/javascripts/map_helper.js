@@ -147,54 +147,81 @@ function setup_rules (num_rules)
     return rtn;
 }
 
-function plot_regions(map, layer, data, nameTrim, fromProj, toProj)
+function plot_features(map, layer, featureList, nameTrim, fromProj, toProj)
 {
-	for(set in data)
-	{
-		var current_loc_group = data[set];
-		var factors 		= current_loc_group["factors"];
-		var locations 		= current_loc_group["locations"];
-		var primary_factor 	= current_loc_group["primary_factor"];
-		var rank		 	= current_loc_group["rank"];
+    var locations       = featureList;
 
-        var stat = 0, count = 0;
-        for(i in factors) 
+    //console.log(current_loc_group);
+    for(var j = 0; j < locations.length; j++)
+    {   
+        var pointList = [];
+       //console.log(locations);
+        for(var i = 0; i < locations[j]['shape'].length; i++) 
         {
-            if(count == primary_factor)
-                stat = factors[i];
-            count++;
+            //console.log(locations[j]);
+            var point = new OpenLayers.Geometry.Point(locations[j]['shape'][i]['long'], locations[j]['shape'][i]['lat']).transform( fromProj, toProj);
+            pointList.push(point);
         }
+        pointList.push(pointList[0]);
 
-		//console.log(current_loc_group);
-	    for(var j = 0; j < locations.length; j++)
-	    {	
-	        var pointList = [];
-	       //console.log(locations);
-	        for(var i = 0; i < locations[j]['shape'].length; i++) 
-	        {
-	        	//console.log(locations[j]);
-	            var point = new OpenLayers.Geometry.Point(locations[j]['shape'][i]['long'], locations[j]['shape'][i]['lat']).transform( fromProj, toProj);
-	            pointList.push(point);
-	        }
-	        pointList.push(pointList[0]);
+        var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
+        //var rawName = locations[j]['record']['DeletionFlag'].replace(nameTrim, "");
+        var placeName = _name_trimmer(locations[j]['record']['DeletionFlag'].replace(nameTrim, ""));
+        
+        var polygonFeature = new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.Polygon([linearRing]), 
+            {
+                'name': placeName,
+                'sysid': locations[j]['record']['SystemID'],
+                'rank': 0,
+                'stat': -1
+            });
 
-	        var linearRing = new OpenLayers.Geometry.LinearRing(pointList);
-	        //var rawName = locations[j]['record']['DeletionFlag'].replace(nameTrim, "");
-	        var placeName = _name_trimmer(locations[j]['record']['DeletionFlag'].replace(nameTrim, ""));
-	        
-	        var polygonFeature = new OpenLayers.Feature.Vector(
-	            new OpenLayers.Geometry.Polygon([linearRing]), 
-	            {
-	                'name': placeName,
-	                'rank': rank,
-                    'stat': stat
-	            });
+        //console.log(polygonFeature);
 
-	        //console.log(polygonFeature);
+        layer.addFeatures(polygonFeature);
+    }
+}
 
-	        layer.addFeatures(polygonFeature);
-	    }
-	}
+function insert_stats(map, layer, data)
+{
+    var factors           = data[0]["factors"];
+    var primary_factor    = data[0]["primary_factor"];
+
+    var statIndex = "", count = 0;
+    for(i in factors) 
+    {
+        if(count == primary_factor)
+            statIndex = i;
+        count++;
+    }
+
+    //console.log(current_loc_group);
+    for(var i = 0; i < layer.features.length; i++)
+    {   
+        var found = false;
+        var j = 0;
+        while(j < data.length && !found)
+        {
+            var current_loc_group = data[j];
+            var locations         = current_loc_group["locations"];
+
+            //The trim is necessary to shake an annoying carriage return that I don't seem to be able to shake
+            //in the python script
+
+            for(var k = 0; k < locations.length; k++)
+            {
+                if(locations[k] == layer.features[i].attributes['sysid'].trim())
+                {
+                    layer.features[i].attributes['stat'] = current_loc_group["factors"][statIndex];
+                    layer.features[i].attributes['rank'] = current_loc_group["rank"];
+                    layer.drawFeature(layer.features[i], "");
+                    found = true;
+                }
+            }
+            j++;
+        }
+    }
 }
 
 function _name_trimmer(rawName)

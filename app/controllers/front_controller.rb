@@ -8,8 +8,8 @@ class FrontController < ApplicationController
 		base_factor_url = "http://localhost:8080/oneFactor/"
 		@param = params[:factor]
 
-		@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
-		gon.wards = @objs_wards
+		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
+		#gon.wards = @objs_wards
 
 		gon.feature_groups = Hash.new
 
@@ -61,23 +61,23 @@ class FrontController < ApplicationController
 
 		#Pass through parsed JSON, structuring for the JS
 		parsed_data.each do |location_group|
-			location_objects = Array.new
-			location_id_list = Array.new
+			# location_objects = Array.new
+			# location_id_list = Array.new
 
-			location_group["location"].each do |location|
-				#a lovely quirk of mongo means that this needs to be regex to match
-		 		location_id_list << Regexp.new(location)
-			end
+			# location_group["location"].each do |location|
+			# 	#a lovely quirk of mongo means that this needs to be regex to match
+		 # 		location_id_list << Regexp.new(location)
+			# end
 
-			#this allows you to append lists to lists
-			if(for_boroughs) then
-				location_objects.push(*LondonReducedBoroughRegion.get_by_system_id_list(location_id_list))
-			else
-				location_objects.push(*LondonReducedWardRegion.get_by_system_id_list(location_id_list))
-			end
+			# #this allows you to append lists to lists
+			# if(for_boroughs) then
+			# 	location_objects.push(*LondonReducedBoroughRegion.get_by_system_id_list(location_id_list))
+			# else
+			# 	location_objects.push(*LondonReducedWardRegion.get_by_system_id_list(location_id_list))
+			# end
 
 			feature_group 					= Hash.new
-			feature_group["locations"] 		= location_objects
+			feature_group["locations"] 		= location_group['location']
 			feature_group["factors"] 		= Hash.new
 			feature_group["primary_factor"] = primary_factor
 

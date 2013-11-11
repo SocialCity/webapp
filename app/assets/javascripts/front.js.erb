@@ -4,6 +4,7 @@
 
 var globalMap;
 var globalLayers = [];
+var base_url_regions = "/assets/";
 $(document).ready(function (){
     var fromProjection  = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
     var toProjection    = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
@@ -16,13 +17,17 @@ $(document).ready(function (){
     var ward_fill_style = style_array['ward_fill_style'];
     var ward_select_style = style_array['ward_select_style'];
 
+    var loaded_region_data = []
+
     console.log(gon.feature_groups);
+
+
 
     //Initialise and add rules
     var rule_array = setup_rules(gon.feature_groups['boroughs'].length);
     for(i in rule_array)
     {
-    	 borough_fill_style.addRules([rule_array[i]]);
+    	borough_fill_style.addRules([rule_array[i]]);
     }
 
     
@@ -34,9 +39,30 @@ $(document).ready(function (){
     var ward_layer = layers['ward_layer'];
     globalLayers['ward_layer'] = ward_layer;
 
-    //Plot region features on map
-    plot_regions(globalMap, borough_layer, gon.feature_groups['boroughs'], "London Boro", fromProjection, toProjection);
-    plot_regions(globalMap, ward_layer, gon.feature_groups['wards'], "Ward", fromProjection, toProjection);
+    //Get regions asynchronously and plot on map
+    $.ajax({
+        url: base_url_regions + "boroughs-reduced.json",
+        crossDomain: true,
+        dataType: "JSON",
+        cache: false
+    })
+    .done(function( json ) {
+        loaded_region_data['boroughs'] = json['regions'];
+        plot_features(globalMap, borough_layer, json['regions'], "London Boro", fromProjection, toProjection);
+        insert_stats(globalMap, borough_layer, gon.feature_groups['boroughs']);
+    });
+
+    $.ajax({
+        url: base_url_regions + "wards-reduced.json",
+        crossDomain: true,
+        dataType: "JSON",
+        cache: false
+    })
+    .done(function( json ) {
+        loaded_region_data['wards'] = json['regions'];
+        plot_features(globalMap, ward_layer, json['regions'], "Ward", fromProjection, toProjection);
+        insert_stats(globalMap, ward_layer, gon.feature_groups['wards']);
+    });
 
     //Set up scroll level controls
     setup_controls(globalMap, ward_layer);
