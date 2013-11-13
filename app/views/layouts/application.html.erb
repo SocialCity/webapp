@@ -8,15 +8,42 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-	<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-	  <!-- Brand and toggle get grouped for better mobile display -->
-	  <div class="navbar-header">
-	    <a class="navbar-brand" href="http://github.com/SocialCity">SocialCity</a>
-	  </div>
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		<a class="navbar-brand" href="http://github.com/SocialCity">SocialCity</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class=""><a href="#">Map View</a></li>
+				<li class="dropdown <% concat "active" if @current_action == "map" %>">
+					<a href="<%= root_url %>" class="dropdown-toggle" data-toggle="dropdown">Map View<b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li><a href="#">View by:</a></li>
+						<li class="divider"></li>
+						<li><a href="<%= root_url %>?factor=0">Crime Rate</a></li>
+						<li><a href="<%= root_url %>?factor=1">House Price</a></li>
+						<li><a href="<%= root_url %>?factor=2">Education</a></li>
+						<li><a href="<%= root_url %>?factor=3">Transport</a></li>
+						<li><a href="<%= root_url %>?factor=4">Mean Age</a></li>
+						<li><a href="<%= root_url %>?factor=5">Drug Usage Rate</a></li>
+						<li><a href="<%= root_url %>?factor=6">Employment Rate</a></li>
+						<li><a href="<%= root_url %>?factor=7">Voter Turnout</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
 	</nav>
 	<div class="container <%= controller.controller_name %>">
 		<div class="row">
-			<%= yield %>
+			<div class="row analytics-container">
+				<div class="">
+				</div>
+				<div class="row">
+					<%= yield %>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>

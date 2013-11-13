@@ -11,14 +11,14 @@
 		<div class="col-md-1">
 		</div>
 		<div class="col-md-3 container">
-			<a class="btn btn-primary btn-block" href="<%= root_url %>?factor=0" role="button">Crime Rate</a>
-			<a class="btn btn-primary btn-block" href="<%= root_url %>?factor=1" role="button">House Price</a>
-			<a class="btn btn-primary btn-block" href="<%= root_url %>?factor=2" role="button">Education</a>
-			<a class="btn btn-primary btn-block" href="<%= root_url %>?factor=3" role="button">Transport</a>
-			<a class="btn btn-primary btn-block" href="<%= root_url %>?factor=4" role="button">Mean Age</a>
-			<a class="btn btn-primary btn-block" href="<%= root_url %>?factor=5" role="button">Drug Usage Rate</a>
-			<a class="btn btn-primary btn-block" href="<%= root_url %>?factor=6" role="button">Employment Rate</a>
-			<a class="btn btn-primary btn-block" href="<%= root_url %>?factor=7" role="button">Voter Turnout</a>
+			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 0 %>" href="<%= root_url %>?factor=0" role="button">Crime Rate</a>
+			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 1 %>" href="<%= root_url %>?factor=1" role="button">House Price</a>
+			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 2 %>" href="<%= root_url %>?factor=2" role="button">Education</a>
+			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 3 %>" href="<%= root_url %>?factor=3" role="button">Transport</a>
+			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 4 %>" href="<%= root_url %>?factor=4" role="button">Mean Age</a>
+			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 5 %>" href="<%= root_url %>?factor=5" role="button">Drug Usage Rate</a>
+			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 6 %>" href="<%= root_url %>?factor=6" role="button">Employment Rate</a>
+			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 7 %>" href="<%= root_url %>?factor=7" role="button">Voter Turnout</a>
 		</div>
 	</div>
 </div>
