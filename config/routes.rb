@@ -1,7 +1,7 @@
 Webapp::Application.routes.draw do
-  get "front/map"
+  get "street_map/one_factor"
 
-  root 'front#map'
+  root 'street_map#one_factor'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

@@ -71,7 +71,7 @@ $(document).ready(function (){
 
     //This is a hack, and I don't like it, but whatever
     //It's necessary because OpenLayers flatly refuses to load into a % width div
-    $('.front .map-container').css('height', $(window).height() * 0.8);
+    $('.street_map .map-container').css('height', $(window).height() * 0.8);
     globalMap.updateSize();
 });
 
@@ -94,7 +94,7 @@ window.onresize = function()
 {
  setTimeout( 
   	function() { 
-      	$('.front .map-container').css('height', $(window).height() * 0.8);
+      	$('.street_map .map-container').css('height', $(window).height() * 0.8);
         globalMap.updateSize();
   	}, 
     200);

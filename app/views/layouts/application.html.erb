@@ -20,16 +20,8 @@
 				<li class="dropdown <% concat "active" if @current_action == "map" %>">
 					<a href="<%= root_url %>" class="dropdown-toggle" data-toggle="dropdown">Map View<b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">View by:</a></li>
-						<li class="divider"></li>
-						<li><a href="<%= root_url %>?factor=0">Crime Rate</a></li>
-						<li><a href="<%= root_url %>?factor=1">House Price</a></li>
-						<li><a href="<%= root_url %>?factor=2">Education</a></li>
-						<li><a href="<%= root_url %>?factor=3">Transport</a></li>
-						<li><a href="<%= root_url %>?factor=4">Mean Age</a></li>
-						<li><a href="<%= root_url %>?factor=5">Drug Usage Rate</a></li>
-						<li><a href="<%= root_url %>?factor=6">Employment Rate</a></li>
-						<li><a href="<%= root_url %>?factor=7">Voter Turnout</a></li>
+						<li><a href="<%= root_url %>?factor=0">One Factor</a></li>
+						<li><a href="<%= root_url %>?factor=0">Two Factor</a></li>
 					</ul>
 				</li>
 			</ul>

@@ -1,5 +1,5 @@
-class FrontController < ApplicationController
-	def map
+class StreetMapController < ApplicationController
+	def one_factor
 		require 'open-uri' 
 
 		#@objs = LondonReducedBoroughRegion.get_borough("GREATER_LONDON_AUTHORITY")
@@ -33,7 +33,6 @@ class FrontController < ApplicationController
 		#--------------------------------------------------
 
 		gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
-
 	end
 
 

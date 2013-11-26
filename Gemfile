@@ -35,6 +35,8 @@ gem "bson_ext", "~> 1.4"
 gem "gon"
 gem "weary"
 
+gem 'd3js-rails'
+
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.

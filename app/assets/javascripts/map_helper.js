@@ -213,7 +213,7 @@ function insert_stats(map, layer, data)
             {
                 if(locations[k] == layer.features[i].attributes['sysid'].trim())
                 {
-                    layer.features[i].attributes['stat'] = current_loc_group["factors"][statIndex];
+                    layer.features[i].attributes['stat'] = current_loc_group["factors"][statIndex].toFixed(1);
                     layer.features[i].attributes['rank'] = current_loc_group["rank"];
                     layer.drawFeature(layer.features[i], "");
                     found = true;
