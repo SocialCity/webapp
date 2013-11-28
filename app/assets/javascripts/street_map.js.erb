@@ -50,6 +50,7 @@ $(document).ready(function (){
         loaded_region_data['boroughs'] = json['regions'];
         plot_features(globalMap, borough_layer, json['regions'], "London Boro", fromProjection, toProjection);
         insert_stats(globalMap, borough_layer, gon.feature_groups['boroughs']);
+        console.log(borough_layer);
     });
 
     $.ajax({

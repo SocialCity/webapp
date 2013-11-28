@@ -1,0 +1,45 @@
+<script type="text/javascript">
+</script>
+
+<div class="col-md-12">
+<br />
+	<div class="row">
+		<div class="col-md-offset-1 col-md-10 container">
+			<%= form_tag("/street_map/two_factor", :method => "get", :role => "form", :class => "factor-compare-form form-inline") do %>
+				I want to compare 
+				<select class="factor-select form-control" id="x-select" name="factor_one">
+					<option id="x-opt-1" value="1">Crime Rate</option>
+					<option id="x-opt-2" value="2">House Price</option>
+					<option id="x-opt-3" value="3">Education</option>
+					<option id="x-opt-4" value="4">Transport</option>
+					<option id="x-opt-5" value="5">Mean Age</option>
+					<option id="x-opt-6" value="6">Drug Usage Rate</option>
+					<option id="x-opt-7" value="7">Employment Rate</option>
+					<option id="x-opt-8" value="8">Voter Turnout</option>
+				</select>
+				against
+				<select class="factor-select form-control" id="y-select" name="factor_two">
+					<option id="y-opt-1" value="1">Crime Rate</option>
+					<option id="y-opt-2" selected value="2">House Price</option>
+					<option id="y-opt-3" value="3">Education</option>
+					<option id="y-opt-4" value="4">Transport</option>
+					<option id="y-opt-5" value="5">Mean Age</option>
+					<option id="y-opt-6" value="6">Drug Usage Rate</option>
+					<option id="y-opt-7" value="7">Employment Rate</option>
+					<option id="y-opt-8" value="8">Voter Turnout</option>
+				</select>
+				<button type="submit" class="btn btn-primary">Go!</button>
+			<% end %>
+		</div>
+	</div>
+	<br/>
+	<div class="row">
+		<div class="col-md-1">
+		</div>
+		<div class="col-md-10 container map-container">
+			<div id="map"></div>
+		</div>
+		<div class="col-md-1">
+		</div>
+	</div>
+</div>

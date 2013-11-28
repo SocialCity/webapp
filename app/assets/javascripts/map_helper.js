@@ -121,16 +121,13 @@ function setup_rules (num_rules)
     var current_color = parseInt(start_color, 16);
 
 
-    console.log((current_color + steps).toString(16) + " " + (current_color + steps));
 
-    for(var i = 0; i <= num_rules; i++)
+
+    var color_set = generate_color_set(num_rules);
+    console.log(color_set);
+
+    for(var i = 0; i < num_rules; i++)
     {
-        if(current_color < 0)
-            current_color = parseInt("0x00FFFFFF", 16);
-    	var hex_section = current_color.toString(16);
-    	while(hex_section.length < 6)
-    		hex_section = "0" + hex_section;
-    	var color_string = "#" + hex_section;
 	    rtn.push(new OpenLayers.Rule({
 	        filter: new OpenLayers.Filter.Comparison({
 	            type: OpenLayers.Filter.Comparison.EQUAL_TO,
@@ -138,13 +135,129 @@ function setup_rules (num_rules)
 	            value: i,
 	        }),
 	        symbolizer: {
-	            fillColor : color_string,
+	            fillColor : get_color_string(color_set[i]),
 	            fillOpacity: 0.5,
 	        },
 	    }));
-	   current_color -= steps;
 	}
     return rtn;
+}
+
+function generate_color_set(num_rules)
+{
+    //we don't interact with this bit
+    var hex_color_prefix = "0x00";
+
+    var start_const = 1;
+    var start_color = [140, 255, 0];
+    var start_to_white_steps = get_color_steps(start_color, num_rules);
+
+    var end_const = 0;
+    var end_color = [255, 0, 0];
+    var end_to_white_steps = get_color_steps(end_color, num_rules);
+
+
+    //var steps = Math.floor((parseInt(end_color, 16) - parseInt(start_color, 16)) / num_rules);
+    //We need to go from start -> white -> end
+    var steps = 255 * 2 / num_rules;
+    //var current_color = parseInt(get_color_string(start_color), 16);
+
+    console.log("Start steps " + start_to_white_steps);
+    console.log("End steps " + end_to_white_steps);
+
+
+    var color_set = new Array();
+    color_set.push(start_color.slice());
+    var current_color = start_color;
+    var hit_white = false;
+
+    for(var i = 0; i < num_rules; i++)
+    {
+        if(hit_white == false)
+        {
+            if(!check_color_over_limit(current_color))
+            {
+                //Move towards white
+                current_color = change_color(current_color, start_const, start_to_white_steps, true);
+            }
+            else
+            {
+                hit_white = true;
+                current_color = [255,255,255];
+            }
+
+            if(!check_color_over_limit(current_color))
+                color_set.push(current_color.slice());
+        }
+        else
+        {
+            //Move towards end
+            if(!check_color_under_limit(current_color))
+            {
+                //Move towards white
+                current_color = change_color(current_color, end_const, end_to_white_steps, false);   
+            }
+            color_set.push(current_color.slice());
+        }
+    }
+
+    return color_set;
+}
+
+function get_color_string(RGB_array)
+{
+    console.log(RGB_array);
+    var string = ("#" + get_hex(RGB_array[0]) + get_hex(RGB_array[1]) + get_hex(RGB_array[2]));
+    console.log(string);
+    return string;
+}
+
+function get_hex(num)
+{
+    if(num == 0)
+        return "00"
+    else
+        return num.toString(16);
+}
+
+
+function check_color_over_limit(RGB_array)
+{
+    for(var i = 0; i < RGB_array.length; i++)
+        if(RGB_array[i] > 255)
+            return true;
+}
+
+function check_color_under_limit(RGB_array)
+{
+    for(var i = 0; i < RGB_array.length; i++)
+        if(RGB_array[i] < 0)
+            return true;
+}
+
+
+function change_color(RGB_array, fixed_elem, change_array, increment)
+{
+    console.log("ARRAY: " + RGB_array + " INCREMENT " + increment);
+    for(var i = 0; i < RGB_array.length; i++)
+    {
+        if(i != fixed_elem)
+        {
+            if(increment)
+                RGB_array[i] += change_array[i];
+            else
+                RGB_array[i] -= change_array[i];
+        }
+    }
+    return RGB_array;
+}
+
+function get_color_steps(RGB_array, num_rules)
+{
+    var step_array = new Array();
+    for(var i = 0; i < RGB_array.length; i++)
+        step_array.push(Math.round((255-RGB_array[i]) / (num_rules / 2)));
+    return step_array;
 }
 
 function plot_features(map, layer, featureList, nameTrim, fromProj, toProj)

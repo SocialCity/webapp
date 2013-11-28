@@ -35,6 +35,50 @@ class StreetMapController < ApplicationController
 		gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
 	end
 
+	def two_factor
+		require 'open-uri' 
+				#@objs = LondonReducedBoroughRegion.get_borough("GREATER_LONDON_AUTHORITY")
+		#gon.boroughs = @objs
+
+		base_factor_url = "http://localhost:8080/oneFactor/"
+		@factor_1 = params[:factor_one]
+		@factor_2 = params[:factor_two]
+
+		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
+		#gon.wards = @objs_wards
+
+		gon.feature_groups = Hash.new
+
+		#dodgy parameter handling
+		if(@factor_1.to_i < 0 or @factor_1.to_i > 7 or @factor_1 == nil) then
+			primary_factor = 0
+		else
+			primary_factor = @factor_1
+		end
+
+		if(@factor_2.to_i < 0 or @factor_2.to_i > 7 or @factor_2 == nil) then
+			secondary_factor = 0
+		else
+			secondary_factor = @factor_2
+		end
+
+
+
+
+
+		#--------------------------------------------------
+		#          		BOROUGH DATA COLLATION
+		#--------------------------------------------------
+
+		gon.feature_groups[:boroughs] = map_feature_collater(true, primary_factor, base_factor_url)
+
+		#--------------------------------------------------
+		#  				WARD DATA COLLATION	
+		#--------------------------------------------------
+
+		gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
+	end
+
 
 	#Takes in a 	
 	def map_feature_collater(for_boroughs, primary_factor, request_url_base)
