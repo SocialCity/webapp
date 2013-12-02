@@ -47,10 +47,10 @@ function setup_layers(map, borough_style, ward_style, ward_select) {
 }
 
 
-function setup_styles() {
+function setup_one_factor_styles() {
     var rtn = [];
     rtn['borough_fill_style'] = new OpenLayers.Style({
-        'fillOpacity': 0.5,
+        'fillOpacity': 0.8,
         'label' : "${name}\n${stat}",
 
         'strokeColor': "#000000",
@@ -112,20 +112,75 @@ function setup_styles() {
     return rtn;
 }
 
-function setup_rules (num_rules) 
+
+function setup_two_factor_styles() {
+    var rtn = [];
+    rtn['borough_fill_style'] = new OpenLayers.Style({
+        'fillOpacity': 0,
+        'label' : "${name}\n${stat}",
+
+        'strokeColor': "#000000",
+        'strokeWidth': 2.5,
+        'strokeDashstyle': "solid",
+        
+        'fontColor': 'black',
+        'fontSize': "12px",
+        'fontFamily': "Courier New, monospace",
+        'fontWeight': "bold",
+        'labelOutlineColor': "white",
+        'labelOutlineWidth': 3
+    });
+
+    rtn['ward_fill_style'] = new OpenLayers.Style({
+        'fillOpacity': 0.8,
+        'label' : "",
+
+        'strokeColor': "#0000FF",
+        'strokeWidth': 1,
+        'strokeDashstyle': "dashdot",
+
+        'fontColor': 'black',
+        'fontSize': "12px",
+        'fontFamily': "Courier New, monospace",
+        'fontWeight': "bold",
+        'labelOutlineColor': "white",
+        'labelOutlineWidth': 3
+    });
+
+    rtn['ward_select_style'] = new OpenLayers.Style({
+        'label' : "${name}\n${rank}",
+
+        'strokeColor': "#FFFFFF",
+        'strokeWidth': 1.5,
+        'strokeDashstyle': "solid",
+
+        'fontColor': 'black',
+        'fontSize': "12px",
+        'fontFamily': "Courier New, monospace",
+        'fontWeight': "bold",
+        'labelOutlineColor': "white",
+        'labelOutlineWidth': 3
+    });
+
+    rtn['basic_line'] = {
+        'strokeColor': "#000000",
+        'strokeWidth': 1,
+        'strokeDashstyle': "dashdot",
+    };
+
+    rtn['ward_line'] = OpenLayers.Util.extend({}, rtn['basic_line']);
+    rtn['ward_line'].strokeColor = "#0000FF";
+    rtn['ward_line'].strokeWidth = 1;
+
+    return rtn;
+}
+
+
+function setup_one_factor_rules (num_rules) 
 {
     var rtn = new Array;
-    var start_color = "0x0000FF00";
-    var end_color = "0x00FF0000";
-    var steps = Math.floor((parseInt(end_color, 16) - parseInt(start_color, 16)) / num_rules);
-    var current_color = parseInt(start_color, 16);
-
-
-
-
     var color_set = generate_color_set(num_rules);
     console.log(color_set);
-
     for(var i = 0; i < num_rules; i++)
     {
 	    rtn.push(new OpenLayers.Rule({
@@ -135,129 +190,108 @@ function setup_rules (num_rules)
 	            value: i,
 	        }),
 	        symbolizer: {
-	            fillColor : get_color_string(color_set[i]),
-	            fillOpacity: 0.5,
+	            fillColor : get_color_string(color_set[i].get_RGB_array()),
+	            fillOpacity: 0.7,
 	        },
 	    }));
 	}
     return rtn;
 }
 
-function generate_color_set(num_rules)
+
+
+function setup_two_factor_rules(boroughs, wards, relation_list) 
 {
-    //we don't interact with this bit
-    var hex_color_prefix = "0x00";
+    var num_rules = boroughs.length;
 
-    var start_const = 1;
-    var start_color = [140, 255, 0];
-    var start_to_white_steps = get_color_steps(start_color, num_rules);
+    var rtn = new Array;
+    //Get base_colours for wards
+    var color_set = generate_color_set(num_rules);
+    console.log("COLOR SET " + num_rules);
+    console.log(color_set);
 
-    var end_const = 0;
-    var end_color = [255, 0, 0];
-    var end_to_white_steps = get_color_steps(end_color, num_rules);
-
-
-    //var steps = Math.floor((parseInt(end_color, 16) - parseInt(start_color, 16)) / num_rules);
-    //We need to go from start -> white -> end
-    var steps = 255 * 2 / num_rules;
-    //var current_color = parseInt(get_color_string(start_color), 16);
-
-    console.log("Start steps " + start_to_white_steps);
-    console.log("End steps " + end_to_white_steps);
+    //there's some disparity between what comes out of the generate method
+    //here and when it is used for one-factor
 
 
-    var color_set = new Array();
-    color_set.push(start_color.slice());
-    var current_color = start_color;
-    var hit_white = false;
+    //Now loop through, for each ward we want to get the base colour for the parent borough, and
+    //adjust it based on the ranking of the previous 
+    //console.log(relation_list);
+    var borough_list = relation_list["borough_list"];
+    var factor_list = relation_list["factors"];
+    //console.log(borough_list);
 
-    for(var i = 0; i < num_rules; i++)
+    var rule_list = new Array();
+    for(borough_key in borough_list)
     {
-        if(hit_white == false)
-        {
-            if(!check_color_over_limit(current_color))
-            {
-                //Move towards white
-                current_color = change_color(current_color, start_const, start_to_white_steps, true);
-            }
-            else
-            {
-                hit_white = true;
-                current_color = [255,255,255];
-            }
+        var borough = borough_list[borough_key];
+        var borough_rank = borough["borough_rank"];
+        var borough_wards = borough["ward_list"];
+        var base_color = color_set[borough_rank];
 
-            if(!check_color_over_limit(current_color))
-                color_set.push(current_color.slice());
-        }
-        else
+        //console.log("Generating for base rank " + borough_rank + " with base_color " + base_color.RGB);
+        var subcolor_set = generate_subcolor_set(base_color.get_RGB_array(), borough["num_ward_ranks"], base_color.fixed_element);
+        console.log(subcolor_set);
+
+        //Alter colour slightly based on in_borough rank
+        for(var j = 0; j < borough_wards.length; j++)
         {
-            //Move towards end
-            if(!check_color_under_limit(current_color))
-            {
-                //Move towards white
-                current_color = change_color(current_color, end_const, end_to_white_steps, false);   
-            }
-            color_set.push(current_color.slice());
-        }
+            //console.log(borough_wards[j]);
+            //console.log("Subcolor set " + subcolor_set);
+            //console.log(borough_wards[j]["in_borough_rank"]);
+            rule_list[borough_rank + "-" + borough_wards[j]["in_borough_rank"]] = get_color_string(subcolor_set[borough_wards[j]["in_borough_rank"]]);
+        }   
     }
 
-    return color_set;
-}
-
-function get_color_string(RGB_array)
-{
-    console.log(RGB_array);
-    var string = ("#" + get_hex(RGB_array[0]) + get_hex(RGB_array[1]) + get_hex(RGB_array[2]));
-    console.log(string);
-    return string;
-}
-
-function get_hex(num)
-{
-    if(num == 0)
-        return "00"
-    else
-        return num.toString(16);
-}
-
-
-function check_color_over_limit(RGB_array)
-{
-    for(var i = 0; i < RGB_array.length; i++)
-        if(RGB_array[i] > 255)
-            return true;
-}
-
-function check_color_under_limit(RGB_array)
-{
-    for(var i = 0; i < RGB_array.length; i++)
-        if(RGB_array[i] < 0)
-            return true;
-}
-
-
-function change_color(RGB_array, fixed_elem, change_array, increment)
-{
-    console.log("ARRAY: " + RGB_array + " INCREMENT " + increment);
-    for(var i = 0; i < RGB_array.length; i++)
+    for(i in rule_list)
     {
-        if(i != fixed_elem)
-        {
-            if(increment)
-                RGB_array[i] += change_array[i];
-            else
-                RGB_array[i] -= change_array[i];
-        }
+        rtn.push(new OpenLayers.Rule({
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                property: "rank",
+                value: i,
+            }),
+            symbolizer: {
+                fillColor : rule_list[i],
+                fillOpacity: 0.7,
+            },
+        }));
     }
-    return RGB_array;
+
+    console.log(rtn);
+    return rtn;
 }
 
-function get_color_steps(RGB_array, num_rules)
+function generate_subcolor_set(borough_color, num_ranks, fixed_elem)
 {
-    var step_array = new Array();
-    for(var i = 0; i < RGB_array.length; i++)
-        step_array.push(Math.round((255-RGB_array[i]) / (num_rules / 2)));
-    return step_array;
+    var rank_span = 0.2
+    var range_bottom_color = borough_color;
+    var range_top_color = borough_color;
+    var subcolor_set = new Array();
+    var change_array = new Array();
+
+
+    for(var i = 0; i < borough_color.length; i++)
+    {
+        change_array.push(Math.round(borough_color[i] * rank_span));
+        range_bottom_color[i] = Math.round(range_bottom_color[i] * (1-rank_span));
+    }
+
+    var current_subcolor = range_bottom_color;
+    console.log(current_subcolor);
+    subcolor_set.push(current_subcolor.slice());
+    console.log(subcolor_set.slice());
+    for(var i = 0; i <= num_ranks; i++)
+    {
+        //increment from bottom, checking not above top
+        //
+        //console.log("B " +current_color);
+        current_subcolor = change_color(current_subcolor.slice(), fixed_elem, change_array, true);
+        //console.log("A " + current_color);
+        subcolor_set.push(current_subcolor.slice());
+    }
+    //console.log("SUBCOLOR " + subcolor_set);
+    return subcolor_set;
 }
 
 function plot_features(map, layer, featureList, nameTrim, fromProj, toProj)
@@ -328,6 +362,67 @@ function insert_stats(map, layer, data)
                 {
                     layer.features[i].attributes['stat'] = current_loc_group["factors"][statIndex].toFixed(1);
                     layer.features[i].attributes['rank'] = current_loc_group["rank"];
+                    layer.drawFeature(layer.features[i], "");
+                    found = true;
+                }
+            }
+            j++;
+        }
+    }
+}
+
+function insert_two_factor_stats(map, layer, data, temp_data)
+{
+    var factors           = data[0]["factors"];
+    var primary_factor    = data[0]["primary_factor"];
+
+    var statIndex = "", count = 0;
+    for(i in factors) 
+    {
+        if(count == primary_factor)
+            statIndex = i;
+        count++;
+    }
+
+    //console.log(current_loc_group);
+    //Pass through features
+    for(var i = 0; i < layer.features.length; i++)
+    {   
+        var found = false;
+        var j = 0;
+        while(j < data.length && !found)
+        {
+            //Get current ward/borough group, incl. location
+            var current_loc_group = data[j];
+            var locations         = current_loc_group["locations"];
+
+            //The trim is necessary to shake an annoying carriage return that I don't seem to be able to shake
+            //in the python script
+
+            for(var k = 0; k < locations.length; k++)
+            {
+                if(locations[k] == layer.features[i].attributes['sysid'].trim())
+                {
+                    //Grab borough rank out of relation list
+                    var parent_borough_rank = temp_data["borough_list"][locations[k].substring(0,4)]["borough_rank"];
+                    //wow...
+                    //console.log(temp_data["borough_list"][locations[k].substring(0,4)]["ward_list"]);
+
+                    //culprit down here
+                    var wards = temp_data["borough_list"][locations[k].substring(0,4)]["ward_list"];
+                    //console.log(wards);
+                    var in_borough_rank = -1;
+
+                    //This causes big problems. I think the best option might be to index the wards by ward code
+                    for(var p = 0; p < wards.length; p++)
+                    {
+                        //console.log('l');
+                        if(wards[p]["id"] == locations[k])
+                            in_borough_rank = wards[p]["in_borough_rank"];
+                    }
+                    //console.log("p");
+                    layer.features[i].attributes['stat'] = current_loc_group["factors"][statIndex].toFixed(1);
+                    layer.features[i].attributes['rank'] = parent_borough_rank + "-" + in_borough_rank;
                     layer.drawFeature(layer.features[i], "");
                     found = true;
                 }

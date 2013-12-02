@@ -11,8 +11,17 @@ $(document).ready(function (){
 
     globalMap = intialise_map();
 
+    console.log(gon.relation_list);
+
     //Initialise styles, rules and layers
-    var style_array = setup_styles();
+    
+    //Different styles needed here 
+    var style_array;
+    if(gon.one_factor)
+        style_array = setup_one_factor_styles();
+    else
+        style_array = setup_two_factor_styles();
+
     var borough_fill_style = style_array['borough_fill_style'];
     var ward_fill_style = style_array['ward_fill_style'];
     var ward_select_style = style_array['ward_select_style'];
@@ -21,13 +30,22 @@ $(document).ready(function (){
 
     console.log(gon.feature_groups);
 
-
-
     //Initialise and add rules
-    var rule_array = setup_rules(gon.feature_groups['boroughs'].length);
-    for(i in rule_array)
+    if(gon.one_factor)
     {
-    	borough_fill_style.addRules([rule_array[i]]);
+        var rule_array = setup_one_factor_rules(gon.feature_groups['boroughs'].length);
+        for(i in rule_array)
+        {
+        	borough_fill_style.addRules([rule_array[i]]);
+        }
+    }
+    else
+    {
+        var rule_array = setup_two_factor_rules(gon.feature_groups['boroughs'], gon.feature_groups['wards'], gon.relation_list);
+        for(i in rule_array)
+        {
+            ward_fill_style.addRules([rule_array[i]]);
+        }
     }
 
     
@@ -62,13 +80,18 @@ $(document).ready(function (){
     .done(function( json ) {
         loaded_region_data['wards'] = json['regions'];
         plot_features(globalMap, ward_layer, json['regions'], "Ward", fromProjection, toProjection);
-        insert_stats(globalMap, ward_layer, gon.feature_groups['wards']);
+        if(gon.one_factor)
+            insert_stats(globalMap, borough_layer, gon.feature_groups['wards']);
+        else
+            insert_two_factor_stats(globalMap, ward_layer, gon.feature_groups['wards'], gon.relation_list);
+        console.log(ward_layer);
     });
 
     //Set up scroll level controls
     setup_controls(globalMap, ward_layer);
 
-    globalMap.events.register("zoomend", globalMap, zoom_level_changed);
+    if(gon.hide_wards)
+        globalMap.events.register("zoomend", globalMap, zoom_level_changed);
 
     //This is a hack, and I don't like it, but whatever
     //It's necessary because OpenLayers flatly refuses to load into a % width div

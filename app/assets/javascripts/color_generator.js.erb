@@ -1,0 +1,196 @@
+function Color(R, G, B, fixed_element)
+{
+    this.R = R;
+    this.G = G;
+    this.B = B;
+    this.fixed_element = fixed_element;
+
+    this.get_RGB_array = get_RGB_array;
+    function get_RGB_array()
+    {
+        var RGB_array = [];
+        RGB_array.push(this.R);
+        RGB_array.push(this.G);
+        RGB_array.push(this.B);
+        return RGB_array;
+    }
+
+    this.set_RGB_from_array = set_RGB_from_array;
+    function set_RGB_from_array(RGB_array) 
+    {
+        this.R = RGB_array[0];
+        this.G = RGB_array[1];
+        this.B = RGB_array[2];
+    } 
+}
+
+
+
+
+function generate_color_set(num_rules)
+{
+    //we don't interact with this bit
+    var hex_color_prefix = "0x00";
+
+    var start_const = 1;
+    var start_color = [90, 153, 0];
+    var start_to_white_steps = get_color_steps(start_color, num_rules);
+
+    var end_const = 0;
+    var end_color = [255, 0, 0];
+    var end_to_white_steps = get_color_steps(end_color, num_rules);
+
+
+    //var steps = Math.floor((parseInt(end_color, 16) - parseInt(start_color, 16)) / num_rules);
+    //We need to go from start -> white -> end
+    var steps = 255 * 2 / num_rules;
+    //var current_color = parseInt(get_color_string(start_color), 16);
+
+    console.log("Start steps " + start_to_white_steps);
+    console.log("End steps " + end_to_white_steps);
+
+
+    var color_set = [];
+    
+    var current_color = new Color(start_color[0], start_color[1], start_color[2], start_const);
+    // current_color.R = 
+    // current_color.G = start_color[1];
+    // current_color.B = start_color[2];
+    // current_color.fixed_elem = start_const;
+    
+    color_set.push(current_color);
+    console.log(color_set.slice());
+    var hit_white = false;
+
+    for(var i = 0; i < num_rules; i++)
+    {
+        //console.log(current_color);
+        current_color = reinstantiate_color(current_color);
+
+        if(hit_white == false)
+        {
+            if(!check_color_over_limit(current_color.get_RGB_array()))
+            {
+                //Move towards white
+                var RGB_array = change_color(current_color.get_RGB_array(), start_const, end_to_white_steps, true);
+                current_color.set_RGB_from_array(RGB_array);
+                current_color.fixed_element = start_const;
+            }
+            else
+            {
+                hit_white = true;
+                current_color.R = 255;
+                current_color.G = 255;
+                current_color.B = 255;
+                current_color.fixed_element = -1;
+            }
+
+            if(!check_color_over_limit(current_color.get_RGB_array()))
+            {
+                //console.log("pushing "+ current_color.get_RGB_array());
+                color_set.push(current_color);
+            }
+        }
+        else
+        {
+            //Move towards end
+
+            //Move towards white
+            var RGB_array = change_color(current_color.get_RGB_array(), end_const, end_to_white_steps, false);
+            current_color.set_RGB_from_array(RGB_array);
+            current_color.fixed_element = end_const;
+            
+            //console.log("pushing "+ current_color.get_RGB_array());
+            if(!check_color_under_limit(current_color.get_RGB_array()))
+            {
+                color_set.push(current_color);
+            }
+        }
+        //console.log(color_set.slice());
+    }
+    //console.log(color_set.slice());
+    return color_set.slice();
+}
+
+function reinstantiate_color(color_object)
+{
+    var temp_color = color_object.get_RGB_array();
+    var fixed_elem = color_object.fixed_element;
+    new_color = new Color(temp_color[0], temp_color[1], temp_color[2], fixed_elem);
+    color_object = null;
+    return new_color;
+}
+
+function get_color_string(RGB_array)
+{
+    var elem_0 = get_hex(RGB_array[0]);
+    var elem_1 = get_hex(RGB_array[1]);
+    var elem_2 = get_hex(RGB_array[2]);
+
+    var string = "#";
+
+    if(elem_0.length == 1)
+        string += "0";
+    string += elem_0;
+
+    if(elem_1.length == 1)
+        string += "0";
+    string += elem_1;
+
+    if(elem_2.length == 1)
+        string += "0";
+    string += elem_2;
+
+
+    //var string = ("#" + get_hex(RGB_array[0]) + get_hex(RGB_array[1]) + get_hex(RGB_array[2]));
+    //console.log(string);
+    return string;
+}
+
+function get_hex(num)
+{
+    if(num == 0)
+        return "00"
+    else
+        return num.toString(16);
+}
+
+
+function check_color_over_limit(RGB_array)
+{
+    for(var i = 0; i < RGB_array.length; i++)
+        if(RGB_array[i] > 255)
+            return true;
+}
+
+function check_color_under_limit(RGB_array)
+{
+    for(var i = 0; i < RGB_array.length; i++)
+        if(RGB_array[i] < 0)
+            return true;
+}
+
+
+function change_color(RGB_array, fixed_elem, change_array, increment)
+{
+    console.log("ARRAY: " + RGB_array + " INCREMENT " + increment);
+    for(var i = 0; i < RGB_array.length; i++)
+    {
+        if(i != fixed_elem)
+        {
+            if(increment)
+                RGB_array[i] += change_array[i];
+            else
+                RGB_array[i] -= change_array[i];
+        }
+    }
+    return RGB_array;
+}
+
+function get_color_steps(RGB_array, num_rules)
+{
+    var step_array = new Array();
+    for(var i = 0; i < RGB_array.length; i++)
+        step_array.push(Math.round((255-RGB_array[i]) / (num_rules / 2)));
+    return step_array;
+}
