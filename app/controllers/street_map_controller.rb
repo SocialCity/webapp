@@ -10,6 +10,7 @@ class StreetMapController < ApplicationController
 		@param = params[:factor]
 		gon.hide_wards = true
 		gon.one_factor = true
+		gon.street_map = true
 
 		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
 		#gon.wards = @objs_wards
@@ -48,6 +49,7 @@ class StreetMapController < ApplicationController
 		@factor_2 = params[:factor_two]
 
 		@hide_wards = false;
+		gon.street_map = true
 
 		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
 		#gon.wards = @objs_wards

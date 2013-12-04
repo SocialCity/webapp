@@ -6,6 +6,15 @@ var globalMap;
 var globalLayers = [];
 var base_url_regions = "/assets/";
 $(document).ready(function (){
+    if(gon.street_map)
+    {
+        initialise_street_map();
+    }
+
+});
+
+function initialise_street_map()
+{
     var fromProjection  = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
     var toProjection    = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
 
@@ -97,7 +106,7 @@ $(document).ready(function (){
     //It's necessary because OpenLayers flatly refuses to load into a % width div
     $('.street_map .map-container').css('height', $(window).height() * 0.8);
     globalMap.updateSize();
-});
+}
 
 function zoom_level_changed()
 {
