@@ -8,7 +8,7 @@ class StreetMapController < ApplicationController
 
 		base_factor_url = "http://localhost:8080/oneFactor/"
 		@param = params[:factor]
-		gon.hide_wards = false
+		gon.hide_wards = true
 		gon.one_factor = true
 
 		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")

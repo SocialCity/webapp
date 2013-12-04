@@ -85,7 +85,7 @@ function setup_one_factor_styles() {
     rtn['ward_select_style'] = new OpenLayers.Style({
         'fillOpacity': 0.5,
         'fillColor': "#FFFFFF",
-        'label' : "${name}\n${stat}",
+        'label' : "${name}",
 
         'strokeColor': "#0000FF",
         'strokeWidth': 1,
@@ -264,7 +264,7 @@ function setup_two_factor_rules(boroughs, wards, relation_list)
 
 function generate_subcolor_set(borough_color, num_ranks, fixed_elem)
 {
-    var rank_span = 0.2
+    var rank_span = 0.15;
     var range_bottom_color = borough_color;
     var range_top_color = borough_color;
     var subcolor_set = new Array();
