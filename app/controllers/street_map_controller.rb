@@ -125,11 +125,11 @@ class StreetMapController < ApplicationController
 
 				#We need to rank based on factor 2 within boroughs, so we need to sort by that value
 				#puts ward_ranking_factor
-				puts "FACTOR "
-				puts "WARD RANK " + ward_ranking_factor
+				#puts "FACTOR "
+				#puts "WARD RANK " + ward_ranking_factor
 				puts temp_factor_hash[ward_ranking_factor.to_i]
 				ranking_stat_value = ward_per_rank_factor_data[ward_feature_group["rank"]][temp_factor_hash[ward_ranking_factor.to_i]]
-				puts "RANK STAT " + ranking_stat_value.to_s
+				#puts "RANK STAT " + ranking_stat_value.to_s
 				borough_ward_list[parent_borough_ID] << {:id => ward_ID, :rank => ward_feature_group["rank"].to_i, :ranking_stat_value => ranking_stat_value}
 			end
 		end
