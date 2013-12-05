@@ -88,7 +88,9 @@ function initialise_street_map()
     })
     .done(function( json ) {
         loaded_region_data['wards'] = json['regions'];
+
         plot_features(globalMap, ward_layer, json['regions'], "Ward", fromProjection, toProjection);
+        
         if(gon.one_factor)
             insert_stats(globalMap, borough_layer, gon.feature_groups['wards']);
         else

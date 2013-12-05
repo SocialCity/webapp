@@ -8,25 +8,25 @@
 			<%= form_tag("/street_map/two_factor", :method => "get", :role => "form", :class => "factor-compare-form form-inline") do %>
 				I want to compare 
 				<select class="factor-select form-control" id="x-select" name="factor_one">
-					<option id="x-opt-1" value="1">Crime Rate</option>
-					<option id="x-opt-2" value="2">House Price</option>
-					<option id="x-opt-3" value="3">Education</option>
-					<option id="x-opt-4" value="4">Transport</option>
-					<option id="x-opt-5" value="5">Mean Age</option>
-					<option id="x-opt-6" value="6">Drug Usage Rate</option>
-					<option id="x-opt-7" value="7">Employment Rate</option>
-					<option id="x-opt-8" value="8">Voter Turnout</option>
+					<option id="x-opt-1" <% concat "selected" if @factor_1.to_i == 0 %> value="0">Crime Rate</option>
+					<option id="x-opt-2" <% concat "selected" if @factor_1.to_i == 1 %> value="1">House Price</option>
+					<option id="x-opt-3" <% concat "selected" if @factor_1.to_i == 2 %> value="2">Education</option>
+					<option id="x-opt-4" <% concat "selected" if @factor_1.to_i == 3 %> value="3">Transport</option>
+					<option id="x-opt-5" <% concat "selected" if @factor_1.to_i == 4 %> value="4">Mean Age</option>
+					<option id="x-opt-6" <% concat "selected" if @factor_1.to_i == 5 %> value="5">Drug Usage Rate</option>
+					<option id="x-opt-7" <% concat "selected" if @factor_1.to_i == 6 %> value="6">Employment Rate</option>
+					<option id="x-opt-8" <% concat "selected" if @factor_1.to_i == 7 %> value="7">Voter Turnout</option>
 				</select>
 				against
 				<select class="factor-select form-control" id="y-select" name="factor_two">
-					<option id="y-opt-1" value="1">Crime Rate</option>
-					<option id="y-opt-2" selected value="2">House Price</option>
-					<option id="y-opt-3" value="3">Education</option>
-					<option id="y-opt-4" value="4">Transport</option>
-					<option id="y-opt-5" value="5">Mean Age</option>
-					<option id="y-opt-6" value="6">Drug Usage Rate</option>
-					<option id="y-opt-7" value="7">Employment Rate</option>
-					<option id="y-opt-8" value="8">Voter Turnout</option>
+					<option id="y-opt-1" <% concat "selected" if @factor_2.to_i == 0 %>  value="0">Crime Rate</option>
+					<option id="y-opt-2" <% concat "selected" if @factor_2.to_i == 1 %>  value="1">House Price</option>
+					<option id="y-opt-3" <% concat "selected" if @factor_2.to_i == 2 %>  value="2">Education</option>
+					<option id="y-opt-4" <% concat "selected" if @factor_2.to_i == 3 %>  value="3">Transport</option>
+					<option id="y-opt-5" <% concat "selected" if @factor_2.to_i == 4 %>  value="4">Mean Age</option>
+					<option id="y-opt-6" <% concat "selected" if @factor_2.to_i == 5 %>  value="5">Drug Usage Rate</option>
+					<option id="y-opt-7" <% concat "selected" if @factor_2.to_i == 6 %>  value="6">Employment Rate</option>
+					<option id="y-opt-8" <% concat "selected" if @factor_2.to_i == 7 %>  value="7">Voter Turnout</option>
 				</select>
 				<button type="submit" class="btn btn-primary">Go!</button>
 			<% end %>

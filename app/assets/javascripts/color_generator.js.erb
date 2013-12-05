@@ -30,6 +30,7 @@ function Color(R, G, B, fixed_element)
 function generate_color_set(num_rules)
 {
     //we don't interact with this bit
+    num_rules = num_rules + 2;
     var hex_color_prefix = "0x00";
 
     var start_const = 0;
@@ -58,11 +59,11 @@ function generate_color_set(num_rules)
     // current_color.B = start_color[2];
     // current_color.fixed_elem = start_const;
     
-    color_set.push(current_color);
+    //color_set.push(current_color);
     console.log(color_set.slice());
     var hit_white = false;
 
-    for(var i = 0; i < num_rules; i++)
+    for(var i = 0; i < num_rules-1; i++)
     {
         //console.log(current_color);
         current_color = reinstantiate_color(current_color);

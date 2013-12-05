@@ -117,7 +117,7 @@ function setup_two_factor_styles() {
     var rtn = [];
     rtn['borough_fill_style'] = new OpenLayers.Style({
         'fillOpacity': 0,
-        'label' : "${name}\n${stat}",
+        'label' : "${name}",
 
         'strokeColor': "#000000",
         'strokeWidth': 2.5,
@@ -132,7 +132,7 @@ function setup_two_factor_styles() {
     });
 
     rtn['ward_fill_style'] = new OpenLayers.Style({
-        'fillOpacity': 0.8,
+        'fillOpacity': 1,
         'label' : "",
 
         'strokeColor': "#0000FF",
@@ -228,6 +228,8 @@ function setup_two_factor_rules(boroughs, wards, relation_list)
         var borough_rank = borough["borough_rank"];
         var borough_wards = borough["ward_list"];
         var base_color = color_set[borough_rank];
+        console.log(color_set);
+        console.log(borough_rank);
 
         //console.log("Generating for base rank " + borough_rank + " with base_color " + base_color.RGB);
         var subcolor_set = generate_subcolor_set(base_color.get_RGB_array(), borough["num_ward_ranks"], base_color.fixed_element);
@@ -253,7 +255,7 @@ function setup_two_factor_rules(boroughs, wards, relation_list)
             }),
             symbolizer: {
                 fillColor : rule_list[i],
-                fillOpacity: 0.7,
+                fillOpacity: 0.8,
             },
         }));
     }
@@ -264,7 +266,7 @@ function setup_two_factor_rules(boroughs, wards, relation_list)
 
 function generate_subcolor_set(borough_color, num_ranks, fixed_elem)
 {
-    var rank_span = 0.15;
+    var rank_span = 0.1;
     var range_bottom_color = borough_color;
     var range_top_color = borough_color;
     var subcolor_set = new Array();
@@ -278,9 +280,9 @@ function generate_subcolor_set(borough_color, num_ranks, fixed_elem)
     }
 
     var current_subcolor = range_bottom_color;
-    console.log(current_subcolor);
+    //console.log(current_subcolor);
     subcolor_set.push(current_subcolor.slice());
-    console.log(subcolor_set.slice());
+    //console.log(subcolor_set.slice());
     for(var i = 0; i <= num_ranks; i++)
     {
         //increment from bottom, checking not above top
@@ -290,7 +292,7 @@ function generate_subcolor_set(borough_color, num_ranks, fixed_elem)
         //console.log("A " + current_color);
         subcolor_set.push(current_subcolor.slice());
     }
-    //console.log("SUBCOLOR " + subcolor_set);
+    console.log(subcolor_set);
     return subcolor_set;
 }
 

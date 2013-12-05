@@ -1,5 +1,4 @@
 class StreetMapController < ApplicationController
-	@@temp_factor_hash = ["crimeRate","drugRate","educationRating","employmentRate", "housePrice","meanAge","transportRating","voteTurnout"]
 	def one_factor
 		require 'open-uri' 
 
@@ -93,12 +92,13 @@ class StreetMapController < ApplicationController
 		gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
 
 		gon.one_factor = false
-
+		puts secondary_factor
 		gon.relation_list = relate_wards_to_boroughs(gon.feature_groups[:wards], gon.feature_groups[:boroughs], secondary_factor)
 	end
 
 
 	def relate_wards_to_boroughs(ward_feature_groups, borough_feature_groups, ward_ranking_factor)
+		temp_factor_hash = ["crimeRate","drugRate","educationRating","employmentRate","housePrice","meanAge","transportRating","voteTurnout"]
 		borough_rank_hash = Hash.new
 		borough_ward_list = Hash.new
 		borough_sorted_ward_list = Hash.new
@@ -124,8 +124,12 @@ class StreetMapController < ApplicationController
 				end
 
 				#We need to rank based on factor 2 within boroughs, so we need to sort by that value
-				ranking_stat_value = ward_per_rank_factor_data[ward_feature_group["rank"]][@@temp_factor_hash[ward_ranking_factor]]
-
+				#puts ward_ranking_factor
+				puts "FACTOR "
+				puts "WARD RANK " + ward_ranking_factor
+				puts temp_factor_hash[ward_ranking_factor.to_i]
+				ranking_stat_value = ward_per_rank_factor_data[ward_feature_group["rank"]][temp_factor_hash[ward_ranking_factor.to_i]]
+				puts "RANK STAT " + ranking_stat_value.to_s
 				borough_ward_list[parent_borough_ID] << {:id => ward_ID, :rank => ward_feature_group["rank"].to_i, :ranking_stat_value => ranking_stat_value}
 			end
 		end
