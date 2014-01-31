@@ -16,5 +16,6 @@
 //= require_tree .
 
 //= require bootstrap
-//= require openlayers-rails
+
 //= require d3
+//= require topojson

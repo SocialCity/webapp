@@ -1,136 +1,109 @@
 //Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 // You can use CoffeeScript in this file: http://coffeescript.org/
-
-var globalMap;
-var globalLayers = [];
 var base_url_regions = "/assets/";
-$(document).ready(function (){
-    if(gon.street_map)
-    {
-        initialise_street_map();
-    }
+var width = 960,
+    height = 500;
+$(document).ready(function() {
+	stats = Array();
+	stats['boroughs'] = gon.feature_groups['boroughs'];
 
-});
+	setup_map();
+	plot_data(stats);
+})
 
-function initialise_street_map()
+function plot_data(stats)
 {
-    var fromProjection  = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
-    var toProjection    = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
-
-    globalMap = intialise_map();
-
-    console.log(gon.relation_list);
-
-    //Initialise styles, rules and layers
-    
-    //Different styles needed here 
-    var style_array;
-    if(gon.one_factor)
-        style_array = setup_one_factor_styles();
-    else
-        style_array = setup_two_factor_styles();
-
-    var borough_fill_style = style_array['borough_fill_style'];
-    var ward_fill_style = style_array['ward_fill_style'];
-    var ward_select_style = style_array['ward_select_style'];
-
-    var loaded_region_data = []
-
-    console.log(gon.feature_groups);
-
-    //Initialise and add rules
-    if(gon.one_factor)
-    {
-        var rule_array = setup_one_factor_rules(gon.feature_groups['boroughs'].length);
-        for(i in rule_array)
-        {
-        	borough_fill_style.addRules([rule_array[i]]);
-        }
-    }
-    else
-    {
-        var rule_array = setup_two_factor_rules(gon.feature_groups['boroughs'], gon.feature_groups['wards'], gon.relation_list);
-        for(i in rule_array)
-        {
-            ward_fill_style.addRules([rule_array[i]]);
-        }
-    }
-
-    
-    //Initialise and store layer objects
-    var layers = setup_layers(globalMap, borough_fill_style, ward_fill_style, ward_select_style);
-    var borough_layer = layers['borough_layer'];
-    globalLayers['borough_layer'] = borough_layer;
-
-    var ward_layer = layers['ward_layer'];
-    globalLayers['ward_layer'] = ward_layer;
-
-    //Get regions asynchronously and plot on map
-    $.ajax({
-        url: base_url_regions + "boroughs-reduced.json",
-        crossDomain: true,
-        dataType: "JSON",
-        cache: false
-    })
-    .done(function( json ) {
-        loaded_region_data['boroughs'] = json['regions'];
-        plot_features(globalMap, borough_layer, json['regions'], "London Boro", fromProjection, toProjection);
-        insert_stats(globalMap, borough_layer, gon.feature_groups['boroughs']);
-        console.log(borough_layer);
-    });
-
-    $.ajax({
-        url: base_url_regions + "wards-reduced.json",
-        crossDomain: true,
-        dataType: "JSON",
-        cache: false
-    })
-    .done(function( json ) {
-        loaded_region_data['wards'] = json['regions'];
-
-        plot_features(globalMap, ward_layer, json['regions'], "Ward", fromProjection, toProjection);
-        
-        if(gon.one_factor)
-            insert_stats(globalMap, borough_layer, gon.feature_groups['wards']);
-        else
-            insert_two_factor_stats(globalMap, ward_layer, gon.feature_groups['wards'], gon.relation_list);
-        console.log(ward_layer);
-    });
-
-    //Set up scroll level controls
-    setup_controls(globalMap, ward_layer);
-
-    if(gon.hide_wards)
-        globalMap.events.register("zoomend", globalMap, zoom_level_changed);
-
-    //This is a hack, and I don't like it, but whatever
-    //It's necessary because OpenLayers flatly refuses to load into a % width div
-    $('.street_map .map-container').css('height', $(window).height() * 0.8);
-    globalMap.updateSize();
+	var svg = d3.select('#map').select('g');
+	console.log(svg);	
+	for(var i = 0; i < stats['boroughs'].length; i++)
+	{
+		var loc_id = stats['boroughs'][i]['locations'];
+		var curr_rank = stats['boroughs'][i]['rank'];
+		for(var j = 0; j < loc_id.length; j++)
+		{
+			console.log(loc_id[j]);
+			console.log(svg.select('[boro-id="' + loc_id[j] + '"]').classed("rank-" + curr_rank, true));
+		}
+	}
 }
 
-function zoom_level_changed()
-{
-    zoom = globalMap.getZoom();
-    console.log(zoom);
-    if(zoom <= 12)
-    {
-        globalLayers['ward_layer'].setVisibility(false);
-    }
-    else
-    {
-        globalLayers['ward_layer'].setVisibility(true);
-    }
-}
+//dfkndsjnj
 
+function setup_map()
+{
+
+	var path = d3.geo.path()
+	    .projection(null);
+
+	var svg = d3.select("#map");
+
+	d3.json(base_url_regions + "london_topo.json", function(error, london) {
+	  console.log(london);
+	  //var subunits = 
+	  console.log(london.objects);
+
+	  var features = svg.append("g");
+
+	  var boroughs = topojson.feature(london, london.objects.londonTrimmed);
+	  var wards = topojson.feature(london, london.objects.londonWardsTrimmed);
+	  console.log(boroughs);
+
+	   var zoom = d3.behavior.zoom()
+	      .translate([0, 0])
+	      .scale(1)
+	      .scaleExtent([1, 8])
+	      .on("zoom", zoomed);
+
+	  var projection = d3.geo.albers()
+	    .center([0, 51.4])
+	    .rotate([-0.12, 0])
+	    .parallels([50, 60])
+	    .scale(75000)
+	    .translate([width / 2, height / 2]);
+
+
+	  var path = d3.geo.path()
+	    .projection(projection);
+
+	  features.append("path")
+	    .datum(boroughs)
+	    .attr("d", path);
+
+
+	  features.selectAll(".boroughs")
+	    .data(topojson.feature(london, london.objects.londonTrimmed).features)
+	  .enter().append("path")
+	  	.attr("boro-id", function(d){
+	  		return d['id'];
+	  	})
+	    .attr("d", path);
+
+	    svg.append("rect")
+	      .attr("class", "overlay")
+	      .attr("width", width)
+	      .attr("height", height)
+	      .call(zoom);
+
+
+	    function zoomed() {
+	      features.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+	    }
+		});
+
+	d3.select(self.frameElement).style("height", height + "px");
+}
 //Resizes the map after a short delay.
 window.onresize = function()
 {
  setTimeout( 
   	function() { 
       	$('.street_map .map-container').css('height', $(window).height() * 0.8);
-        globalMap.updateSize();
+
   	}, 
     200);
 }
+
+
+
+//Hellosadsads

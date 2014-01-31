@@ -1,12 +1,9 @@
-// Place all the styles related to the Front controller here.
+/* Place all the styles related to the Front controller here.
 // They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
-
-.street_map
-{
-	.map-container
-	{
-		height: 400px;
+// You can use Sass (SCSS) here: http://sass-lang.com/ */
+.street_map {
+	.map-container {
+		height: 800px;
 	}
 
 	#map 
@@ -31,4 +28,43 @@
 		text-align:center;
 		font-size:1.5em;
 	}
+}
+
+
+
+/*****************************
+	SVG STYLES
+******************************/
+
+#map{
+	background:#D0D0D0;
+}
+
+.borough.one{fill:#ddc;}
+.borough.two{fill:#cdd;}
+.borough.three{fill:#ddc;}
+.borough.four{fill:#cdc;}
+.borough.five{fill:#dcd;}
+
+
+.rank-0 {fill:#f7fbff;}
+.rank-1 {fill:#deebf7;}
+.rank-2 {fill:#c6dbef;}
+.rank-3 {fill:#9ecae1;}
+.rank-4 {fill:#6baed6;}
+.rank-5 {fill:#4292c6;}
+.rank-6 {fill:#2171b5;}
+.rank-7 {fill:#08519c;}
+.rank-8 {fill:#08306b;}
+
+.state-border {
+  fill: none;
+  stroke: #000;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
 }
