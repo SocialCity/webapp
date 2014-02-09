@@ -34,7 +34,7 @@ function plot_data(stats)
 		for(var i = 0; i < stats['boroughs'].length; i++)
 		{
 			var loc_id = stats['boroughs'][i]['locations'];
-			var curr_rank = stats['boroughs'][i]['rank'];
+			var curr_rank = stats['boroughs'][i]['adj_rank'];
 			for(var j = 0; j < loc_id.length; j++)
 			{
 				svg.select('[boro-id="' + loc_id[j] + '"]').classed("rank-" + curr_rank, true);
@@ -121,3 +121,5 @@ window.onresize = function()
 
 
 //Hellosadsads
+
+

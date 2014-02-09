@@ -6,6 +6,8 @@ class StreetMapController < ApplicationController
 		#gon.boroughs = @objs
 
 		base_factor_url = "http://localhost:8080/oneFactor/"
+		max_ranks = 10
+
 		@param = params[:factor]
 		gon.hide_wards = true
 		gon.one_factor = true
@@ -29,13 +31,77 @@ class StreetMapController < ApplicationController
 		#          		BOROUGH DATA COLLATION
 		#--------------------------------------------------
 
-		gon.feature_groups[:boroughs] = map_feature_collater(true, primary_factor, base_factor_url)
+		gon.feature_groups[:boroughs] = group_ranks(map_feature_collater(true, primary_factor, base_factor_url), max_ranks)
 
+		#Now we want to go through and add a 'grouped' ranking
+		#We do this by going through and finding the difference between the ranked parameters
+
+		#group_ranks(map_feature_collater(true, primary_factor, base_factor_url), max_ranks)
 		#--------------------------------------------------
 		#  				WARD DATA COLLATION	
 		#--------------------------------------------------
 
 		gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
+	end
+
+	def group_ranks(collated_features, reduce_to)
+		diff_list = Hash.new
+		no_ranks_to_remove = collated_features.length - reduce_to
+		combine_list = Array.new
+
+		rank_factor_index = collated_features[0]["primary_factor"].to_i
+		rank_factor_name = ""
+		collated_features[0]["factors"].keys.each_with_index do |key, index|
+			if index == rank_factor_index then
+				rank_factor_name = key
+			end
+		end
+
+		for i in 0...(collated_features.length-1)
+			curr_feature = collated_features[i]["factors"][rank_factor_name]
+			next_feature = collated_features[i+1]["factors"][rank_factor_name]
+			diff_list[(curr_feature - next_feature).abs] = i
+		end
+
+		hit_list = diff_list.keys.sort
+		#We now take the first (ranks_to_remove) from the hit list, this will pick the ones with the smallest diff
+		#To their next rank
+		for i in 0..no_ranks_to_remove
+			combine_list.push(diff_list[hit_list[i]])
+		end
+		combine_list = combine_list.sort
+
+
+		#Now we go through the list and set n+1's rank to n
+		for i in 0...collated_features.length
+			collated_features[i]["adj_rank"] = collated_features[i]["rank"] 
+		end 
+
+
+		for i in 0...combine_list.length
+			collated_features[combine_list[i] + 1]["adj_rank"] = collated_features[combine_list[i]]["adj_rank"]
+		end
+
+		#Now we correct ranks by going through and on a rank change from element i to i+1, setting val(i+1) to val(i) + 1
+		for i in 0...(collated_features.length-1)
+			curr_rank = collated_features[i]["adj_rank"]
+			next_rank = collated_features[i+1]["adj_rank"]
+			if next_rank > curr_rank then
+				#Now we find the end of this run of ranks starting at next element
+				count = 0
+				for j in (i+1)..(collated_features.length-1)
+					if collated_features[j]["adj_rank"] == next_rank then
+						count += 1
+					end
+				end
+				for j in (i+1)...(i+1+count) 
+					collated_features[j]["adj_rank"] = curr_rank + 1
+				end
+			end
+		end
+
+
+		collated_features
 	end
 
 	def two_factor
@@ -95,7 +161,6 @@ class StreetMapController < ApplicationController
 		puts secondary_factor
 		gon.relation_list = relate_wards_to_boroughs(gon.feature_groups[:wards], gon.feature_groups[:boroughs], secondary_factor)
 	end
-
 
 	def relate_wards_to_boroughs(ward_feature_groups, borough_feature_groups, ward_ranking_factor)
 		temp_factor_hash = ["crimeRate","drugRate","educationRating","employmentRate","housePrice","meanAge","transportRating","voteTurnout"]
@@ -223,3 +288,13 @@ class StreetMapController < ApplicationController
 		map_features
 	end
 end
+
+
+
+
+
+
+
+
+
+#Ruby
