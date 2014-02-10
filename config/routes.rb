@@ -1,6 +1,7 @@
 Webapp::Application.routes.draw do
   get "street_map/one_factor"
   get "street_map/two_factor"
+  get "parallel/single_boro"
   get "street_map/two_factor/:factor_one/:factor_two" => "street_map#two_factor"
 
   root 'street_map#one_factor'

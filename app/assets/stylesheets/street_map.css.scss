@@ -1,6 +1,15 @@
 /* Place all the styles related to the Front controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/ */
+.graph-container 
+{
+	height: 800px;
+	background-color:rgba(208,208,208,0.8);
+	padding: 10px;
+	border-radius: 5px;
+}
+
+
 .street_map {
 	.map-container {
 		height: 800px;
@@ -64,7 +73,38 @@
   stroke-linecap: round;
 }
 
+.ward {
+	fill:none;
+	stroke:#000;
+	stroke-width: 0.5;
+}
+
 .overlay {
   fill: none;
   pointer-events: all;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

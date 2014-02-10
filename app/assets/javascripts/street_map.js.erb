@@ -69,8 +69,8 @@ function setup_map(stats)
 					.on("zoom", zoomed);
 
 		var projection = d3.geo.albers()
-							.center([0, 51.4])
-							.rotate([-0.12, 0])
+							.center([0, 51.6])
+							.rotate([0.0, 0])
 							.parallels([50, 60])
 							.scale(75000)
 							.translate([width / 2, height / 2]);
@@ -84,7 +84,8 @@ function setup_map(stats)
 				.attr("d", path);
 
 		console.log(features.selectAll(".boroughs"));
-		console.log("HI");
+
+		//Set up borough IDs for easy colouring
 		features.selectAll(".boroughs")
 				.data(topojson.feature(london, london.objects.londonTrimmed).features)
 				.enter().append("path")
@@ -92,6 +93,24 @@ function setup_map(stats)
 					return d['id'];
 				})
 				.attr("d", path);
+
+		//Append text to the boroughs, needs fixing
+		features.selectAll("text")
+		    .data(topojson.feature(london, london.objects.londonTrimmed).features)
+		    .enter()
+		    .append("svg:text")
+		    .text(function(d){
+		        return d['properties']['NAME'];
+		    })
+		    .attr("x", function(d){
+		        return path.centroid(d)[0];
+		    })
+		    .attr("y", function(d){
+		        return  path.centroid(d)[1];
+		    })
+		    .attr("text-anchor","middle")
+		    .attr('font-size','4pt');
+
 
 		svg.append("rect")
 			.attr("class", "overlay")
@@ -117,9 +136,4 @@ window.onresize = function()
   	}, 
     200);
 }
-
-
-
-//Hellosadsads
-
 

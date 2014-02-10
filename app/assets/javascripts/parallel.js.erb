@@ -1,0 +1,43 @@
+//Place all the behaviors and hooks related to the matching controller here.
+// All this logic will automatically be available in application.js.
+// You can use CoffeeScript in this file: http://coffeescript.org/
+var base_url_regions = "/assets/";
+var width = 960,
+    height = 500;
+$(document).ready(function() {
+	stats = Array();
+	stats['boroughs'] = gon.feature_groups['boroughs'];
+	console.log(stats);
+	setup_map(stats);
+	
+})
+
+function plot_data(stats)
+{
+	var svg = d3.select('#map').select('g');
+
+}
+
+function setup_map(stats)
+{
+
+	var path = d3.geo.path()
+				.projection(null);
+
+	var svg = d3.select("#map");
+
+	
+
+	d3.select(self.frameElement).style("height", height + "px");
+}
+//Resizes the map after a short delay.
+window.onresize = function()
+{
+ setTimeout( 
+  	function() { 
+      	$('.street_map .map-container').css('height', $(window).height() * 0.8);
+
+  	}, 
+    200);
+}
+
