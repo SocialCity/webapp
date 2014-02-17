@@ -7,28 +7,46 @@ var width = 960,
 $(document).ready(function() {
 	stats = Array();
 	stats['boroughs'] = gon.feature_groups['boroughs'];
+
+	test_boro = stats['boroughs'][1]
+
 	console.log(stats);
-	setup_map(stats);
+	console.log(test_boro);
+	if(gon.parallel)
+		setup_parallel_graph(stats);
 	
 })
 
-function plot_data(stats)
+function plot_parallel_data(stats)
 {
 	var svg = d3.select('#map').select('g');
 
 }
 
-function setup_map(stats)
+function setup_parallel_graph(obj)
 {
+	var boroughs = [];
 
-	var path = d3.geo.path()
-				.projection(null);
+    traits = ["sepal length", "petal length", "sepal width", "petal width"];
 
-	var svg = d3.select("#map");
+	//Define pixel widths across graph space
+	var m = [80, 160, 200, 160],
+	    w = 960 - m[1] - m[3],
+	    h = 500 - m[0] - m[2];
 
-	
+	//Define x scale
+	var x = d3.scale.ordinal().domain(traits).rangePoints([0, w]),
+	    y = {};
 
-	d3.select(self.frameElement).style("height", height + "px");
+	var line = d3.svg.line(),
+	    axis = d3.svg.axis().orient("left"),
+	    foreground;
+
+	var svg = d3.select("body").append("svg:svg")
+	    .attr("width", w + m[1] + m[3])
+	    .attr("height", h + m[0] + m[2])
+	  .append("svg:g")
+    .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 }
 //Resizes the map after a short delay.
 window.onresize = function()

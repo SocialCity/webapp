@@ -8,7 +8,8 @@ $(document).ready(function() {
 	stats = Array();
 	stats['boroughs'] = gon.feature_groups['boroughs'];
 	console.log(stats);
-	setup_map(stats);
+	if(gon.street_map)
+		setup_map(stats);
 	
 })
 

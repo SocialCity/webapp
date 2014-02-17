@@ -12,7 +12,7 @@ class ParallelController < ApplicationController
 		@param = params[:factor]
 		gon.hide_wards = true
 		gon.one_factor = true
-		gon.street_map = true
+		gon.parallel = true
 
 		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
 		#gon.wards = @objs_wards
