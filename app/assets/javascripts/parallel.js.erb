@@ -7,13 +7,15 @@ var width = 960,
 $(document).ready(function() {
 	stats = Array();
 	stats['boroughs'] = gon.feature_groups['boroughs'];
-
-	test_boro = stats['boroughs'][1]
+    stats['wards'] = gon.feature_groups['wards'];
 
 	console.log(stats);
-	console.log(test_boro);
+
 	if(gon.parallel)
-		setup_parallel_graph(stats);
+        if(gon.para_boros)
+		  setup_parallel_graph(stats['boroughs']);
+        else
+            setup_parallel_graph(stats['wards']);
 	
 })
 
@@ -23,31 +25,188 @@ function plot_parallel_data(stats)
 
 }
 
-function setup_parallel_graph(obj)
+function setup_parallel_graph(feat_list)
 {
-	var boroughs = [];
+    var boroughs = [];
 
-    traits = ["sepal length", "petal length", "sepal width", "petal width"];
+    var factors = ["Crime Rate", "Drug Rate", "Education", "Employment", "House Price", "Transport Rating", "Mean Age"];
+    //Define pixel widths across graph space
+    var m = [80, 160, 200, 160],
+    w = 1280 - m[1] - m[3],
+    h = 600 - m[0] - m[2];
 
-	//Define pixel widths across graph space
-	var m = [80, 160, 200, 160],
-	    w = 960 - m[1] - m[3],
-	    h = 500 - m[0] - m[2];
+    //Define x scale
+    var x = d3.scale.ordinal().domain(factors).rangePoints([0, w]),
+        y = {};
 
-	//Define x scale
-	var x = d3.scale.ordinal().domain(traits).rangePoints([0, w]),
-	    y = {};
+    var line = d3.svg.line(),
+        axis = d3.svg.axis().orient("left"),
+        foreground;
 
-	var line = d3.svg.line(),
-	    axis = d3.svg.axis().orient("left"),
-	    foreground;
+    var svg = d3.select("#parallel").append("svg:svg")
+                .attr("width", w + m[1] + m[3])
+                .attr("height", h + m[0] + m[2])
+                .append("svg:g")
+                .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-	var svg = d3.select("body").append("svg:svg")
-	    .attr("width", w + m[1] + m[3])
-	    .attr("height", h + m[0] + m[2])
-	  .append("svg:g")
-    .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+    // Create a scale and brush for each trait.
+    //Trait being each variable, so for boros we do crime etc
+    factors.forEach(function(factor_name) {
+        // Coerce values to numbers.
+        //This is a list of instances, so for us, boros
+        feat_list.forEach(function(features) { 
+            //var factor_id = get_factor_id(factor_name)
+            //p[d] = +p[d]; 
+            //feature['factors'][factor_id]
+            //We might want to trim outliers here...
+        });
+
+        //Define y scale value based on attribute value
+        //We need to replace the values in domain for the min/max of each
+        //factor - to calc in ruby
+
+        //Get scale for factor name
+        var factor_id = get_factor_id(factor_name);
+        
+        var dom = [feat_list[0]['min_max'][factor_id]['min'], feat_list[0]['min_max'][factor_id]['max']]; 
+        
+        y[factor_name] = d3.scale.linear()
+                            .domain(d3.extent(dom))
+                            .range([h, 0]);
+
+        //I guess this is the line for the boro
+        y[factor_name].brush = d3.svg.brush()
+                                .y(y[factor_name])
+                                .on("brush", brush);
+    });
+
+    //Current status - the scale function stored in y is not returning anything except NaN
+
+    //  console.log("FACTORS HERE: " +  factors);
+
+    // Add foreground lines.
+    foreground = svg.append("svg:g")
+                    .attr("class", "foreground")
+                    .selectAll("path")
+                    .data(feat_list, function(feature)
+                    {
+                        factors_vals = new(Array);
+
+                        factors_vals.push(feature['factors']['crimeRate']);
+                        factors_vals.push(feature['factors']['drugRate']);
+                        factors_vals.push(feature['factors']['educationRating']);
+                        factors_vals.push(feature['factors']['employmentRate']);
+                        return factors_vals;
+                    })
+                    .enter().append("svg:path")
+                    .attr("d", path)
+                    .attr("class", function(feature) 
+                    {
+                        return "line-l"
+                    });
+
+
+    // Add a group element for each trait.
+    var g = svg.selectAll(".factor")
+                .data(factors)
+                .enter().append("svg:g")
+                .attr("class", "factor")
+                .attr("transform", function(d) 
+                {
+                    return "translate(" + x(d) + ")"; 
+                })
+                .call(d3.behavior.drag()
+                .origin(function(d) { 
+                    return {
+                        x: x(d)
+                    }; 
+                })
+                .on("dragstart", dragstart)
+                .on("drag", drag)
+                .on("dragend", dragend));
+
+    // Add an axis and title.
+    g.append("svg:g")
+        .attr("class", "axis")
+        .each(function(d) { 
+            d3.select(this).call(axis.scale(y[d])); 
+        })
+        .append("svg:text")
+        .attr("text-anchor", "middle")
+        .attr("y", -9)
+        .text(String);
+
+    // Add a brush for each axis.
+
+
+    g.append("svg:g")
+        .attr("class", "brush")
+        .each(function(d) { 
+            d3.select(this).call(y[d].brush); 
+        })
+        .selectAll("rect")
+        .attr("x", -8)
+        .attr("width", 16);
+    //These functions allow you to define sections of the coordinates to
+    function dragstart(d) {
+        i = factors.indexOf(d);
+    }
+
+    function drag(d) {
+        x.range()[i] = d3.event.x;
+        factors.sort(function(a, b) { return x(a) - x(b); });
+        g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+        foreground.attr("d", path);
+    }
+
+    function dragend(d) {
+        x.domain(factors).rangePoints([0, w]);
+        var t = d3.transition().duration(500);
+        t.selectAll(".factor").attr("transform", function(d) { 
+                console.log(x(d))
+                return "translate(" + x(d) + ")"; 
+            });
+        t.selectAll(".foreground path").attr("d", path);
+    }
+
+    function get_factor_id(factor_name)
+    {
+        switch(factor_name)
+        {
+            case "Crime Rate":  return "crimeRate";  break;
+            case "Drug Rate":   return "drugRate"; break;
+            case "Education":   return "educationRating"; break;
+            case "Employment":  return "employmentRate"; break;
+            case "House Price": return "housePrice"; break; 
+            case "Transport Rating": return "transportRating"; break;
+            case "Mean Age": return "meanAge"; break;
+        }
+    }
+
+
+    // Returns the path for a given data point.
+    function path(data) {
+        return line(factors.map(function(factor_name) 
+        { 
+            var factor_id = get_factor_id(factor_name);
+            return [x(factor_name), y[factor_name](data['factors'][factor_id])]; 
+        }));
+    }
+
+    // Handles a brush event, toggling the display of foreground lines.
+    function brush() {
+        var actives = factors.filter(function(p) { return !y[p].brush.empty(); }),
+        extents = actives.map(function(p) { return y[p].brush.extent(); });
+        foreground.classed("fade", function(d) 
+        {
+            return !actives.every(function(p, i) 
+            {
+                return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+            });
+        });
+    }
 }
+
 //Resizes the map after a short delay.
 window.onresize = function()
 {

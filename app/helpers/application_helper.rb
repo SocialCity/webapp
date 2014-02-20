@@ -21,6 +21,10 @@ module ApplicationHelper
 			parsed_data = JSON.parse(response)
 		end
 
+		#Whilst we are structuring etc, we want to produce a min/max list of values
+		min_max_vals = Hash.new
+
+
 		#Pass through parsed JSON, structuring for the JS
 		parsed_data.each do |location_group|
 			feature_group 					= Hash.new
@@ -30,9 +34,26 @@ module ApplicationHelper
 
 
 			#Add in the value of each factor to the location list
+			fill_min_max_hash = false
+			if(min_max_vals.length == 0)
+				fill_min_max_hash = true
+			end
 			location_group.each do |key, value|
 				if key != "location" then
 					feature_group["factors"][key] = value
+
+					if fill_min_max_hash
+						min_max_vals[key] = Hash.new
+						min_max_vals[key]['min'] = value
+						min_max_vals[key]['max'] = value
+					else
+						if min_max_vals[key]['min'] > value
+							min_max_vals[key]['min'] = value
+						end
+						if min_max_vals[key]['max'] < value
+							min_max_vals[key]['max'] = value
+						end
+					end
 				end
 			end
 			map_features.push(feature_group)
@@ -45,6 +66,10 @@ module ApplicationHelper
 		rank_count = 0
 		ranking_array.sort_by{|hsh| hsh[:primary_value]}.each do |rank|
 			map_features[rank[:array_id]]["rank"] = rank_count
+
+			#This is not great practice as it inc data transfer but the 
+			#map might break horribly if I include it as a global to the boros
+			map_features[rank[:array_id]]["min_max"] = min_max_vals
 			rank_count += 1
 		end
 
