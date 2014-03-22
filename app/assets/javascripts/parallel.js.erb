@@ -29,7 +29,16 @@ function setup_parallel_graph(feat_list)
 {
     var boroughs = [];
 
-    var factors = ["Crime Rate", "Drug Rate", "Education", "Employment", "House Price", "Transport Rating", "Mean Age"];
+    var factors = ["Crime Rate",
+                    "House Price",
+                    "GCSE Score",
+                    "Transport Rating",
+                    "School Absences",
+                    "Income Support",
+                    "Unemployment Rate",
+                    "Dependent Children in Out-of-Work Household",
+                    "Deliberate Fires",
+                    "Incapacity Benefit"];
     //Define pixel widths across graph space
     var m = [80, 160, 200, 160],
     w = 1280 - m[1] - m[3],
@@ -67,7 +76,8 @@ function setup_parallel_graph(feat_list)
 
         //Get scale for factor name
         var factor_id = get_factor_id(factor_name);
-        
+        console.log(feat_list[0]['min_max']);
+        console.log(factor_id);
         var dom = [feat_list[0]['min_max'][factor_id]['min'], feat_list[0]['min_max'][factor_id]['max']]; 
         
         y[factor_name] = d3.scale.linear()
@@ -171,15 +181,19 @@ function setup_parallel_graph(feat_list)
 
     function get_factor_id(factor_name)
     {
+        console.log(factor_name);
         switch(factor_name)
         {
             case "Crime Rate":  return "crimeRate";  break;
-            case "Drug Rate":   return "drugRate"; break;
-            case "Education":   return "educationRating"; break;
-            case "Employment":  return "employmentRate"; break;
-            case "House Price": return "housePrice"; break; 
-            case "Transport Rating": return "transportRating"; break;
-            case "Mean Age": return "meanAge"; break;
+            case "House Price":   return "housePrice"; break;
+            case "GCSE Score":   return "GCSEScore"; break;
+            case "Transport Rating":   return "transportRating"; break;
+            case "School Absences":   return "schoolAbscences"; break;
+            case "Income Support":   return "incomeSupport"; break;
+            case "Unemployment Rate":   return "unemploymentRate"; break;
+            case "Dependent Children in Out-of-Work Household":   return "childInNoWorkHouse"; break;
+            case "Deliberate Fires":   return "deliberateFires"; break;
+            case "Incapacity Benefit":   return "incapacityBenefit"; break;
         }
     }
 

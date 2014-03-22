@@ -1,23 +1,78 @@
 module ApplicationHelper
-	def map_feature_collater(for_boroughs, primary_factor, request_url_base)
+	require 'open-uri'
+	def URL_requester(base_url, params)
+		request_url = base_url + "/" + params[:method] + "/"
+		case params[:method]
+		when "oneFactor"
+			request_url += params[:factor_number].to_s 		+ "/"
+			request_url += params[:get_wards].to_s 			+ "/"
+			request_url += params[:combine].to_s 			+ "/"
+			request_url += params[:get_all_factors].to_s 	+ "/"
+			if params.has_key?(:year)
+				request_url += params[:year].to_s 			+ "/"
+			end
+		when "twoFactors"
+			request_url += params[:factor_one].to_s 		+ "/"
+			request_url += params[:factor_two].to_s 		+ "/"
+			request_url += params[:get_wards].to_s 			+ "/"
+			request_url += params[:combine].to_s 			+ "/"
+			request_url += params[:get_all_factors].to_s 	+ "/"
+			if params.has_key?(:year)
+				request_url += params[:year].to_s 			+ "/"
+			end
+		when "timestamps"
+			# no params
+		when "hashTagList"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
+		when "hashTagFactors"
+			request_url += params[:tag_1].to_s 				+ "/"
+			request_url += params[:tag_2].to_s 				+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
+		when "devicesForBorough"
+			request_url += params[:borough_code].to_s 		+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
+		when "deviceList"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
+		when "deviceFactor"
+			request_url += params[:device].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
+		when "factorList"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
+		when "words"
+			request_url += params[:word_code_num].to_s 		+ "/"
+			request_url += params[:borough_code].to_s 		+ "/"
+		else
+			raise "Invalid REST Method"
+		end
+		puts request_url
+		begin
+			request = open(request_url) 
+		rescue StandardError => e
+			raise ActionController::RoutingError.new("REST Error - #{e.message} - #{request_url}")
+		end
+	end
+	
+	def map_feature_collater(for_boroughs, primary_factor, request_data)
 		require 'open-uri' 
 		map_features 	= Array.new
 		ranking_array 	= Array.new
 
-		#construct factor data url
-		request_url = request_url_base + primary_factor.to_s + "/"
-		if for_boroughs then 
-			request_url += "false"
-		else
-			request_url += "true"
-		end
-
-
-		#grab data from the server
-		request = open(request_url) 
-
 		parsed_data = ""
-		request.each_line do |response|
+		puts "out"
+		puts request_data
+		request_data.each_line do |response|
 			parsed_data = JSON.parse(response)
 		end
 
@@ -38,6 +93,7 @@ module ApplicationHelper
 			if(min_max_vals.length == 0)
 				fill_min_max_hash = true
 			end
+			puts location_group
 			location_group.each do |key, value|
 				if key != "location" then
 					feature_group["factors"][key] = value
@@ -54,6 +110,7 @@ module ApplicationHelper
 							min_max_vals[key]['max'] = value
 						end
 					end
+					puts key
 				end
 			end
 			map_features.push(feature_group)

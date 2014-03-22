@@ -1,12 +1,7 @@
 class ParallelController < ApplicationController
 	include ApplicationHelper 
 	def boroughs
-		
-
-		#@objs = LondonReducedBoroughRegion.get_borough("GREATER_LONDON_AUTHORITY")
-		#gon.boroughs = @objs
-
-		base_factor_url = "http://localhost:8080/oneFactor/"
+		base_factor_url = "http://localhost:9113"
 		max_ranks = 10
 
 		@param = params[:factor]
@@ -15,32 +10,21 @@ class ParallelController < ApplicationController
 		gon.parallel = true
 		gon.para_boros = true
 
-		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
-		#gon.wards = @objs_wards
+		req_params = { :method => "oneFactor",
+						:factor_number => 1,
+						:get_wards => false,
+						:combine => true,
+						:get_all_factors => true}
+
+		request_data = URL_requester(base_factor_url, req_params)
 
 		gon.feature_groups = Hash.new
-		gon.feature_groups[:boroughs] = map_feature_collater(true, 1, base_factor_url)
-
-		#Now we want to go through and add a 'grouped' ranking
-		#We do this by going through and finding the difference between the ranked parameters
-
-		#group_ranks(map_feature_collater(true, primary_factor, base_factor_url), max_ranks)
-		#--------------------------------------------------
-		#  				WARD DATA COLLATION	
-		#--------------------------------------------------
-
-		gon.feature_groups[:wards] = map_feature_collater(false, 1, base_factor_url)
-
-
+		gon.feature_groups[:boroughs] = map_feature_collater(true, 1, request_data)
 	end
 
-	def wards
-		
+	def wards		
+		base_factor_url = "http://localhost:9113"
 
-		#@objs = LondonReducedBoroughRegion.get_borough("GREATER_LONDON_AUTHORITY")
-		#gon.boroughs = @objs
-
-		base_factor_url = "http://localhost:8080/oneFactor/"
 		max_ranks = 10
 
 		@param = params[:factor]
@@ -49,21 +33,21 @@ class ParallelController < ApplicationController
 		gon.parallel = true
 		gon.para_boros = false
 
-		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
-		#gon.wards = @objs_wards
+		req_params = { :method => "oneFactor",
+						:factor_number => 1,
+						:get_wards => true,
+						:combine => true,
+						:get_all_factors => true}
+
+		request_data = URL_requester(base_factor_url, req_params)
+		print request_data
 
 		gon.feature_groups = Hash.new
-		gon.feature_groups[:boroughs] = map_feature_collater(true, 1, base_factor_url)
-
-		#Now we want to go through and add a 'grouped' ranking
-		#We do this by going through and finding the difference between the ranked parameters
-
-		#group_ranks(map_feature_collater(true, primary_factor, base_factor_url), max_ranks)
 		#--------------------------------------------------
 		#  				WARD DATA COLLATION	
 		#--------------------------------------------------
 
-		gon.feature_groups[:wards] = map_feature_collater(false, 1, base_factor_url)
+		gon.feature_groups[:wards] = map_feature_collater(false, 1, request_data)
 
 
 	end
