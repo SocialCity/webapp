@@ -12,24 +12,29 @@ class StreetMapController < ApplicationController
 		gon.one_factor = true
 		gon.street_map = true
 
+		#, grab the factor information
+		factor_info_params = { :method => "factorList"}
+		@factor_info = parse_factor_list(URL_requester(BACKEND_URL, factor_info_params))
+
 
 		gon.feature_groups = Hash.new
 
 		#dodgy parameter handling
-		if(@param.to_i < 1 or @param.to_i > 7 or @param == nil) then
-			primary_factor = 1
+		@primary_factor = 0
+		if(@param.to_i < 0 or @param.to_i > @factor_info.length - 1 or @param == nil) then
+			@primary_factor = 0
 		else
-			primary_factor = @param
+			@primary_factor = @param.to_i
 		end
 
 
 		boro_req_params = { :method => "oneFactor",
-						:factor_number => 1,
+						:factor_number => @primary_factor,
 						:get_wards => false,
 						:combine => true,
 						:get_all_factors => true}
 		ward_req_params = { :method => "oneFactor",
-						:factor_number => 1,
+						:factor_number => @primary_factor,
 						:get_wards => true,
 						:combine => true,
 						:get_all_factors => true}
@@ -43,19 +48,9 @@ class StreetMapController < ApplicationController
 
 		gon.feature_groups = Hash.new
 
-		gon.feature_groups[:boroughs] = group_ranks(map_feature_collater(true, 1, boro_request_data), max_ranks)
+		gon.feature_groups[:boroughs] = group_ranks(map_feature_collater(true, @primary_factor, boro_request_data), max_ranks)
 		
-		gon.feature_groups[:wards] = map_feature_collater(false, 1, ward_request_data)
-
-		#Now we want to go through and add a 'grouped' ranking
-		#We do this by going through and finding the difference between the ranked parameters
-
-		#group_ranks(map_feature_collater(true, primary_factor, base_factor_url), max_ranks)
-		#--------------------------------------------------
-		#  				WARD DATA COLLATION	
-		#--------------------------------------------------
-
-		#gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
+		gon.feature_groups[:wards] = map_feature_collater(false, @primary_factor, ward_request_data)
 	end
 
 	def group_ranks(collated_features, reduce_to)

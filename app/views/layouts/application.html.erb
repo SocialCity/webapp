@@ -9,30 +9,42 @@
 	<%= csrf_meta_tags %>
 </head>
 <body>
-	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-	<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-		<a class="navbar-brand" href="http://github.com/SocialCity">SocialCity</a>
+	<div class="container-fluid">
+		<nav class="navbar navbar-default navbar-fixed-top" id="top-nav" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+			<a class="navbar-brand" href="http://github.com/SocialCity">SocialCity</a>
+			</div>
+<!-- 
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li class=""><a href="#">Map View</a></li>
+					<li class="dropdown <% concat "active" if @current_action == "map" %>">
+						<a href="<%= root_url %>" class="dropdown-toggle" data-toggle="dropdown">Map View<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							
+						</ul>
+					</li>
+				</ul>
+			</nav><!-- /.navbar-collapse --> 
 		</div>
+	</div>
+	<div class="container-fluid full-height">
+		<div class="row fill-height">
+			<div class="col-sm-2 col-md-2 sidebar">
+				<ul class="nav nav-stacked">
+				  	<li class="active"><a href="">Home</a></li>
+				  	<li>
+				  		<a href="<%=root_url%>/street_map">Map Visualisation</a>
 
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-			<ul class="nav navbar-nav">
-				<li class=""><a href="#">Map View</a></li>
-				<li class="dropdown <% concat "active" if @current_action == "map" %>">
-					<a href="<%= root_url %>" class="dropdown-toggle" data-toggle="dropdown">Map View<b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li><%= link_to "One Factor", street_map_one_factor_path %></li>
-						<li><%= link_to "Two Factors", street_map_two_factor_path %></li>
-					</ul>
-				</li>
-			</ul>
-		</div><!-- /.navbar-collapse -->
-	</nav>
-	<div class="container <%= controller.controller_name %>">
-		<div class="row">
-			<div class="row analytics-container">
-				<div class="">
-				</div>
+				  	</li>
+				  	<li>
+				  		<a href="<%=root_url%>/parallel">Parallel Visualisation</a>
+				  	</li>
+				</ul>
+			</div>	
+
+			<div class="col-md-10 col-md-offset-2 main <%= controller.controller_name %>">
 				<div class="row">
 					<%= yield %>
 				</div>
@@ -41,3 +53,5 @@
 	</div>
 </body>
 </html>
+<!-- <li><%= link_to "One Factor", street_map_one_factor_path %></li>
+							<li><%= link_to "Two Factors", street_map_two_factor_path %></li> -->

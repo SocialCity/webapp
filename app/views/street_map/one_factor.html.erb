@@ -1,25 +1,45 @@
-<div class="col-md-12">
-<br />
-	<div class="row">
-		<div class="col-md-12">
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-8 container map-container">
-			<svg id="map" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
-			</svg>
-		</div>
-		<div class="col-md-1">
-		</div>
-		<div class="col-md-3 container">
-			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 0 %>" href="<%= root_url %>?factor=0" role="button">Crime Rate</a>
-			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 1 %>" href="<%= root_url %>?factor=1" role="button">House Price</a>
-			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 2 %>" href="<%= root_url %>?factor=2" role="button">Education</a>
-			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 3 %>" href="<%= root_url %>?factor=3" role="button">Transport</a>
-			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 4 %>" href="<%= root_url %>?factor=4" role="button">Mean Age</a>
-			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 5 %>" href="<%= root_url %>?factor=5" role="button">Drug Usage Rate</a>
-			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 6 %>" href="<%= root_url %>?factor=6" role="button">Employment Rate</a>
-			<a class="btn btn-primary btn-block <% concat "active" if @param.to_i == 7 %>" href="<%= root_url %>?factor=7" role="button">Voter Turnout</a>
-		</div>
+<div class="col-md-8">
+	<h2> One-Factor Map Comparison </h2>	
+	<div class="map-container">
+		<svg id="map" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
+		</svg>
 	</div>
 </div>
+<div class="col-md-4 legend-box">
+	<div class="row">
+		<div class="col-md-12">
+			<h3> <small>Visualisation Options</small></h3>
+			
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Choose factor to color on <span class="caret"></span>
+				</button>
+
+				<ul class="dropdown-menu" role="menu">
+					<%  @factor_info.each do |factor| %>
+						<li>
+							<a href="<%= root_url %>street_map/one_factor?factor=<%=factor[:factor_id]%>">
+								<span  <% if factor[:factor_id].to_i == @primary_factor %>
+										class="text-muted"
+									<% end %>>
+								<%= factor[:factor_name] %>
+								</span>
+							</a>
+						</li>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<h3> <small>Visualisation Information </small></h3>
+			<strong>Selected factor</strong>: <%= @factor_info[@primary_factor][:factor_name]%>
+			<br/>
+			<strong>Description</strong>: <%= @factor_info[@primary_factor][:measure]%>
+		</div>
+	</div>
+	
+	
+</div>
+

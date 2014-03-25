@@ -2,8 +2,7 @@
 // All this logic will automatically be available in application.js.
 // You can use CoffeeScript in this file: http://coffeescript.org/
 var base_url_regions = "/assets/";
-var width = 960,
-    height = 500;
+
 $(document).ready(function() {
 	stats = Array();
 	stats['boroughs'] = gon.feature_groups['boroughs'];
@@ -13,7 +12,7 @@ $(document).ready(function() {
 
 	if(gon.parallel)
         if(gon.para_boros)
-		  setup_parallel_graph(stats['boroughs']);
+		    setup_parallel_graph(stats['boroughs']);
         else
             setup_parallel_graph(stats['wards']);
 	
@@ -28,7 +27,14 @@ function plot_parallel_data(stats)
 function setup_parallel_graph(feat_list)
 {
     var boroughs = [];
+    var width = 1100,
+    height = 400;
 
+    var g;
+    var line, axis, foreground;
+    var svg;
+
+    //Convert this into a JS object with a series of keypairs
     var factors = ["Crime Rate",
                     "House Price",
                     "GCSE Score",
@@ -40,21 +46,29 @@ function setup_parallel_graph(feat_list)
                     "Deliberate Fires",
                     "Incapacity Benefit"];
     //Define pixel widths across graph space
-    var m = [80, 160, 200, 160],
-    w = 1280 - m[1] - m[3],
-    h = 600 - m[0] - m[2];
+    //Top edge, right edge, bottom edge, left edge
+    var m = [40, 40, 10, 40],
+    w = width - m[1] - m[3],
+    h = height - m[0] - m[2];
 
     //Define x scale
-    var x = d3.scale.ordinal().domain(factors).rangePoints([0, w]),
+    var x = d3.scale.ordinal()
+                    .domain(factors)
+                    .rangePoints([0, w]),
         y = {};
 
-    var line = d3.svg.line(),
-        axis = d3.svg.axis().orient("left"),
-        foreground;
+    line = d3.svg.line();
+    axis = d3.svg.axis().orient("left");
 
-    var svg = d3.select("#parallel").append("svg:svg")
-                .attr("width", w + m[1] + m[3])
-                .attr("height", h + m[0] + m[2])
+    //Create the svg base, translate according to coords
+    console.log("w " + (w + m[1] + m[3]) + " h " + (h + m[0] + m[2]));
+    d3.select("#parallel")
+        .attr("width", width)
+        .attr("height", height);
+
+    svg = d3.select("#parallel").append("svg:svg")
+                // .attr("width", w + m[1] + m[3])
+                // .attr("height", h + m[0] + m[2])
                 .append("svg:g")
                 .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
@@ -76,23 +90,18 @@ function setup_parallel_graph(feat_list)
 
         //Get scale for factor name
         var factor_id = get_factor_id(factor_name);
-        console.log(feat_list[0]['min_max']);
-        console.log(factor_id);
         var dom = [feat_list[0]['min_max'][factor_id]['min'], feat_list[0]['min_max'][factor_id]['max']]; 
         
+        //Create the y-scale for this particular factor from height to 0 (we're in cartesian coords)
         y[factor_name] = d3.scale.linear()
                             .domain(d3.extent(dom))
                             .range([h, 0]);
 
-        //I guess this is the line for the boro
+        
         y[factor_name].brush = d3.svg.brush()
                                 .y(y[factor_name])
                                 .on("brush", brush);
     });
-
-    //Current status - the scale function stored in y is not returning anything except NaN
-
-    //  console.log("FACTORS HERE: " +  factors);
 
     // Add foreground lines.
     foreground = svg.append("svg:g")
@@ -102,10 +111,9 @@ function setup_parallel_graph(feat_list)
                     {
                         factors_vals = new(Array);
 
-                        factors_vals.push(feature['factors']['crimeRate']);
-                        factors_vals.push(feature['factors']['drugRate']);
-                        factors_vals.push(feature['factors']['educationRating']);
-                        factors_vals.push(feature['factors']['employmentRate']);
+                        factors.forEach(function(factor){
+                            factors_vals.push(feature['factors'][get_factor_id(factor)]);
+                        })
                         return factors_vals;
                     })
                     .enter().append("svg:path")
@@ -117,23 +125,25 @@ function setup_parallel_graph(feat_list)
 
 
     // Add a group element for each trait.
-    var g = svg.selectAll(".factor")
+    g = svg.selectAll(".factor")
                 .data(factors)
                 .enter().append("svg:g")
                 .attr("class", "factor")
                 .attr("transform", function(d) 
                 {
+                    console.log("here");
                     return "translate(" + x(d) + ")"; 
                 })
                 .call(d3.behavior.drag()
-                .origin(function(d) { 
-                    return {
-                        x: x(d)
-                    }; 
-                })
-                .on("dragstart", dragstart)
-                .on("drag", drag)
-                .on("dragend", dragend));
+                    .origin(function(d) { 
+                        return {
+                            x: x(d)
+                        }; 
+                    })
+                    .on("dragstart", dragstart)
+                    .on("drag", drag)
+                    .on("dragend", dragend)
+                );
 
     // Add an axis and title.
     g.append("svg:g")
@@ -141,14 +151,46 @@ function setup_parallel_graph(feat_list)
         .each(function(d) { 
             d3.select(this).call(axis.scale(y[d])); 
         })
-        .append("svg:text")
+        .append("foreignObject")
         .attr("text-anchor", "middle")
-        .attr("y", -9)
-        .text(String);
+        .attr("y", -40)
+        .attr("x", -40)
+        .attr("width", 100)
+        .attr("height", 40)
+        .append("xhtml:p")
+        .html(function(d){
+            //Handle line splits properly
+            if(d.length > 10)
+            {
+                var temp_end = d.slice(10);
+                var parts = d.split(" ");
+                var return_line = "";
+                var current_line = parts[0];
+                for(var i = 1; i < parts.length; i++)
+                {
+                    if(current_line.length > 10)
+                    {
+                        if(return_line.length > 0)
+                            return_line += '<br/>';
+                        return_line += current_line;
+                        current_line = parts[i];
+                    }
+                    else
+                        current_line += " " + parts[i];
+                }
+                if(current_line.length > 0)
+                {
+                    if(return_line.length > 0)
+                        return_line += "<br/>";
+                    return_line += current_line;
+                }
+                return return_line;
+            }
+            else
+                return d;
+        });
 
     // Add a brush for each axis.
-
-
     g.append("svg:g")
         .attr("class", "brush")
         .each(function(d) { 
@@ -158,8 +200,10 @@ function setup_parallel_graph(feat_list)
         .attr("x", -8)
         .attr("width", 16);
     //These functions allow you to define sections of the coordinates to
+
     function dragstart(d) {
         i = factors.indexOf(d);
+        console.log(d);
     }
 
     function drag(d) {
@@ -173,7 +217,6 @@ function setup_parallel_graph(feat_list)
         x.domain(factors).rangePoints([0, w]);
         var t = d3.transition().duration(500);
         t.selectAll(".factor").attr("transform", function(d) { 
-                console.log(x(d))
                 return "translate(" + x(d) + ")"; 
             });
         t.selectAll(".foreground path").attr("d", path);
@@ -181,7 +224,6 @@ function setup_parallel_graph(feat_list)
 
     function get_factor_id(factor_name)
     {
-        console.log(factor_name);
         switch(factor_name)
         {
             case "Crime Rate":  return "crimeRate";  break;
@@ -211,7 +253,7 @@ function setup_parallel_graph(feat_list)
     function brush() {
         var actives = factors.filter(function(p) { return !y[p].brush.empty(); }),
         extents = actives.map(function(p) { return y[p].brush.extent(); });
-        foreground.classed("fade", function(d) 
+        foreground.classed("line-fade", function(d) 
         {
             return !actives.every(function(p, i) 
             {
@@ -221,14 +263,4 @@ function setup_parallel_graph(feat_list)
     }
 }
 
-//Resizes the map after a short delay.
-window.onresize = function()
-{
- setTimeout( 
-  	function() { 
-      	$('.street_map .map-container').css('height', $(window).height() * 0.8);
-
-  	}, 
-    200);
-}
 

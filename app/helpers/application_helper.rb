@@ -1,5 +1,22 @@
 module ApplicationHelper
 	require 'open-uri'
+
+	def parse_factor_list(factor_list)
+		parsed_data = ""
+		factor_list_parsed = Array.new
+		factor_list.each_line do |response|
+			parsed_data = JSON.parse(response)
+		end
+
+		parsed_data.each do |factor|
+			factor_list_parsed << {:factor_id => factor["id"],
+									:measure => factor["measure"],
+									:factor_name => factor["factor"]}
+		end
+
+		factor_list_parsed
+	end
+
 	def URL_requester(base_url, params)
 		request_url = base_url + "/" + params[:method] + "/"
 		case params[:method]

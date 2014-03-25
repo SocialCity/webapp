@@ -13,7 +13,7 @@ class ParallelController < ApplicationController
 		req_params = { :method => "oneFactor",
 						:factor_number => 1,
 						:get_wards => false,
-						:combine => true,
+						:combine => false,
 						:get_all_factors => true}
 
 		request_data = URL_requester(base_factor_url, req_params)
@@ -36,7 +36,7 @@ class ParallelController < ApplicationController
 		req_params = { :method => "oneFactor",
 						:factor_number => 1,
 						:get_wards => true,
-						:combine => true,
+						:combine => false,
 						:get_all_factors => true}
 
 		request_data = URL_requester(base_factor_url, req_params)

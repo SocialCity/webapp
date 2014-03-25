@@ -3,34 +3,34 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/ */
 .graph-container 
 {
-	height: 800px;
-	background-color:rgba(208,208,208,0.8);
-	padding: 10px;
-	border-radius: 5px;
+/*	height: 800px;*/
+
 }
 
-
 .street_map {
-	.map-container {
+/*	.map-container {
 		height: 800px;
-	}
+	}*/
+
 
 	#map 
 	{
 		height:100%;
 	}
 
-	.container 
+/*	.container 
 	{
 		background-color:rgba(208,208,208,0.8);
 		padding: 10px;
 		border-radius: 5px;
-	}
+	}*/
 
 	.factor-select
 	{
 		width:25%;
 	}
+
+
 
 	.factor-compare-form
 	{
@@ -46,8 +46,8 @@
 ******************************/
 
 #map{
-	background:#D0D0D0;
-}
+/*	background:#D0D0D0;
+*/}
 
 .borough.one{fill:#ddc;}
 .borough.two{fill:#cdd;}

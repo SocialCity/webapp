@@ -6,14 +6,23 @@ svg {
   font-size: 14px;
 }
 
+/*.graph-container 
+{
+    height:600px;
+}
+.graph-container > svg
+{
+    height: 600px;
+}
+*/
 .foreground path {
   fill: none;
   stroke-opacity: .5;
   stroke-width: 1.5px;
 }
 
-.foreground path.fade {
-  stroke: #fff;
+.foreground path.line-fade {
+  stroke: #000;
   stroke-opacity: .05;
 }
 

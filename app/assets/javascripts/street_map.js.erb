@@ -2,8 +2,8 @@
 // All this logic will automatically be available in application.js.
 // You can use CoffeeScript in this file: http://coffeescript.org/
 var base_url_regions = "/assets/";
-var width = 960,
-    height = 500;
+var width = 600,
+    height = 400;
 $(document).ready(function() {
 	stats = Array();
 	stats['boroughs'] = gon.feature_groups['boroughs'];
@@ -12,6 +12,11 @@ $(document).ready(function() {
 		setup_map(stats);
 	
 })
+
+function one_factor_change(element, url)
+{
+	window.location(url + "?factor=" + element.value);
+}
 
 function plot_data(stats)
 {
@@ -70,7 +75,7 @@ function setup_map(stats)
 					.on("zoom", zoomed);
 
 		var projection = d3.geo.albers()
-							.center([0, 51.6])
+							.center([-0.25, 51.56])
 							.rotate([0.0, 0])
 							.parallels([50, 60])
 							.scale(75000)
