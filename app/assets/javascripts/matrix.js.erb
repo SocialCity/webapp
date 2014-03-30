@@ -52,7 +52,7 @@ function setup_matrix_graph(words)
 				.domain(d3.extent(words, function(d){
 					return d['pleas'];
 				}))
-				.range([padding, height-padding]);
+				.range([height-padding, padding]);
 	// x_scale = d3.scale.linear()
 	// 			.domain([1,3])
 	// 			.range([padding, width-padding]);
