@@ -3,6 +3,7 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>SocialCity Visualisation Dashboard</title>
+	<link href='http://fonts.googleapis.com/css?family=Metrophobic' rel='stylesheet' type='text/css'>
 	<%= include_gon %>
 	<%= stylesheet_link_tag    "application", media: "all" %>
 	<%= javascript_include_tag "application" %>
@@ -35,11 +36,14 @@
 				<ul class="nav nav-stacked">
 				  	<li class="active"><a href="">Home</a></li>
 				  	<li>
-				  		<a href="<%=root_url%>/street_map">Map Visualisation</a>
+				  		<a href="<%=root_url%>street_map">Map Visualisation</a>
 
 				  	</li>
 				  	<li>
-				  		<a href="<%=root_url%>/parallel">Parallel Visualisation</a>
+				  		<a href="<%=root_url%>parallel">Parallel Visualisation</a>
+				  	</li>
+				  	<li>
+				  		<a href="<%=root_url%>matrix">Matrix Visualisation</a>
 				  	</li>
 				</ul>
 			</div>	

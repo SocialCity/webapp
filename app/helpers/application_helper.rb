@@ -37,6 +37,11 @@ module ApplicationHelper
 			if params.has_key?(:year)
 				request_url += params[:year].to_s 			+ "/"
 			end
+		when "areaFactors"
+			request_url += params[:code].to_s 		+ "/"
+			if params.has_key?(:year)
+				request_url += params[:year].to_s 			+ "/"
+			end
 		when "timestamps"
 			# no params
 		when "hashTagList"
@@ -44,8 +49,7 @@ module ApplicationHelper
 				request_url += params[:time].to_s 			+ "/"
 			end
 		when "hashTagFactors"
-			request_url += params[:tag_1].to_s 				+ "/"
-			request_url += params[:tag_2].to_s 				+ "/"
+			request_url += params[:tag_1].to_s 				+ "/"			+ "/"
 			if params.has_key?(:time)
 				request_url += params[:time].to_s 			+ "/"
 			end
@@ -67,9 +71,25 @@ module ApplicationHelper
 			if params.has_key?(:time)
 				request_url += params[:time].to_s 			+ "/"
 			end
-		when "words"
-			request_url += params[:word_code_num].to_s 		+ "/"
-			request_url += params[:borough_code].to_s 		+ "/"
+		when "areaSentiment"
+			request_url += params[:borough_code].to_s 			+ "/"
+		when "hashtagSentiment"
+			request_url += params[:tag].to_s 			+ "/"
+		when "deviceSentiment"
+			request_url += params[:device].to_s 			+ "/"
+		when "areaWords"
+			request_url += params[:word_code_num].to_s 			+ "/"
+			request_url += params[:borough_code].to_s 			+ "/"
+		when "hashtagWords"
+			request_url += params[:word_code_num].to_s 			+ "/"
+			request_url += params[:tag].to_s 			+ "/"
+		when "deviceWords"
+			request_url += params[:word_code_num].to_s 			+ "/"
+			request_url += params[:device].to_s 			+ "/"
+		when "areaTags"
+			request_url += params[:borough_code].to_s 			+ "/"
+		when "areaDevices"
+			request_url += params[:borough_code].to_s 			+ "/"
 		else
 			raise "Invalid REST Method"
 		end

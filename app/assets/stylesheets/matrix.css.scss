@@ -1,0 +1,56 @@
+// Place all the styles related to the matrix controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+svg{
+/*	stroke:black;
+	stroke-width:1px;*/
+}
+.circle {
+	fill: #e0e0e0;
+	stroke-width: 1px;
+	stroke: black;
+}
+.circle-group
+{
+	stroke-width: 1px;
+	stroke: black;
+}
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.axis > .domain
+{
+	stroke-width:1px;
+	stroke:black;
+	fill: none;
+	shape-rendering:crispEdges;
+}
+
+.axis text
+{
+	font-family: sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+}
+
+.tip-tooltip
+{
+	font-size: 13px;
+}
+.type_1{
+	fill: #66c2a5;
+}
+.type_2{
+	fill: #fc8d62;
+}
+.type_3{
+	fill: #8da0cb;
+}
+.type_4{
+	fill: #e78ac3;
+}
+.type_5{
+	fill: #a6d854;
+}

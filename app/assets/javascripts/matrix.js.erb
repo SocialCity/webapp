@@ -1,0 +1,141 @@
+var base_url_regions = "/assets/";
+
+$(document).ready(function() {
+	word_data = Array();
+	word_data = gon.word_data;
+
+	console.log(word_data);
+
+	if(gon.matrix)
+        setup_matrix_graph(word_data);
+	
+})
+
+function setup_matrix_graph(words)
+{
+	var width = 800,
+    height = 600;
+
+	var padding = 20;
+	var min_range = 1;
+	var max_range = 3;
+
+	var x_scale, y_scale;
+	var circ_grps;
+
+	var svg = d3.select('.graph-container')
+				.append('svg:svg')
+				.attr('width', width)
+				.attr('height', height);
+	
+		
+	var zoom = d3.behavior.zoom()
+  			.on("zoom", zoomed);
+
+  	svg.append("rect")
+      .attr("class", "overlay")
+      .attr("width", width)
+      .attr("height", height)
+      .call(zoom);
+
+    //Order matters here!
+    //We have to make sure the zoom overlay
+    //Is behind the circles/axes
+    var layer = svg.append('svg:g');
+
+	x_scale = d3.scale.linear()
+				.domain(d3.extent(words, function(d){
+					return d['activ'];
+				}))
+				.range([padding, width-padding]);
+	y_scale = d3.scale.linear()
+				.domain(d3.extent(words, function(d){
+					return d['pleas'];
+				}))
+				.range([padding, height-padding]);
+	// x_scale = d3.scale.linear()
+	// 			.domain([1,3])
+	// 			.range([padding, width-padding]);
+	// y_scale = d3.scale.linear()
+	// 			.domain([1,3])
+	// 			.range([padding, height-padding]);
+	r_scale = d3.scale.linear()
+				.domain(d3.extent(words, function(d){
+					return d['freq'];
+				}))
+				.range([6, 20]);
+
+					//Now we put the axes on etc
+	var axis_names = ['Pleasantness', 'Activation'];
+	
+	var x_axis = d3.svg.axis()
+					.scale(x_scale)
+					.orient('bottom');
+					//.ticks();
+	var y_axis = d3.svg.axis()
+					.scale(y_scale)
+					.orient('left');
+					//.ticks(3);
+
+	layer.append('svg:g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0,' + height/2 + ')')
+		.call(x_axis);
+
+	layer.append('svg:g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(' + width/2 + ',0)')
+		.call(y_axis);
+
+	layer.append('svg:text')
+		.attr('transform', 'translate(' + (width/2 - 45) + ',' + height + ')')
+		.text('Pleasantness');
+	layer.append('svg:text')
+		.attr('transform', 'translate(' + (width - 80) + ',' + (height/2 - 10) + ')')
+		.text('Activation');
+	//Now lets insert circles for each of the words
+	
+	circ_grps = layer.selectAll('.circle-group')
+						.data(words)
+						.enter().append('svg:g')
+						.attr('class', 'circle-group')
+						.attr('transform', function(d) {
+							return 'translate(' + x_scale(d['activ']) + ' ' + y_scale(d['pleas']) + ')';
+						});
+	var circles = circ_grps.append('svg:circle')
+							.attr('r', function(d)
+							{
+								return String(r_scale(parseInt(d['freq'])));
+							})
+							.attr('class', function(d)
+							{
+								switch(d['type'])
+								{
+								case 'DAL': return 'type_1'; break;
+								case 'adjective': return 'type_2'; break;
+								case 'verb': return 'type_3'; break;
+								case 'nouns': return 'type_4'; break;
+								case 'Catagories': return 'type_5'; break;
+								}
+							});
+
+    $('circle').tipsy({ 
+        gravity: 'w', 
+        html: true, 
+        title: function() {
+			var d = this.__data__;
+			console.log(d);//, c = colors(d.i);
+			$('#info-word').empty().append(d['word']);
+			$('#info-activ').empty().append(d['activ']);
+			$('#info-pleas').empty().append(d['pleas']);
+			$('#info-freq').empty().append(d['freq']);
+			$('#info-image').empty().append(d['image']);
+			return "<span class='tip-tooltip'>Word: " + d['word'] + "</span>";
+      	}	
+    });
+
+	function zoomed() {
+    	layer.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+
+}

@@ -1,0 +1,69 @@
+<div class="col-md-8">
+	<h2> Hashtag Associated Words </h2>	
+	<div class="graph-container">
+		<!-- <svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
+		</svg> -->
+	</div>
+</div>
+<div class="col-md-4">
+	<h3> <small>Visualisation Information </small></h3> 
+	<br />
+	<strong>Current Hashtag</strong>: <%= @hashtag %>
+	<br/><br/>
+	<div class="btn-group">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+		Available Hashtags <span class="caret"></span>
+		</button>
+
+		<ul class="dropdown-menu" role="menu" style="height: 300px; overflow-y:auto;">
+			<% @hashtag_list.each do |hashtag_sing| %>
+				<li>
+					<a href="<%= root_url %>matrix/hashtag?tag=<%= hashtag_sing%>">
+						<span  <% if @hashtag == hashtag_sing %>
+								class="text-muted"
+							<% end %>>
+						<%= hashtag_sing %>
+						</span>
+					</a>
+				</li>
+			<% end %>
+		</ul>
+	</div>
+	<br/>
+	<br/>
+	<em>Hover over a bubble to see stats below</em>
+	<div class="row">
+		<div class="col-md-8">
+			<table class="table" id="info-table">
+				<tr>
+					<th></th>
+					<th>Value</th>
+				</tr>
+				<tr>	
+					<td>Word</td>
+					<td id="info-word"></td>
+				</tr>
+				<tr>	
+					<td>Activation</td>
+					<td id="info-activ"></td>
+				</tr>
+				<tr>	
+					<td>Pleasantness</td>
+					<td id="info-pleas"></td>
+				</tr>
+				<tr>	
+					<td>Imagery</td>
+					<td id="info-image"></td>
+				</tr>
+				<tr>	
+					<td>Frequency</td>
+					<td id="info-freq"></td>
+				</tr>
+
+			</table>
+		</div>
+	</div>
+</div>
+
+</div>
+

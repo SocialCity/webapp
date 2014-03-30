@@ -3,8 +3,17 @@ Webapp::Application.routes.draw do
   get "street_map/two_factor"
   get "parallel/boroughs"
   get "parallel/wards"
+  get "matrix/hashtag"
+
+  #Parameter routes
   get "street_map/two_factor/:factor_one/:factor_two" => "street_map#two_factor"
 
+
+  #Default routes
+  get "street_map" => "street_map#one_factor"
+  get "parallel" => "parallel#boroughs"
+  get "matrix" => "matrix#hashtag"
+  
   root 'street_map#one_factor'
   
   # The priority is based upon order of creation: first created -> highest priority.

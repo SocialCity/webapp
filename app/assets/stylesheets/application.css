@@ -40,6 +40,7 @@ svg {
     Hides the sidebar when on mobile, too */
 .sidebar {
     display: none;
+    font-family: 'Metrophobic', sans-serif;
 }
 @media (min-width: 768px) {
     .sidebar {

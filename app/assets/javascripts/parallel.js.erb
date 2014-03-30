@@ -4,17 +4,18 @@
 var base_url_regions = "/assets/";
 
 $(document).ready(function() {
-	stats = Array();
-	stats['boroughs'] = gon.feature_groups['boroughs'];
-    stats['wards'] = gon.feature_groups['wards'];
-
-	console.log(stats);
-
 	if(gon.parallel)
+    {
+        stats = Array();
+        stats['boroughs'] = gon.feature_groups['boroughs'];
+        stats['wards'] = gon.feature_groups['wards'];
+
+        console.log(stats);
         if(gon.para_boros)
 		    setup_parallel_graph(stats['boroughs']);
         else
             setup_parallel_graph(stats['wards']);
+    }
 	
 })
 
