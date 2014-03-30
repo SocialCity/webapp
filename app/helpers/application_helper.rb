@@ -107,8 +107,8 @@ module ApplicationHelper
 		ranking_array 	= Array.new
 
 		parsed_data = ""
-		puts "out"
-		puts request_data
+		#puts "out"
+		#puts request_data
 		request_data.each_line do |response|
 			parsed_data = JSON.parse(response)
 		end
@@ -130,7 +130,7 @@ module ApplicationHelper
 			if(min_max_vals.length == 0)
 				fill_min_max_hash = true
 			end
-			puts location_group
+			#puts location_group
 			location_group.each do |key, value|
 				if key != "location" then
 					feature_group["factors"][key] = value
@@ -147,7 +147,7 @@ module ApplicationHelper
 							min_max_vals[key]['max'] = value
 						end
 					end
-					puts key
+					#puts key
 				end
 			end
 			map_features.push(feature_group)

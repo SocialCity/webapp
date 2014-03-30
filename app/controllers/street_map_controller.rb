@@ -167,7 +167,7 @@ class StreetMapController < ApplicationController
 		gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
 
 		gon.one_factor = false
-		puts secondary_factor
+		#puts secondary_factor
 		gon.relation_list = relate_wards_to_boroughs(gon.feature_groups[:wards], gon.feature_groups[:boroughs], secondary_factor)
 	end
 
@@ -201,7 +201,7 @@ class StreetMapController < ApplicationController
 				#puts ward_ranking_factor
 				#puts "FACTOR "
 				#puts "WARD RANK " + ward_ranking_factor
-				puts temp_factor_hash[ward_ranking_factor.to_i]
+				#puts temp_factor_hash[ward_ranking_factor.to_i]
 				ranking_stat_value = ward_per_rank_factor_data[ward_feature_group["rank"]][temp_factor_hash[ward_ranking_factor.to_i]]
 				#puts "RANK STAT " + ranking_stat_value.to_s
 				borough_ward_list[parent_borough_ID] << {:id => ward_ID, :rank => ward_feature_group["rank"].to_i, :ranking_stat_value => ranking_stat_value}

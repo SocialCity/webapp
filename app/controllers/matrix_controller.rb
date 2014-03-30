@@ -15,7 +15,7 @@ class MatrixController < ApplicationController
 
 		#First get the list of hashtags
 		hashtag_req_params = {:method => "hashTagList"}
-		hashtag_request_data = URL_requester(base_factor_url, hashtag_req_params)
+		hashtag_request_data = URL_requester(BACKEND_URL, hashtag_req_params)
 
 		#Now structure this data
 		parsed_hashtags = nil
@@ -37,7 +37,7 @@ class MatrixController < ApplicationController
 		req_params = { :method => "hashtagWords",
 						:word_code_num => 0,
 						:tag => query_hashtag}
-		request_data = URL_requester(base_factor_url, req_params)
+		request_data = URL_requester(BACKEND_URL, req_params)
 
 		#Now structure this data
 		parsed_data = nil

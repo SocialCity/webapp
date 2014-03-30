@@ -16,7 +16,7 @@ class ParallelController < ApplicationController
 						:combine => false,
 						:get_all_factors => true}
 
-		request_data = URL_requester(base_factor_url, req_params)
+		request_data = URL_requester(BACKEND_URL, req_params)
 
 		gon.feature_groups = Hash.new
 		gon.feature_groups[:boroughs] = map_feature_collater(true, 1, request_data)
@@ -39,8 +39,8 @@ class ParallelController < ApplicationController
 						:combine => false,
 						:get_all_factors => true}
 
-		request_data = URL_requester(base_factor_url, req_params)
-		print request_data
+		request_data = URL_requester(BACKEND_URL, req_params)
+		#print request_data
 
 		gon.feature_groups = Hash.new
 		#--------------------------------------------------
