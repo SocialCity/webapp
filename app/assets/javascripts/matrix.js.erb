@@ -7,11 +7,13 @@ $(document).ready(function() {
 	console.log(word_data);
 
 	if(gon.matrix)
-        setup_matrix_graph(word_data);
+	{
+    	setup_matrix(word_data);
+	}
 	
 })
 
-function setup_matrix_graph(words)
+function setup_matrix(words)
 {
 	var width = 800,
     height = 600;
@@ -137,5 +139,4 @@ function setup_matrix_graph(words)
 	function zoomed() {
     	layer.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
-
 }

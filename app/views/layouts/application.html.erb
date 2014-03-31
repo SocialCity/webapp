@@ -16,20 +16,9 @@
 			<div class="navbar-header">
 			<a class="navbar-brand" href="http://github.com/SocialCity">SocialCity</a>
 			</div>
-<!-- 
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav">
-					<li class=""><a href="#">Map View</a></li>
-					<li class="dropdown <% concat "active" if @current_action == "map" %>">
-						<a href="<%= root_url %>" class="dropdown-toggle" data-toggle="dropdown">Map View<b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							
-						</ul>
-					</li>
-				</ul>
-			</nav><!-- /.navbar-collapse --> 
 		</div>
 	</div>
+
 	<div class="container-fluid full-height">
 		<div class="row fill-height">
 			<div class="col-sm-2 col-md-2 sidebar">
@@ -42,8 +31,17 @@
 				  	<li>
 				  		<a href="<%=root_url%>parallel">Parallel Visualisation</a>
 				  	</li>
-				  	<li>
-				  		<a href="<%=root_url%>matrix">Matrix Visualisation</a>
+
+				  	<li class="dropdown dropdown-stack">
+				  		<!-- <a href="<%=root_url%>matrix">Matrix Visualisation</a> -->
+							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>matrix">
+							Matrix Visualisation <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/hashtag">Hashtag</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/area">Borough</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/device">Device</a></li>
+							</ul>
 				  	</li>
 				</ul>
 			</div>	

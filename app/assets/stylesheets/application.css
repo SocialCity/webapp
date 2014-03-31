@@ -78,6 +78,18 @@ svg {
     }
 }
 
+.dropdown-stack, .dropdown-stack > li, .dropdown-stack > a
+{
+    background-color: #3e3e3e !important;
+    color:#eee !important;
+    width:100%;
+}
+.dropdown-stack > li > a:hover
+{
+    color:#eee !important;
+}
+
+
 
 /*Again from the Bootstrap Dashboard example
 Accounts for the fixing to the LHS of the sidebar */

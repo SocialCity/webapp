@@ -4,6 +4,8 @@ Webapp::Application.routes.draw do
   get "parallel/boroughs"
   get "parallel/wards"
   get "matrix/hashtag"
+  get "matrix/area"
+  get "matrix/device"
 
   #Parameter routes
   get "street_map/two_factor/:factor_one/:factor_two" => "street_map#two_factor"

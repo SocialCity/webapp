@@ -1,0 +1,99 @@
+<div class="col-md-8">
+	<h2> Device Associated Words </h2>	
+	<div class="graph-container">
+		<!-- <svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
+		</svg> -->
+	</div>
+</div>
+<div class="col-md-4">
+	<h3> <small>Visualisation Information </small></h3> 
+	<br />
+	<strong>Current Device</strong>: <%= @device %>
+	<br/><br/>
+	<div class="btn-group">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+		Available Devices <span class="caret"></span>
+		</button>
+
+		<ul class="dropdown-menu" role="menu" style="height: 300px; overflow-y:auto;">
+			<% @device_list.each do |device_sing| %>
+				<li>
+					<a href="<%= root_url %>matrix/device?device=<%= device_sing%>">
+						<span  <% if @device == device_sing %>
+								class="text-muted"
+							<% end %>>
+						<%= device_sing %>
+						</span>
+					</a>
+				</li>
+			<% end %>
+		</ul>
+	</div>
+	<br/>
+	<br/>
+	<em>Hover over a bubble to see stats below</em>
+	<div class="row">
+		<div class="col-md-8">
+			<table class="table" id="info-table">
+				<tr>
+					<th></th>
+					<th>Value</th>
+				</tr>
+				<tr>	
+					<td>Word</td>
+					<td id="info-word"></td>
+				</tr>
+				<tr>	
+					<td>Activation</td>
+					<td id="info-activ"></td>
+				</tr>
+				<tr>	
+					<td>Pleasantness</td>
+					<td id="info-pleas"></td>
+				</tr>
+				<tr>	
+					<td>Imagery</td>
+					<td id="info-image"></td>
+				</tr>
+				<tr>	
+					<td>Frequency</td>
+					<td id="info-freq"></td>
+				</tr>
+
+			</table>
+
+			<br/>
+
+			<table class='table table-condensed key'>
+				<tr>
+					<th>Key</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="key-name">DAL</td>
+					<td class='key-color' id="type-1-key">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="key-name">Adjective</td>
+					<td class='key-color' id="type-2-key">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="key-name">Verb</td>
+					<td class='key-color' id="type-3-key">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="key-name">Noun</td>
+					<td class='key-color' id="type-4-key">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="key-name">Category</td>
+					<td class='key-color' id="type-5-key">&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+
+	</div>
+</div>
+
+</div>
+
