@@ -116,6 +116,7 @@ class MatrixController < ApplicationController
 		#We can assume that hashtags are safe
 		#I'd never do this on a non-research system :P
 		@input_boro = params[:code]
+		@input_timestamp = params[:timestamp]
 		gon.matrix = true
 		gon.area = true
 		@boro_code = ""
@@ -218,6 +219,8 @@ class MatrixController < ApplicationController
 		#We can assume that hashtags are safe
 		#I'd never do this on a non-research system :P
 		@input_device = params[:device]
+		@input_timestamp = params[:timestamp]
+
 		gon.matrix = true
 		gon.device = true
 		@device = ""
