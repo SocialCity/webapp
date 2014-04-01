@@ -30,7 +30,7 @@ class MatrixController < ApplicationController
 		
 		ts_found = false
 		@timestamp_list.each do | ts |
-			if ts[:url] == @input_hashtag then
+			if ts[:url] == @input_timestamp then
 				ts_found = true
 				@timestamp = ts
 			end
@@ -40,8 +40,6 @@ class MatrixController < ApplicationController
 			#MAY NOT BE CORRECT
 			@timestamp = @timestamp_list[-1]
 		end
-
-		@rev_timestamp_list = @timestamp_list.reverse
 
 		query_timestamp = @timestamp[:url]
 
@@ -140,7 +138,7 @@ class MatrixController < ApplicationController
 		
 		ts_found = false
 		@timestamp_list.each do | ts |
-			if ts[:url] == @input_hashtag then
+			if ts[:url] == @input_timestamp then
 				ts_found = true
 				@timestamp = ts
 			end
@@ -241,7 +239,7 @@ class MatrixController < ApplicationController
 		
 		ts_found = false
 		@timestamp_list.each do | ts |
-			if ts[:url] == @input_hashtag then
+			if ts[:url] == @input_timestamp then
 				ts_found = true
 				@timestamp = ts
 			end
