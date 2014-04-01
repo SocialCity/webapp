@@ -39,7 +39,7 @@
 		</button>
 
 		<ul class="dropdown-menu" role="menu" style="height: 300px; overflow-y:auto;">
-			<% @device_list.each do |device_sing| %>
+			<% @device_list.sort.each do |device_sing| %>
 				<li>
 					<a href="<%= root_url %>matrix/device?device=<%= device_sing%>&timestamp=<%= @timestamp[:url] %>">
 						<span  <% if @device == device_sing %>

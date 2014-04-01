@@ -74,23 +74,47 @@ module ApplicationHelper
 			end
 		when "areaSentiment"
 			request_url += params[:borough_code].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
 		when "hashtagSentiment"
 			request_url += params[:tag].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
 		when "deviceSentiment"
 			request_url += params[:device].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
 		when "areaWords"
 			request_url += params[:word_code_num].to_s 			+ "/"
 			request_url += params[:borough_code].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
 		when "hashtagWords"
 			request_url += params[:word_code_num].to_s 			+ "/"
 			request_url += params[:tag].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
 		when "deviceWords"
 			request_url += params[:word_code_num].to_s 			+ "/"
 			request_url += params[:device].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
 		when "areaTags"
 			request_url += params[:borough_code].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
 		when "areaDevices"
 			request_url += params[:borough_code].to_s 			+ "/"
+			if params.has_key?(:time)
+				request_url += params[:time].to_s 			+ "/"
+			end
 		else
 			raise "Invalid REST Method"
 		end

@@ -39,7 +39,7 @@
 		</button>
 
 		<ul class="dropdown-menu" role="menu" style="max-height: 300px; overflow-y:auto;">
-			<% @hashtag_list.each do |hashtag_sing| %>
+			<% @hashtag_list.sort.each do |hashtag_sing| %>
 				<li>
 					<a href="<%= root_url %>matrix/hashtag?tag=<%= hashtag_sing%>&timestamp=<%= @timestamp[:url] %>">
 						<span  <% if @hashtag == hashtag_sing %>
