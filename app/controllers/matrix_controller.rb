@@ -41,6 +41,8 @@ class MatrixController < ApplicationController
 			@timestamp = @timestamp_list[-1]
 		end
 
+		@rev_timestamp_list = @timestamp_list.reverse
+
 		query_timestamp = @timestamp[:url]
 
 		#===================================

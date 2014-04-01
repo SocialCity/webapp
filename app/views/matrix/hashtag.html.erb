@@ -18,7 +18,7 @@
 		</button>
 
 		<ul class="dropdown-menu" role="menu" style="max-height: 300px; overflow-y:auto; width:100%;">
-			<% @timestamp_list.each do |timestamp_sing| %>
+			<% @timestamp_list.reverse.each do |timestamp_sing| %>
 				<li>
 					<a href="<%= root_url %>matrix/hashtag?timestamp=<%= timestamp_sing[:url]%>">
 						<span  <% if @timestamp[:human_readable] == timestamp_sing[:human_readable] %>
