@@ -36,9 +36,9 @@ class MatrixController < ApplicationController
 			end
 		end
 
-		if not ts_found then
+		if ts_found == false then
 			#MAY NOT BE CORRECT
-			@timestamp = @timestamp_list[0]
+			@timestamp = @timestamp_list[-1]
 		end
 
 		query_timestamp = @timestamp[:url]
@@ -144,9 +144,9 @@ class MatrixController < ApplicationController
 			end
 		end
 
-		if not ts_found then
+		if ts_found == false then
 			#MAY NOT BE CORRECT
-			@timestamp = @timestamp_list[0]
+			@timestamp = @timestamp_list[-1]
 		end
 
 		query_timestamp = @timestamp[:url]
@@ -245,9 +245,9 @@ class MatrixController < ApplicationController
 			end
 		end
 
-		if not ts_found then
+		if ts_found == false then
 			#MAY NOT BE CORRECT
-			@timestamp = @timestamp_list[0]
+			@timestamp = @timestamp_list[-1]
 		end
 
 		query_timestamp = @timestamp[:url]
