@@ -1,5 +1,6 @@
 module ApplicationHelper
 	require 'open-uri'
+	require 'date'
 	
 	def parse_factor_list(factor_list)
 		parsed_data = ""
@@ -100,6 +101,25 @@ module ApplicationHelper
 			raise ActionController::RoutingError.new("REST Error - #{e.message} - #{request_url}")
 		end
 	end
+
+	def parse_server_timestamps(timestamps)
+
+		format_str = "%a %b %d %H %M %S %Z %Y"
+		d = DateTime.strptime(timestamps[0]['date'].tr('_', ' '), format_str)
+		processed_ts = Array.new
+
+		timestamps.each do |stamp|
+			d = DateTime.strptime(stamp['date'].tr('_', ' '), format_str)
+			time_h = {
+				:date_obj => d,
+				:human_readable => d.strftime("%H:%M %d-%b-%y"),
+				:url => stamp['date']
+			}
+			processed_ts << time_h
+		end
+		processed_ts
+	end
+
 	
 	def map_feature_collater(for_boroughs, primary_factor, request_data)
 		require 'open-uri' 

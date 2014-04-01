@@ -8,14 +8,48 @@ class MatrixController < ApplicationController
 		#We can assume that hashtags are safe
 		#I'd never do this on a non-research system :P
 		@input_hashtag = params[:tag]
+		@input_timestamp = params[:timestamp]
 		gon.matrix = true
 		gon.hashtag = true
 		@hashtag = ""
 		@hashtag_list = nil
-		
+		@timestamp = nil
 
-		#First get the list of hashtags
-		hashtag_req_params = {:method => "hashTagList"}
+		#FIRST, we get timestamps
+		#Get timestamp list
+		timestamp_req_params = {:method => "timestamps"}
+		timestamp_request_data = URL_requester(BACKEND_URL, timestamp_req_params)
+
+		#Now structure this data
+		parsed_timestamps = nil
+		timestamp_request_data.each_line do |response|
+			parsed_timestamps = JSON.parse(response)
+		end
+		
+		@timestamp_list = parse_server_timestamps(parsed_timestamps)
+		
+		ts_found = false
+		@timestamp_list.each do | ts |
+			if ts[:url] == @input_hashtag then
+				ts_found = true
+				@timestamp = ts
+			end
+		end
+
+		if not ts_found then
+			#MAY NOT BE CORRECT
+			@timestamp = @timestamp_list[0]
+		end
+
+		query_timestamp = @timestamp[:url]
+
+		#===================================
+		
+		#Then get the list of hashtags
+		hashtag_req_params = {
+			:method => "hashTagList",
+			:time 	=> query_timestamp
+		}
 		hashtag_request_data = URL_requester(BACKEND_URL, hashtag_req_params)
 
 		#Now structure this data
@@ -27,6 +61,8 @@ class MatrixController < ApplicationController
 
 		query_hashtag = nil
 
+
+
 		#Check the hashtag is valid here
 		if parsed_hashtags.include?(@input_hashtag) then
 			query_hashtag = @input_hashtag
@@ -37,7 +73,8 @@ class MatrixController < ApplicationController
 		#Get data for the chosen hashtag
 		req_params = { :method => "hashtagWords",
 						:word_code_num => 0,
-						:tag => query_hashtag}
+						:tag => query_hashtag,
+						:time => query_timestamp}
 		request_data = URL_requester(BACKEND_URL, req_params)
 
 		#Now structure this data
@@ -83,9 +120,41 @@ class MatrixController < ApplicationController
 		gon.area = true
 		@boro_code = ""
 		@boro_name = ""
+
+		@timestamp = nil
+
+		#FIRST, we get timestamps
+		#Get timestamp list
+		timestamp_req_params = {:method => "timestamps"}
+		timestamp_request_data = URL_requester(BACKEND_URL, timestamp_req_params)
+
+		#Now structure this data
+		parsed_timestamps = nil
+		timestamp_request_data.each_line do |response|
+			parsed_timestamps = JSON.parse(response)
+		end
 		
+		@timestamp_list = parse_server_timestamps(parsed_timestamps)
+		
+		ts_found = false
+		@timestamp_list.each do | ts |
+			if ts[:url] == @input_hashtag then
+				ts_found = true
+				@timestamp = ts
+			end
+		end
+
+		if not ts_found then
+			#MAY NOT BE CORRECT
+			@timestamp = @timestamp_list[0]
+		end
+
+		query_timestamp = @timestamp[:url]
+		
+
+		#==========================================
+		#Now handle boros
 		@boro_list = load_boros()
-		puts @boro_list.class.name
 
 	 	query_boro = nil
 	 	boro_check = false
@@ -108,7 +177,8 @@ class MatrixController < ApplicationController
 		#Get data for the chosen hashtag
 		req_params = { :method => "areaWords",
 						:word_code_num => 0,
-						:borough_code => query_boro}
+						:borough_code => query_boro,
+						:time => query_timestamp}
 		request_data = URL_requester(BACKEND_URL, req_params)
 
 		#Now structure this data
@@ -152,10 +222,43 @@ class MatrixController < ApplicationController
 		gon.device = true
 		@device = ""
 		@device_list = nil
+		@timestamp = nil
+
+		#FIRST, we get timestamps
+		#Get timestamp list
+		timestamp_req_params = {:method => "timestamps"}
+		timestamp_request_data = URL_requester(BACKEND_URL, timestamp_req_params)
+
+		#Now structure this data
+		parsed_timestamps = nil
+		timestamp_request_data.each_line do |response|
+			parsed_timestamps = JSON.parse(response)
+		end
+		
+		@timestamp_list = parse_server_timestamps(parsed_timestamps)
+		
+		ts_found = false
+		@timestamp_list.each do | ts |
+			if ts[:url] == @input_hashtag then
+				ts_found = true
+				@timestamp = ts
+			end
+		end
+
+		if not ts_found then
+			#MAY NOT BE CORRECT
+			@timestamp = @timestamp_list[0]
+		end
+
+		query_timestamp = @timestamp[:url]
 		
 
-		#First get the list of hashtags
-		device_req_params = {:method => "deviceList"}
+		#==========================================
+		#Now get the list of hashtags
+		device_req_params = {
+			:method => "deviceList",
+			:time => query_timestamp
+			}
 		device_request_data = URL_requester(BACKEND_URL, device_req_params)
 
 		#Now structure this data
@@ -177,7 +280,8 @@ class MatrixController < ApplicationController
 		#Get data for the chosen hashtag
 		req_params = { :method => "deviceWords",
 						:word_code_num => 0,
-						:device => query_device}
+						:device => query_device,
+						:time => query_timestamp}
 		request_data = URL_requester(BACKEND_URL, req_params)
 
 		#Now structure this data
@@ -208,8 +312,4 @@ class MatrixController < ApplicationController
 		end
 		gon.word_data = associated_words
 	 end
-
-
-
-
 end
