@@ -53,7 +53,11 @@
 		</ul>
 	</div>
 	<br/>
-	<br/>
+	<div class="checkbox">
+		<label>
+			<input type="checkbox" onclick='window.location.replace("<%=root_url%>matrix/area?code=<%=@boro_code%>&timestamp=<%=@timestamp[:url]%>&full_scale=<%= @full_scale == true ? 'false' : 'true' %>")' <%= @full_scale ? "checked='true'" : ""%>> Full-Width Scale?
+		</label>
+	</div>
 	<em>Hover over a bubble to see stats below</em>
 	<div class="row">
 		<div class="col-md-8">

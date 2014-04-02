@@ -1,5 +1,5 @@
 <div class="col-md-8">
-	<h2> Device Associated Words </h2>	
+	<h2> Hashtag Associated Words </h2>	
 	<div class="graph-container">
 		<!-- <svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
 		</svg> -->
@@ -8,7 +8,7 @@
 <div class="col-md-4">
 	<h3> <small>Visualisation Information </small></h3> 
 	<br />
-	<strong>Current Device</strong>: <%= @device %>
+	<strong>Current Hashtag</strong>: <%= @hashtag %>
 	<br/>
 	<strong>Current Timestamp</strong>: <%= @timestamp[:human_readable] %>
 	<br/><br/>
@@ -20,7 +20,7 @@
 		<ul class="dropdown-menu" role="menu" style="max-height: 300px; overflow-y:auto; width:100%;">
 			<% @timestamp_list.reverse.each do |timestamp_sing| %>
 				<li>
-					<a href="<%= root_url %>matrix/device?timestamp=<%= timestamp_sing[:url]%>">
+					<a href="<%= root_url %>matrix/hashtag?timestamp=<%= timestamp_sing[:url]%>">
 						<span  <% if @timestamp[:human_readable] == timestamp_sing[:human_readable] %>
 								class="text-muted"
 							<% end %>>
@@ -32,32 +32,6 @@
 		</ul>
 	</div>
 	<br />
-	<br />
-	<div class="btn-group">
-		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-		Available Devices <span class="caret"></span>
-		</button>
-
-		<ul class="dropdown-menu" role="menu" style="height: 300px; overflow-y:auto;">
-			<% @device_list.sort.each do |device_sing| %>
-				<li>
-					<a href="<%= root_url %>matrix/device?device=<%= device_sing%>&timestamp=<%= @timestamp[:url] %>">
-						<span  <% if @device == device_sing %>
-								class="text-muted"
-							<% end %>>
-						<%= device_sing %>
-						</span>
-					</a>
-				</li>
-			<% end %>
-		</ul>
-	</div>
-	<br/>
-	<div class="checkbox">
-		<label>
-			<input type="checkbox" onclick='window.location.replace("<%=root_url%>matrix/device?device=<%=@device%>&timestamp=<%=@timestamp[:url]%>&full_scale=<%= @full_scale == true ? 'false' : 'true' %>")' <%= @full_scale ? "checked='true'" : ""%>> Full-Width Scale?
-		</label>
-	</div>
 	<em>Hover over a bubble to see stats below</em>
 	<div class="row">
 		<div class="col-md-8">
@@ -82,12 +56,10 @@
 					<td>Imagery</td>
 					<td id="info-image"></td>
 				</tr>
-				<tr>	
-					<td>Frequency</td>
-					<td id="info-freq"></td>
-				</tr>
 
 			</table>
+
+	
 
 			<table class='table table-condensed key'>
 				<tr>

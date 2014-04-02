@@ -1,11 +1,14 @@
 Webapp::Application.routes.draw do
   get "street_map/one_factor"
   get "street_map/two_factor"
+
   get "parallel/boroughs"
   get "parallel/wards"
+
   get "matrix/hashtag"
   get "matrix/area"
   get "matrix/device"
+  get "matrix/aggr_hashtag"
 
   get "donut/boro_devices"
 
