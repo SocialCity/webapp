@@ -68,28 +68,14 @@ function setup_parallel_graph(feat_list)
         .attr("height", height);
 
     svg = d3.select("#parallel").append("svg:svg")
-                // .attr("width", w + m[1] + m[3])
-                // .attr("height", h + m[0] + m[2])
+                .attr("width", w + m[1] + m[3])
+                .attr("height", h + m[0] + m[2])
                 .append("svg:g")
                 .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-    // Create a scale and brush for each trait.
-    //Trait being each variable, so for boros we do crime etc
+
+    //Define scales for each factor
     factors.forEach(function(factor_name) {
-        // Coerce values to numbers.
-        //This is a list of instances, so for us, boros
-        feat_list.forEach(function(features) { 
-            //var factor_id = get_factor_id(factor_name)
-            //p[d] = +p[d]; 
-            //feature['factors'][factor_id]
-            //We might want to trim outliers here...
-        });
-
-        //Define y scale value based on attribute value
-        //We need to replace the values in domain for the min/max of each
-        //factor - to calc in ruby
-
-        //Get scale for factor name
         var factor_id = get_factor_id(factor_name);
         var dom = [feat_list[0]['min_max'][factor_id]['min'], feat_list[0]['min_max'][factor_id]['max']]; 
         
@@ -104,7 +90,7 @@ function setup_parallel_graph(feat_list)
                                 .on("brush", brush);
     });
 
-    // Add foreground lines.
+    // Add data lines.
     foreground = svg.append("svg:g")
                     .attr("class", "foreground")
                     .selectAll("path")
@@ -119,10 +105,7 @@ function setup_parallel_graph(feat_list)
                     })
                     .enter().append("svg:path")
                     .attr("d", path)
-                    .attr("class", function(feature) 
-                    {
-                        return "line-l"
-                    });
+                    .attr("class", 'line-l');
 
 
     // Add a group element for each trait.

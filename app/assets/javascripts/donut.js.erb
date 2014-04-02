@@ -1,0 +1,83 @@
+var base_url_regions = "/assets/";
+
+$(document).ready(function() {
+	data_list = Array();
+	data_list = gon.vis_device_data;
+
+	console.log(data_list);
+
+	if(gon.donut)
+	{
+    	setup_boro_donut(data_list);
+	}
+	
+})
+
+function setup_boro_donut(data_list)
+{
+	var width = 800,
+    height = 600,
+    radius = Math.min(width, height) / 2;
+
+	var padding = 20;
+	var x_scale, y_scale;
+
+	var color_scale = d3.scale.ordinal()
+						.range(["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c"/*, "#08306b"*/]);
+
+	console.log(color_scale);
+	var svg = d3.select('.graph-container')
+				.append('svg:svg')
+				.attr('width', width)
+				.attr('height', height);
+
+    var layer = svg.append('svg:g')
+    				.attr('transform', 'translate(' + width/2 + ',' + height/2 + ')');
+
+    var pie_calc = d3.layout.pie()
+    					.sort(null)
+    					.value(function(d){
+    						return d['split'];
+    					});
+    var arc = d3.svg.arc()
+    			.innerRadius(radius - 10)
+    			.outerRadius(radius - 125);
+
+   	var arc_groups = layer.selectAll('.donut_arc')
+   					.data(pie_calc(data_list))
+   					.enter()
+   					.append('svg:g')
+   					.attr('fill', function(d){
+   						console.log(d);
+   						return color_scale(d.data['device']);
+   					})
+   					.attr('class', 'donut_arc');
+   	arc_groups.append("svg:path")
+   				.attr("d", arc)
+   				.attr('class', 'donut_arc_path');
+   	arc_groups.append("svg:text")
+   				.attr('transform', function(d) {
+   					return 'translate(' + arc.centroid(d) + ')';
+   				})
+   				.attr('text-anchor', 'middle')
+   				.text(function(d) {
+   					if(d.data['split'] > 0.05)
+   						return d.data['split'].toFixed(5) * 100 + '%'
+
+   				})
+   				.attr('class', 'arc-text');
+
+
+   	$('.donut_arc').tipsy({ 
+        gravity: 'w', 
+        html: true, 
+        title: function() {
+			var d = this.__data__;
+			console.log(d);//, c = colors(d.i);
+			$('#info-device').empty().append(d.data['device']);
+			$('#info-split').empty().append(d.data['split'].toFixed(5) * 100 + '%');
+aq	
+			return "<span class='tip-tooltip'>Device: " + d.data['device'] + "</span>";
+      	}	
+    });
+}
