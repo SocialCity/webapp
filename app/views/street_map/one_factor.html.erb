@@ -17,11 +17,31 @@
 				<ul class="dropdown-menu" role="menu">
 					<%  @factor_info.each do |factor| %>
 						<li>
-							<a href="<%= root_url %>street_map/one_factor?factor=<%=factor[:factor_id]%>">
+							<a href="<%= root_url %>street_map/one_factor?factor=<%=factor[:factor_id]%>&year=<%=@year%>">
 								<span  <% if factor[:factor_id].to_i == @primary_factor %>
 										class="text-muted"
 									<% end %>>
 								<%= factor[:factor_name] %>
+								</span>
+							</a>
+						</li>
+					<% end %>
+				</ul>
+			</div>
+			<br/><br/>
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Choose year <span class="caret"></span>
+				</button>
+
+				<ul class="dropdown-menu" role="menu">
+					<%  for year in [2008, 2009, 2010, 2011, 2012] %>
+						<li>
+							<a href="<%= root_url %>street_map/one_factor?factor=<%=@primary_factor%>&year=<%=year%>">
+								<span  <% if year == @year %>
+										class="text-muted"
+									<% end %>>
+								<%= year %>
 								</span>
 							</a>
 						</li>
@@ -62,33 +82,33 @@
 				<div class="col-md-12">
 					<table class="table table-condensed">
 						<tr>
-							<td>Crime Rate</td>
+							<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[0][:factor_name]%></em><br/><%=@factor_info[0][:measure]%>">Crime Rate</td>
 							<td id="map-tab-cr">&nbsp;</td>
-							<td>House Price</td>
+							<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[1][:factor_name]%></em><br/><%=@factor_info[1][:measure]%>">House Price</td>
 							<td id="map-tab-hp">&nbsp;</td>
 						</tr>
 						<tr>
-							<td>GCSE Score</td>
+							<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[2][:factor_name]%></em><br/><%=@factor_info[2][:measure]%>">GCSE Score</td>
 							<td id="map-tab-gs">&nbsp;</td>
-							<td>Trans. Rating</td>
+							<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[3][:factor_name]%></em><br/><%=@factor_info[3][:measure]%>">Trans. Rating</td>
 							<td id="map-tab-tr">&nbsp;</td>
 						</tr>
 						<tr>
-							<td>School Abs.</td>
+							<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[4][:factor_name]%></em><br/><%=@factor_info[4][:measure]%>">School Abs.</td>
 							<td id="map-tab-sa">&nbsp;</td>
-							<td>Income Supp.</td>
+							<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[5][:factor_name]%></em><br/><%=@factor_info[5][:measure]%>">Income Supp.</td>
 							<td id="map-tab-is">&nbsp;</td>
 						</tr>
 						<tr>
-							<td>Unempl. Rate</td>
+							<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[6][:factor_name]%></em><br/><%=@factor_info[6][:measure]%>">Unempl. Rate</td>
 							<td id="map-tab-ur">&nbsp;</td>
-							<td>DCOWF</td>
+							<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[7][:factor_name]%></em><br/><%=@factor_info[7][:measure]%>">DCOWF</td>
 							<td id="map-tab-dc">&nbsp;</td>
 						</tr>
 						<tr>
-							<td>Delib. Fires</td>
+							<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[8][:factor_name]%></em><br/><%=@factor_info[8][:measure]%>">Delib. Fires</td>
 							<td id="map-tab-df">&nbsp;</td>
-							<td>Incap. Benef.</td>
+							<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[9][:factor_name]%></em><br/><%=@factor_info[9][:measure]%>">Incap. Benef.</td>
 							<td id="map-tab-ib">&nbsp;</td>
 						</tr>
 					</table>

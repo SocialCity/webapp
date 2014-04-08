@@ -8,6 +8,11 @@
 	<%= stylesheet_link_tag    "application", media: "all" %>
 	<%= javascript_include_tag "application" %>
 	<%= csrf_meta_tags %>
+	<script>
+	$(document).ready(function(){
+		$('td').popover();
+	});
+	</script>
 </head>
 <body>
 	<div class="container-fluid">
@@ -25,7 +30,7 @@
 				<ul class="nav nav-stacked">
 				  	<li class="active"><a href="">Home</a></li>
 				  	<li>
-				  		<a href="<%=root_url%>street_map">Map</a>
+				  		<a href="<%=root_url%>street_map">Area Social Factors</a>
 
 				  	</li>
 				  	<li>
@@ -48,8 +53,7 @@
 				  		<a href="<%=root_url%>donut">Device Breakdown</a>
 				  	</li>
 
-				  	<li class="dropdown dropdown-stack">
-				  		<!-- <a href="<%=root_url%>matrix">Matrix Visualisation</a> -->
+<!-- 				  	<li class="dropdown dropdown-stack">
 							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>matrix">
 							Aggregate Sentiment <span class="caret"></span>
 							</a>
@@ -58,7 +62,7 @@
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/area">Borough</a></li>
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/device">Device</a></li>
 							</ul>
-				  	</li>
+				  	</li> -->
 				</ul>
 			</div>	
 

@@ -215,7 +215,7 @@ function setup_map(stats)
         title: function() {
 			var d = this.__data__;
 			console.log(d);//, c = colors(d.i);
-			$("#map-tab-cr").empty().append(d['data']['factors']['crimeRate'].toPrecision(2));
+			$("#map-tab-cr").empty().append(d['data']['factors']['crimeRate'].toPrecision(4));
 			$("#map-tab-hp").empty().append(d['data']['factors']['housePrice'].toPrecision(9));
 			$("#map-tab-gs").empty().append(d['data']['factors']['GCSEScore'].toPrecision(4));
 			$("#map-tab-tr").empty().append(d['data']['factors']['transportRating'].toPrecision(2));

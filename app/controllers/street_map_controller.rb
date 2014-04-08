@@ -7,10 +7,13 @@ class StreetMapController < ApplicationController
 		#gon.boroughs = @objs
 		max_ranks = 8
 
-		@param = params[:factor]
+		input_factor_num = params[:factor]
+		input_year = params[:year]
 		gon.hide_wards = true
 		gon.one_factor = true
 		gon.street_map = true
+		@primary_factor = 0
+		@year = 2012
 
 		#, grab the factor information
 		factor_info_params = { :method => "factorList"}
@@ -21,11 +24,17 @@ class StreetMapController < ApplicationController
 		gon.feature_groups = Hash.new
 
 		#dodgy parameter handling
-		@primary_factor = 0
-		if(@param.to_i < 0 or @param.to_i > @factor_info.length - 1 or @param == nil) then
+
+		if(input_factor_num.to_i < 0 or input_factor_num.to_i > @factor_info.length - 1 or input_factor_num == nil) then
 			@primary_factor = 0
 		else
-			@primary_factor = @param.to_i
+			@primary_factor = input_factor_num.to_i
+		end
+
+		if [2008, 2009, 2010, 2011, 2012].include?(input_year.to_i)
+			@year = input_year.to_i
+		else
+			@year = 2012
 		end
 
 
@@ -33,7 +42,8 @@ class StreetMapController < ApplicationController
 						:factor_number => @primary_factor,
 						:get_wards => false,
 						:combine => true,
-						:get_all_factors => true}
+						:get_all_factors => true,
+						:year => @year}
 		# ward_req_params = { :method => "oneFactor",
 		# 				:factor_number => @primary_factor,
 		# 				:get_wards => true,
@@ -74,92 +84,58 @@ class StreetMapController < ApplicationController
 	def group_ranks(collated_features, reduce_to)
 		diff_list = Hash.new
 		no_ranks_to_remove = collated_features.length - reduce_to
+		ranking_factor_name = get_factor_name(collated_features[0]['primary_factor'])
 
+		#First, we sort the list into rank order
+		sorted_features = collated_features.sort_by{|cf| cf['factors'][ranking_factor_name]}
 
-		if collated_features.length < reduce_to then
-			collated_features.each do |f|
-				f['adj_rank'] = f['rank']
+		#Now get a list of indices and their diff to the next feature
+		factor_diff_list = Array.new
+		for i in 0...(sorted_features.length-1)
+			curr_feat = sorted_features[i]
+			next_feat = sorted_features[i+1]
+			#puts "AT " + i.to_s + " R " + curr_feat['rank'].to_s + " " + curr_feat['factors'][ranking_factor_name].to_s + " " + next_feat['factors'][ranking_factor_name].to_s
+			#We just want the diff, not the sign
+			factor_diff_list << {
+				:index => i,
+				:diff => (curr_feat['factors'][ranking_factor_name] - next_feat['factors'][ranking_factor_name]).abs
+			}
+		end
+		
+		#Now sort this list based on difference
+		#First, we're going to merge anything with 0's, since this is an insignificant border
+		remove_rank_list = Array.new
+		factor_diff_list.sort_by{|hash| hash[:diff]}.each do |sdl|
+			if sdl[:diff] == 0
+				remove_rank_list << sdl[:index]
+				puts 'Adding ' + sdl[:index].to_s + " for remov " + sdl[:diff].to_s
+			#Then, we take any others we need. If we've already got enough, we skip this bit
+			elsif !(no_ranks_to_remove <= 0 or no_ranks_to_remove <= remove_rank_list.size) and sdl[:diff] > 0
+				remove_rank_list << sdl[:index]
+				puts 'Adding ' + sdl[:index].to_s + " for remov " + sdl[:diff].to_s
 			end
-		else
+		end
 
-			#I think this needs rewriting
-			combine_list = Array.new
+		#Now we sort the removal list
+		sorted_removal_list = remove_rank_list.sort
+		puts sorted_removal_list.to_s
 
-			collated_features.each do |f|
-				puts "rank " + f['rank'].to_s
-				name = get_factor_name(f['primary_factor'])
-				puts f['factors'][name]
-			end
-
-			rank_factor_index = collated_features[0]["primary_factor"].to_i
-			rank_factor_name = ""
-			collated_features[0]["factors"].keys.each_with_index do |key, index|
-				if index == rank_factor_index then
-					rank_factor_name = key
-				end
-			end
-
-			for i in 0...(collated_features.length-1)
-				curr_feature = collated_features[i]["factors"][rank_factor_name]
-				next_feature = collated_features[i+1]["factors"][rank_factor_name]
-				diff_list[(curr_feature - next_feature).abs] = i
-			end
-
-			hit_list = diff_list.keys.sort
-			#We now take the first (ranks_to_remove) from the hit list, this will pick the ones with the smallest diff
-			#To their next rank
-			for i in 0..no_ranks_to_remove
-				combine_list.push(diff_list[hit_list[i]])
-			end
-			combine_list = combine_list.sort
-			puts combine_list.to_s
-
-			#Now we go through the list and set n+1's rank to n
-			for i in 0...collated_features.length
-				collated_features[i]["adj_rank"] = collated_features[i]["rank"] 
-				puts collated_features[i]["adj_rank"]
-			end 
-			puts "*"*40
-
-			for i in 0...combine_list.length
-				collated_features[combine_list[i] + 1]["adj_rank"] = collated_features[combine_list[i]]["adj_rank"]
-				puts collated_features[combine_list[i]]["adj_rank"] 
-			end
-			puts "*"*40
-
-			#Now we correct ranks by going through and on a rank change from element i to i+1, setting val(i+1) to val(i) + 1
-			curr_rank = 0
-
-			for i in 0...(collated_features.length-1)
-				#puts "fire " + collated_features[i]['factors']['deliberateFires'].to_s
-				curr_rank = collated_features[i]["adj_rank"]
-				next_rank = collated_features[i+1]["adj_rank"]
-				puts "c " + curr_rank.to_s + " n " + next_rank.to_s
-				if next_rank > curr_rank then
-					#Now we find the end of this run of ranks starting at next element
-					count = 0
-					for j in (i+1)..(collated_features.length-1)
-						if collated_features[j]["adj_rank"] == next_rank then
-							count += 1
-						end
-					end
-					
-					#puts "count " + count.to_s
-					for j in (i+1)...(i+1+count) 
-						collated_features[j]["adj_rank"] = curr_rank + 1
-					end
-					
-				end
+		#We set the first feature to rank 0
+		sorted_features[0]['adj_rank'] = 0
+		adj_rank = 0
+		#Now we move through, only iterating the rank whenever we encounter something *not* in 
+		#our removal list
+		for i in 1...(sorted_features.length)
+			sorted_features[i]['adj_rank'] = adj_rank
+			if not sorted_removal_list.include?(i)
+				adj_rank += 1
 			end
 			
 		end
 
-		collated_features.each do |cf|
-			puts "r "  + cf['adj_rank'].to_s + " " + cf['factors']['deliberateFires'].to_s
-		end
-
-		collated_features
+		sorted_features
 	end
+
 
 	# def two_factor
 	# 	require 'open-uri' 
