@@ -18,6 +18,33 @@ module ApplicationHelper
 		factor_list_parsed
 	end
 
+	#This is hacky
+	def get_factor_name(num)
+		factor_name = ""
+		case num
+		when 0
+			factor_name = 'crimeRate'
+		when 1
+			factor_name = 'housePrice'
+		when 2
+			factor_name = 'GCSEScore'
+		when 3
+			factor_name = "transportRating"
+		when 4
+			factor_name = "schoolAbscences"
+		when 5
+			factor_name = "incomeSupport"
+		when 6
+			factor_name = "unemploymentRate"
+		when 7
+			factor_name = "childInNoWorkHouse"
+		when 8
+			factor_name = "deliberateFires"
+		when 9
+			factor_name = "incapacityBenefit"
+		end
+	end
+
 	def URL_requester(base_url, params)
 		request_url = base_url + "/" + params[:method] + "/"
 		case params[:method]
@@ -162,6 +189,7 @@ module ApplicationHelper
 
 
 		#Pass through parsed JSON, structuring for the JS
+		puts parsed_data.size
 		parsed_data.each do |location_group|
 			feature_group 					= Hash.new
 			feature_group["locations"] 		= location_group['location']
@@ -197,10 +225,11 @@ module ApplicationHelper
 			map_features.push(feature_group)
 
 			#add to ranking array
-			ranking_array << {:array_id => (map_features.length - 1), :primary_value => feature_group["factors"][primary_factor] }
+			ranking_array << {:array_id => (map_features.length - 1), :primary_value => feature_group["factors"][get_factor_name(primary_factor)] }
 		end
 
 		#rank by the primary factor
+
 		rank_count = 0
 		ranking_array.sort_by{|hsh| hsh[:primary_value]}.each do |rank|
 			map_features[rank[:array_id]]["rank"] = rank_count

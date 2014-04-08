@@ -5,7 +5,7 @@ class StreetMapController < ApplicationController
 
 		#@objs = LondonReducedBoroughRegion.get_borough("GREATER_LONDON_AUTHORITY")
 		#gon.boroughs = @objs
-		max_ranks = 10
+		max_ranks = 8
 
 		@param = params[:factor]
 		gon.hide_wards = true
@@ -15,6 +15,7 @@ class StreetMapController < ApplicationController
 		#, grab the factor information
 		factor_info_params = { :method => "factorList"}
 		@factor_info = parse_factor_list(URL_requester(BACKEND_URL, factor_info_params))
+		puts @factor_info
 
 
 		gon.feature_groups = Hash.new
@@ -33,143 +34,190 @@ class StreetMapController < ApplicationController
 						:get_wards => false,
 						:combine => true,
 						:get_all_factors => true}
-		ward_req_params = { :method => "oneFactor",
-						:factor_number => @primary_factor,
-						:get_wards => true,
-						:combine => true,
-						:get_all_factors => true}
+		# ward_req_params = { :method => "oneFactor",
+		# 				:factor_number => @primary_factor,
+		# 				:get_wards => true,
+		# 				:combine => true,
+		# 				:get_all_factors => true}
 
 		#--------------------------------------------------
 		#          		BOROUGH DATA COLLATION
 		#--------------------------------------------------
 
 		boro_request_data = URL_requester(BACKEND_URL, boro_req_params)
-		ward_request_data = URL_requester(BACKEND_URL, ward_req_params)
+		# ward_request_data = URL_requester(BACKEND_URL, ward_req_params)
 
 		gon.feature_groups = Hash.new
 
 		gon.feature_groups[:boroughs] = group_ranks(map_feature_collater(true, @primary_factor, boro_request_data), max_ranks)
 		
-		gon.feature_groups[:wards] = map_feature_collater(false, @primary_factor, ward_request_data)
+		# gon.feature_groups[:wards] = map_feature_collater(false, @primary_factor, ward_request_data)
+
+		#Grab some info for the keys
+		@rank_values = Hash.new
+
+		#Get name of primary factor
+		factor_name = ""
+		@factor_info.each do |factor|
+			if factor[:factor_id] == @primary_factor.to_i then
+				factor_name = factor[:factor_name]
+			end
+		end
+		gon.feature_groups[:boroughs].each do |boro_group|
+			rank = boro_group["adj_rank"]
+			@rank_values[rank] = boro_group["factors"][get_factor_name(boro_group["primary_factor"])].round(4)
+		end
+
+		#Test hover thing.
 	end
 
 	def group_ranks(collated_features, reduce_to)
 		diff_list = Hash.new
 		no_ranks_to_remove = collated_features.length - reduce_to
-		combine_list = Array.new
 
-		rank_factor_index = collated_features[0]["primary_factor"].to_i
-		rank_factor_name = ""
-		collated_features[0]["factors"].keys.each_with_index do |key, index|
-			if index == rank_factor_index then
-				rank_factor_name = key
+
+		if collated_features.length < reduce_to then
+			collated_features.each do |f|
+				f['adj_rank'] = f['rank']
 			end
-		end
+		else
 
-		for i in 0...(collated_features.length-1)
-			curr_feature = collated_features[i]["factors"][rank_factor_name]
-			next_feature = collated_features[i+1]["factors"][rank_factor_name]
-			diff_list[(curr_feature - next_feature).abs] = i
-		end
+			#I think this needs rewriting
+			combine_list = Array.new
 
-		hit_list = diff_list.keys.sort
-		#We now take the first (ranks_to_remove) from the hit list, this will pick the ones with the smallest diff
-		#To their next rank
-		for i in 0..no_ranks_to_remove
-			combine_list.push(diff_list[hit_list[i]])
-		end
-		combine_list = combine_list.sort
+			collated_features.each do |f|
+				puts "rank " + f['rank'].to_s
+				name = get_factor_name(f['primary_factor'])
+				puts f['factors'][name]
+			end
 
+			rank_factor_index = collated_features[0]["primary_factor"].to_i
+			rank_factor_name = ""
+			collated_features[0]["factors"].keys.each_with_index do |key, index|
+				if index == rank_factor_index then
+					rank_factor_name = key
+				end
+			end
 
-		#Now we go through the list and set n+1's rank to n
-		for i in 0...collated_features.length
-			collated_features[i]["adj_rank"] = collated_features[i]["rank"] 
-		end 
+			for i in 0...(collated_features.length-1)
+				curr_feature = collated_features[i]["factors"][rank_factor_name]
+				next_feature = collated_features[i+1]["factors"][rank_factor_name]
+				diff_list[(curr_feature - next_feature).abs] = i
+			end
 
+			hit_list = diff_list.keys.sort
+			#We now take the first (ranks_to_remove) from the hit list, this will pick the ones with the smallest diff
+			#To their next rank
+			for i in 0..no_ranks_to_remove
+				combine_list.push(diff_list[hit_list[i]])
+			end
+			combine_list = combine_list.sort
+			puts combine_list.to_s
 
-		for i in 0...combine_list.length
-			collated_features[combine_list[i] + 1]["adj_rank"] = collated_features[combine_list[i]]["adj_rank"]
-		end
+			#Now we go through the list and set n+1's rank to n
+			for i in 0...collated_features.length
+				collated_features[i]["adj_rank"] = collated_features[i]["rank"] 
+				puts collated_features[i]["adj_rank"]
+			end 
+			puts "*"*40
 
-		#Now we correct ranks by going through and on a rank change from element i to i+1, setting val(i+1) to val(i) + 1
-		for i in 0...(collated_features.length-1)
-			curr_rank = collated_features[i]["adj_rank"]
-			next_rank = collated_features[i+1]["adj_rank"]
-			if next_rank > curr_rank then
-				#Now we find the end of this run of ranks starting at next element
-				count = 0
-				for j in (i+1)..(collated_features.length-1)
-					if collated_features[j]["adj_rank"] == next_rank then
-						count += 1
+			for i in 0...combine_list.length
+				collated_features[combine_list[i] + 1]["adj_rank"] = collated_features[combine_list[i]]["adj_rank"]
+				puts collated_features[combine_list[i]]["adj_rank"] 
+			end
+			puts "*"*40
+
+			#Now we correct ranks by going through and on a rank change from element i to i+1, setting val(i+1) to val(i) + 1
+			curr_rank = 0
+
+			for i in 0...(collated_features.length-1)
+				#puts "fire " + collated_features[i]['factors']['deliberateFires'].to_s
+				curr_rank = collated_features[i]["adj_rank"]
+				next_rank = collated_features[i+1]["adj_rank"]
+				puts "c " + curr_rank.to_s + " n " + next_rank.to_s
+				if next_rank > curr_rank then
+					#Now we find the end of this run of ranks starting at next element
+					count = 0
+					for j in (i+1)..(collated_features.length-1)
+						if collated_features[j]["adj_rank"] == next_rank then
+							count += 1
+						end
 					end
-				end
-				for j in (i+1)...(i+1+count) 
-					collated_features[j]["adj_rank"] = curr_rank + 1
+					
+					#puts "count " + count.to_s
+					for j in (i+1)...(i+1+count) 
+						collated_features[j]["adj_rank"] = curr_rank + 1
+					end
+					
 				end
 			end
+			
 		end
 
+		collated_features.each do |cf|
+			puts "r "  + cf['adj_rank'].to_s + " " + cf['factors']['deliberateFires'].to_s
+		end
 
 		collated_features
 	end
 
-	def two_factor
-		require 'open-uri' 
-				#@objs = LondonReducedBoroughRegion.get_borough("GREATER_LONDON_AUTHORITY")
-		#gon.boroughs = @objs
+	# def two_factor
+	# 	require 'open-uri' 
+	# 			#@objs = LondonReducedBoroughRegion.get_borough("GREATER_LONDON_AUTHORITY")
+	# 	#gon.boroughs = @objs
 
-		base_factor_url = "http://localhost:8080/oneFactor/"
-		@factor_1 = params[:factor_one]
-		@factor_2 = params[:factor_two]
+	# 	base_factor_url = "http://localhost:8080/oneFactor/"
+	# 	@factor_1 = params[:factor_one]
+	# 	@factor_2 = params[:factor_two]
 
-		@hide_wards = false;
-		gon.street_map = true
+	# 	@hide_wards = false;
+	# 	gon.street_map = true
 
-		#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
-		#gon.wards = @objs_wards
+	# 	#@objs_wards = LondonReducedWardRegion.get_borough("GREATER_LONDON_AUTHORITY")
+	# 	#gon.wards = @objs_wards
 
-		gon.feature_groups = Hash.new
+	# 	gon.feature_groups = Hash.new
 
-		#dodgy parameter handling
-		if(@factor_1.to_i < 0 or @factor_1.to_i > 7 or @factor_1 == nil) then
-			primary_factor = 0
-		else
-			primary_factor = @factor_1
-		end
+	# 	#dodgy parameter handling
+	# 	if(@factor_1.to_i < 0 or @factor_1.to_i > 7 or @factor_1 == nil) then
+	# 		primary_factor = 0
+	# 	else
+	# 		primary_factor = @factor_1
+	# 	end
 
-		if(@factor_2.to_i < 0 or @factor_2.to_i > 7 or @factor_2 == nil) then
-			secondary_factor = 0
-		else
-			secondary_factor = @factor_2
-		end
-
-
-		#
-		# For each ward, attach a borough_rank variable
-		# it can then grab the colour and adjust based on that?
-		# Index into layer to grab rules, get colour based on that
-		# Then permute
-		#build up local cache of first 4 letters of id => base colour
+	# 	if(@factor_2.to_i < 0 or @factor_2.to_i > 7 or @factor_2 == nil) then
+	# 		secondary_factor = 0
+	# 	else
+	# 		secondary_factor = @factor_2
+	# 	end
 
 
+	# 	#
+	# 	# For each ward, attach a borough_rank variable
+	# 	# it can then grab the colour and adjust based on that?
+	# 	# Index into layer to grab rules, get colour based on that
+	# 	# Then permute
+	# 	#build up local cache of first 4 letters of id => base colour
 
 
-		#--------------------------------------------------
-		#          		BOROUGH DATA COLLATION
-		#--------------------------------------------------
 
-		gon.feature_groups[:boroughs] = map_feature_collater(true, primary_factor, base_factor_url)
 
-		#--------------------------------------------------
-		#  				WARD DATA COLLATION	
-		#--------------------------------------------------
+	# 	#--------------------------------------------------
+	# 	#          		BOROUGH DATA COLLATION
+	# 	#--------------------------------------------------
 
-		gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
+	# 	gon.feature_groups[:boroughs] = map_feature_collater(true, primary_factor, base_factor_url)
 
-		gon.one_factor = false
-		#puts secondary_factor
-		gon.relation_list = relate_wards_to_boroughs(gon.feature_groups[:wards], gon.feature_groups[:boroughs], secondary_factor)
-	end
+	# 	#--------------------------------------------------
+	# 	#  				WARD DATA COLLATION	
+	# 	#--------------------------------------------------
+
+	# 	gon.feature_groups[:wards] = map_feature_collater(false, primary_factor, base_factor_url)
+
+	# 	gon.one_factor = false
+	# 	#puts secondary_factor
+	# 	gon.relation_list = relate_wards_to_boroughs(gon.feature_groups[:wards], gon.feature_groups[:boroughs], secondary_factor)
+	# end
 
 	def relate_wards_to_boroughs(ward_feature_groups, borough_feature_groups, ward_ranking_factor)
 		temp_factor_hash = ["crimeRate","drugRate","educationRating","employmentRate","housePrice","meanAge","transportRating","voteTurnout"]

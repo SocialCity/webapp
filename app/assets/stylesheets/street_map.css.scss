@@ -56,21 +56,57 @@
 .borough.five{fill:#dcd;}
 
 
-.rank-0 {fill:#f7fbff;}
-.rank-1 {fill:#deebf7;}
-.rank-2 {fill:#c6dbef;}
-.rank-3 {fill:#9ecae1;}
-.rank-4 {fill:#6baed6;}
-.rank-5 {fill:#4292c6;}
-.rank-6 {fill:#2171b5;}
-.rank-7 {fill:#08519c;}
-.rank-8 {fill:#08306b;}
+.rank-0 {
+	fill:#f7fbff;
+	background-color:#f7fbff;
+}
+.rank-1 {
+	fill:#deebf7;
+	background-color:#deebf7;
+}
+.rank-2 {
+	fill:#c6dbef;
+	background-color:#c6dbef;
+}
+.rank-3 {
+	fill:#9ecae1;
+	background-color:#9ecae1;
+}
+.rank-4 {
+	fill:#6baed6;
+	background-color:#6baed6;
+}
+.rank-5 {
+	fill:#4292c6;
+	background-color:#4292c6;
+}
+.rank-6 {
+	fill:#2171b5;
+	background-color:#2171b5;
+}
+.rank-7 {
+	fill:#08519c;
+	background-color:#08519c;
+}
+.rank-8 {
+	fill:#08306b;
+	background-color:#08306b;
+}
 
-.state-border {
-  fill: none;
+.borough {
   stroke: #000;
+  stroke-width: 0.5px;
   stroke-linejoin: round;
   stroke-linecap: round;
+}
+
+.label-light-bg{
+	color:#000;
+	shape-rendering: crispEdges;
+}
+.label-dark-bg{
+	color: #fff;
+	shape-rendering: crispEdges;
 }
 
 .ward {

@@ -2,8 +2,6 @@
 // All this logic will automatically be available in application.js.
 // You can use CoffeeScript in this file: http://coffeescript.org/
 var base_url_regions = "/assets/";
-var width = 600,
-    height = 400;
 $(document).ready(function() {
 	if(gon.street_map)
 	{
@@ -15,14 +13,10 @@ $(document).ready(function() {
 	
 })
 
-function one_factor_change(element, url)
-{
-	window.location(url + "?factor=" + element.value);
-}
 
 function plot_data(stats)
 {
-	var svg = d3.select('#map').select('g');
+	var svg = d3.select('svg').select('g');
 
 	//We don't really want more than 10 groups on the map because it's really hard
 	//to visualise more. We prep the data by reassigning ranks
@@ -43,6 +37,7 @@ function plot_data(stats)
 		{
 			var loc_id = stats['boroughs'][i]['locations'];
 			var curr_rank = stats['boroughs'][i]['adj_rank'];
+			//console.log(stats['boroughs'][i]);
 			for(var j = 0; j < loc_id.length; j++)
 			{
 				svg.select('[boro-id="' + loc_id[j] + '"]').classed("rank-" + curr_rank, true);
@@ -53,11 +48,17 @@ function plot_data(stats)
 
 function setup_map(stats)
 {
+	var width = 800,
+	height = 600;
 
 	var path = d3.geo.path()
 				.projection(null);
 
-	var svg = d3.select("#map");
+	var svg = d3.select(".map-container")
+				.append('svg:svg')
+				.attr('width', width)
+				.attr('height', height);
+
 
 	d3.json(base_url_regions + "london_topo.json", function(error, london) {
 		console.log(london);
@@ -77,7 +78,7 @@ function setup_map(stats)
 					.on("zoom", zoomed);
 
 		var projection = d3.geo.albers()
-							.center([-0.25, 51.56])
+							.center([-0.1, 51.475])
 							.rotate([0.0, 0])
 							.parallels([50, 60])
 							.scale(75000)
@@ -87,61 +88,156 @@ function setup_map(stats)
 		var path = d3.geo.path()
 					.projection(projection);
 
+		// svg.append("rect")
+		// 	.attr("class", "overlay")
+		// 	.attr("width", width)
+		// 	.attr("height", height)
+		// 	.call(zoom);
+
+
 		features.append("path")
 				.datum(boroughs)
 				.attr("d", path);
 
-		console.log(features.selectAll(".boroughs"));
-
 		//Set up borough IDs for easy colouring
-		features.selectAll(".boroughs")
+		features.selectAll(".borough")
 				.data(topojson.feature(london, london.objects.londonTrimmed).features)
 				.enter().append("path")
-				.attr("boro-id", function(d){
+				.attr('boro-id', function(d){
 					return d['id'];
 				})
-				.attr("d", path);
+				.attr('class', 'borough')
+				.attr("d", path)
+				.call(zoom);
 
 		//Append text to the boroughs, needs fixing
 		features.selectAll("text")
 		    .data(topojson.feature(london, london.objects.londonTrimmed).features)
 		    .enter()
-		    .append("svg:text")
-		    .text(function(d){
-		        return d['properties']['NAME'];
-		    })
+		    .append("foreignObject")
 		    .attr("x", function(d){
-		        return path.centroid(d)[0];
+		        return path.centroid(d)[0]-15;
 		    })
 		    .attr("y", function(d){
-		        return  path.centroid(d)[1];
+		        return  path.centroid(d)[1]-10;
 		    })
 		    .attr("text-anchor","middle")
-		    .attr('font-size','4pt');
+		    .attr('font-size','4pt')
+	        .attr("width", function(d)
+        	{
+        		if(d['id'] != '00AA' && d['id'] != '00AW' && d['id'] != '00AN')
+        			return 100;
+        	})
+	        .attr("height", 40)
+	        .attr("boro-text", function(d){
+	        	return d['id'];
+	        })
+	        .append("xhtml:p")
+	        .html(function(d){
+	            //Handle line splits properly
+	            var name = d['properties']['NAME']
+	            if(d['id'] != '00AA' && d['id'] != '00AW' && d['id'] != '00AN')
+	            {
+		            if(name.length > 10)
+		            {
+		                var temp_end = name.slice(10);
+		                var parts = name.split(" ");
+		                var return_line = "";
+		                var current_line = parts[0];
+		                for(var i = 1; i < parts.length; i++)
+		                {
+		                    if(current_line.length > 8)
+		                    {
+		                        if(return_line.length > 0)
+		                            return_line += '<br/>';
+		                        return_line += current_line;
+		                        current_line = parts[i];
+		                    }
+		                    else
+		                        current_line += " " + parts[i];
+		                }
+		                if(current_line.length > 0)
+		                {
+		                    if(return_line.length > 0)
+		                        return_line += "<br/>";
+		                    return_line += current_line;
+		                }
+		                return return_line;
+		            }
+		            else
+		                return name;
+		        }
+	        });
+
+		//We don't really want more than 10 groups on the map because it's really hard
+		//to visualise more. We prep the data by reassigning ranks
+		if(stats['boroughs'].length > 0)
+		{
+			var ranking_factor = parseInt(stats['boroughs'][0]['primary_factor']);
+			var boros = stats['boroughs'];
+			var rank_name = Object.keys(boros[0]['factors'])[ranking_factor];
+			
+			for(var i = 1; i < boros.length; i++)
+			{	
+				var diff = parseFloat(boros[i]['factors'][rank_name]) - parseFloat(boros[i-1]['factors'][rank_name]);
+				console.log(diff);
+			}	
+
+			//Now label it up
+			for(var i = 0; i < stats['boroughs'].length; i++)
+			{
+				var loc_id = stats['boroughs'][i]['locations'];
+				var curr_rank = stats['boroughs'][i]['adj_rank'];
+				//console.log(stats['boroughs'][i]);
+				for(var j = 0; j < loc_id.length; j++)
+				{
+					features.select('[boro-id="' + loc_id[j] + '"]')
+							.classed("rank-" + curr_rank, true)
+							.datum(function(d)
+							{
+								d['data'] = stats['boroughs'][i];
+								return d;
+							});
+
+					//console.log(features.select('[boro-id="' + loc_id[j] + '"]'));
+					if(curr_rank >= 4)
+						features.select('[boro-text="' + loc_id[j] + '"]').classed("label-dark-bg", true);
+					else
+						features.select('[boro-text="' + loc_id[j] + '"]').classed("label-light-bg", true);
+				}
+			}
+		}
 
 
-		svg.append("rect")
-			.attr("class", "overlay")
-			.attr("width", width)
-			.attr("height", height)
-			.call(zoom);
+		$('path.borough').tipsy({ 
+        gravity: 'w', 
+        html: true, 
+        title: function() {
+			var d = this.__data__;
+			console.log(d);//, c = colors(d.i);
+			$("#map-tab-cr").empty().append(d['data']['factors']['crimeRate'].toPrecision(2));
+			$("#map-tab-hp").empty().append(d['data']['factors']['housePrice'].toPrecision(9));
+			$("#map-tab-gs").empty().append(d['data']['factors']['GCSEScore'].toPrecision(4));
+			$("#map-tab-tr").empty().append(d['data']['factors']['transportRating'].toPrecision(2));
+			$("#map-tab-sa").empty().append(d['data']['factors']['schoolAbscences'].toPrecision(2));
+			$("#map-tab-is").empty().append(d['data']['factors']['incomeSupport'].toPrecision(2));
+			$("#map-tab-ur").empty().append(d['data']['factors']['unemploymentRate'].toPrecision(2));
+			$("#map-tab-dc").empty().append(d['data']['factors']['childInNoWorkHouse'].toPrecision(2));
+			$("#map-tab-df").empty().append(d['data']['factors']['deliberateFires'].toPrecision(2));
+			$("#map-tab-ib").empty().append(d['data']['factors']['incapacityBenefit'].toPrecision(2));
+			return "<span class='tip-tooltip'>" + d['properties']['NAME'] + "</span>";
+      	}	
+    });
 
-		plot_data(stats);
+
+
+
+		//plot_data(stats);
 		function zoomed() {
 			features.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 		}
 	});
 
-	d3.select(self.frameElement).style("height", height + "px");
 }
-//Resizes the map after a short delay.
-window.onresize = function()
-{
- setTimeout( 
-  	function() { 
-      	$('.street_map .map-container').css('height', $(window).height() * 0.8);
 
-  	}, 
-    200);
-}
 

@@ -1,8 +1,7 @@
 <div class="col-md-8">
 	<h2> One-Factor Map Comparison </h2>	
 	<div class="map-container">
-		<svg id="map" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
-		</svg>
+
 	</div>
 </div>
 <div class="col-md-4 legend-box">
@@ -37,7 +36,66 @@
 			<strong>Selected factor</strong>: <%= @factor_info[@primary_factor][:factor_name]%>
 			<br/>
 			<strong>Description</strong>: <%= @factor_info[@primary_factor][:measure]%>
+
+			<div class="row">
+				<div class="col-md-8">
+					<table class="table table-condensed">
+						<tr>
+							<th>Value</th>
+							<th>&nbsp;</th>
+						</tr>
+						<% @rank_values.sort_by{|k, v| k}.each do | rank, val | %>
+							<tr>
+								<td><%if @primary_factor == 1 then %>
+											<%=number_to_currency(val, unit: "£")%>
+										<%else%>
+											<%=val%>
+										<%end%>
+								</td>
+								<td class="rank-<%=rank%>">&nbsp;</td>
+							</tr>
+						<% end %>
+					</table>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<table class="table table-condensed">
+						<tr>
+							<td>Crime Rate</td>
+							<td id="map-tab-cr">&nbsp;</td>
+							<td>House Price</td>
+							<td id="map-tab-hp">&nbsp;</td>
+						</tr>
+						<tr>
+							<td>GCSE Score</td>
+							<td id="map-tab-gs">&nbsp;</td>
+							<td>Trans. Rating</td>
+							<td id="map-tab-tr">&nbsp;</td>
+						</tr>
+						<tr>
+							<td>School Abs.</td>
+							<td id="map-tab-sa">&nbsp;</td>
+							<td>Income Supp.</td>
+							<td id="map-tab-is">&nbsp;</td>
+						</tr>
+						<tr>
+							<td>Unempl. Rate</td>
+							<td id="map-tab-ur">&nbsp;</td>
+							<td>DCOWF</td>
+							<td id="map-tab-dc">&nbsp;</td>
+						</tr>
+						<tr>
+							<td>Delib. Fires</td>
+							<td id="map-tab-df">&nbsp;</td>
+							<td>Incap. Benef.</td>
+							<td id="map-tab-ib">&nbsp;</td>
+						</tr>
+					</table>
+				</div>
+			</div>
 		</div>
+
 	</div>
 	
 	
