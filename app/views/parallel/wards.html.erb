@@ -1,12 +1,94 @@
 <div class="col-md-12">
-	<h2> Ward Stats Comparison </h2>	
+	<h2> Borough Stats Comparison </h2>	
 	<div class="graph-container">
-		<svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
+		<svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='400px'>
 		</svg>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 			<h3> <small>Visualisation Information </small></h3>
+			<div class="row">
+				<div class="col-md-4">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						Choose year <span class="caret"></span>
+						</button>
+
+						<ul class="dropdown-menu" role="menu">
+							<%  for year in [2008, 2009, 2010, 2011, 2012] %>
+								<li>
+									<a href="<%= root_url %>parallel/boroughs?year=<%=year%>">
+										<span  <% if year == @year %>
+												class="text-muted"
+											<% end %>>
+										<%= year %>
+										</span>
+									</a>
+								</li>
+							<% end %>
+						</ul>
+					</div>
+					<br /><br />
+					<div class="btn-group">
+						<a href="<%= root_url %>parallel/boroughs?year=<%=@year%>"role="button" class="btn btn-default">
+							Go to boroughs for same year 
+						</a>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="row">
+						<div class="col-md-6">
+							<strong>Highlighted Boroughs</strong>  <span id="para-ward" class="scroll-notif"></span>
+							<div class="scroll-table" style="overflow-y:auto; max-height:150px;">
+								<table class="table table-condensed high-tab" id="para-ward" >
+
+								</table>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-condensed">
+								<tr>
+									<td colspan="2"><strong>Selected Borough</strong></td>
+									<td id="para-ward" class="tab-name" colspan="2">&nbsp;</td>
+									
+								</tr>
+								<tr>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[0][:factor_name]%></em><br/><%=@factor_info[0][:measure]%>">Crime Rate</td>
+									<td id="para-ward" class="tab-cr">&nbsp;</td>
+									<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[1][:factor_name]%></em><br/><%=@factor_info[1][:measure]%>">House Price</td>
+									<td id="para-ward" class="tab-hp">&nbsp;</td>
+								</tr>
+								<tr>
+									<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[2][:factor_name]%></em><br/><%=@factor_info[2][:measure]%>">GCSE Score</td>
+									<td id="para-ward" class="tab-gs">&nbsp;</td>
+									<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[3][:factor_name]%></em><br/><%=@factor_info[3][:measure]%>">Trans. Rating</td>
+									<td id="para-ward" class="tab-tr">&nbsp;</td>
+								</tr>
+								<tr>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[4][:factor_name]%></em><br/><%=@factor_info[4][:measure]%>">School Abs.</td>
+									<td id="para-ward" class="tab-sa">&nbsp;</td>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[5][:factor_name]%></em><br/><%=@factor_info[5][:measure]%>">Income Supp.</td>
+									<td id="para-ward" class="tab-is">&nbsp;</td>
+								</tr>
+								<tr>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[6][:factor_name]%></em><br/><%=@factor_info[6][:measure]%>">Unempl. Rate</td>
+									<td id="para-ward" class="tab-ur">&nbsp;</td>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[7][:factor_name]%></em><br/><%=@factor_info[7][:measure]%>">DCOWF</td>
+									<td id="para-ward" class="tab-dc">&nbsp;</td>
+								</tr>
+								<tr>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[8][:factor_name]%></em><br/><%=@factor_info[8][:measure]%>">Delib. Fires</td>
+									<td id="para-ward" class="tab-df">&nbsp;</td>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[9][:factor_name]%></em><br/><%=@factor_info[9][:measure]%>">Incap. Benef.</td>
+									<td id="para-ward" class="tab-ib">&nbsp;</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
 		</div>
+		
 	</div>
 </div>

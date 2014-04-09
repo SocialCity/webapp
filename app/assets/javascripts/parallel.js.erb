@@ -101,11 +101,15 @@ function setup_parallel_graph(feat_list)
                         factors.forEach(function(factor){
                             factors_vals.push(feature['factors'][get_factor_id(factor)]);
                         });
-                        console.log(factors_vals);
+                        //console.log(factors_vals);
                         return factors_vals;
                     })
                     .enter().append("svg:path")
                     .attr("d", path)
+                    .attr("data", function(d)
+                    {
+                        return d;
+                    })
                     .attr("class", 'line-l');
 
 
@@ -244,17 +248,58 @@ function setup_parallel_graph(feat_list)
         {
             return !actives.every(function(p, i) 
             {
-                console.log(d['factors'][get_factor_id(p)]);
                 return extents[i][0] <= d['factors'][get_factor_id(p)] && d['factors'][get_factor_id(p)] <= extents[i][1];
             });
         });
 
-        console.log(foreground.selectAll(':not(.line-fade)')
-                .attr('class', function(d)
+        d3.selectAll("path:not(.line-fade)")
+            .forEach(function(d)
+            {
+                var class_name = "";
+                if(gon.para_boros)
+                    class_name = "para-boro";
+                else
+                    class_name = "para-ward";
+
+                $(".scroll-notif#" + class_name).empty();
+                $('.high-tab#' + class_name).empty();
+                for(var i = 0; i < d.length; i++)
+                {
+
+                    if(d[i]['__data__'] != 0)
                     {
-                        console.log(d);
-                    }));
+                        $(".scroll-notif#" + class_name).empty().append('Scroll for more...');
+                        $('.high-tab#' + class_name).append('<tr><td>'+d[i]['__data__']['name']+'</td></tr>');
+                    }
+                }
+                
+            });
+        //console.log(selected_lines);
+
     }
+
+    $('path.line-l').mouseover(function(){ 
+            var d = this.__data__;
+            console.log(d);//, c = colors(d.i);
+            var class_name = "";
+            if(gon.para_boros)
+                class_name = "para-boro";
+            else
+                class_name = "para-ward";
+
+            $(".tab-name#" + class_name).empty().append(d['name']);
+            $(".tab-cr#" + class_name).empty().append(d['factors']['crimeRate'].toPrecision(4));
+            $(".tab-hp#" + class_name).empty().append(d['factors']['housePrice'].toPrecision(9));
+            $(".tab-gs#" + class_name).empty().append(d['factors']['GCSEScore'].toPrecision(4));
+            $(".tab-tr#" + class_name).empty().append(d['factors']['transportRating'].toPrecision(2));
+            $(".tab-sa#" + class_name).empty().append(d['factors']['schoolAbscences'].toPrecision(2));
+            $(".tab-is#" + class_name).empty().append(d['factors']['incomeSupport'].toPrecision(2));
+            $(".tab-ur#" + class_name).empty().append(d['factors']['unemploymentRate'].toPrecision(2));
+            $(".tab-dc#" + class_name).empty().append(d['factors']['childInNoWorkHouse'].toPrecision(2));
+            $(".tab-df#" + class_name).empty().append(d['factors']['deliberateFires'].toPrecision(2));
+            $(".tab-ib#" + class_name).empty().append(d['factors']['incapacityBenefit'].toPrecision(2));
+            //return "<span class='tip-tooltip'>" + d['properties']['NAME'] + "</span>"; 
+    });
 }
 
 

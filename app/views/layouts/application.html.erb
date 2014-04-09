@@ -33,9 +33,17 @@
 				  		<a href="<%=root_url%>street_map">Area Social Factors</a>
 
 				  	</li>
-				  	<li>
-				  		<a href="<%=root_url%>parallel">Parallel</a>
+				  	<li class="dropdown dropdown-stack">
+				  		<!-- <a href="<%=root_url%>matrix">Matrix Visualisation</a> -->
+							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>parallel">
+							Parallel Factors <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>parallel/boroughs">Boroughs</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>parallel/wards">Wards</a></li>
+							</ul>
 				  	</li>
+
 
 				  	<li class="dropdown dropdown-stack">
 				  		<!-- <a href="<%=root_url%>matrix">Matrix Visualisation</a> -->
@@ -43,9 +51,9 @@
 							Related Words <span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/hashtag">Hashtag</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/area">Borough</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/device">Device</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/hashtag">Hashtags</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/area">Boroughs</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/device">Devices</a></li>
 							</ul>
 				  	</li>
 
