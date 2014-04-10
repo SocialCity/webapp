@@ -62,7 +62,7 @@ function setup_boro_donut(data_list)
    				.attr('text-anchor', 'middle')
    				.text(function(d) {
    					if(d.data['split'] > 0.05)
-   						return d.data['split'].toPrecision(4).toString().slice(0,6)  * 100 + '%'
+   						return (d.data['split'].toPrecision(4) * 100).toString().slice(0,5) + '%'
 
    				})
    				.attr('class', 'arc-text');
@@ -75,7 +75,7 @@ function setup_boro_donut(data_list)
 			var d = this.__data__;
 			console.log(d);//, c = colors(d.i);
 			$('#info-device').empty().append(d.data['device']);
-			$('#info-split').empty().append(d.data['split'].toPrecision(4).toString().slice(0,6) * 100 + '%');
+			$('#info-split').empty().append((d.data['split'].toPrecision(4) * 100).toString().slice(0,5) + '%');
 aq	
 			return "<span class='tip-tooltip'>Device: " + d.data['device'] + "</span>";
       	}	

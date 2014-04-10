@@ -25,34 +25,11 @@ class MatrixController < ApplicationController
 			@full_scale = true
 		end
 
-		#FIRST, we get timestamps
-		#Get timestamp list
-		timestamp_req_params = {:method => "timestamps"}
-		timestamp_request_data = URL_requester(BACKEND_URL, timestamp_req_params)
-
-		#Now structure this data
-		parsed_timestamps = nil
-		timestamp_request_data.each_line do |response|
-			parsed_timestamps = JSON.parse(response)
-		end
-		
-		@timestamp_list = parse_server_timestamps(parsed_timestamps)
-		
-		ts_found = false
-		@timestamp_list.each do | ts |
-			if ts[:url] == @input_timestamp then
-				ts_found = true
-				@timestamp = ts
-			end
-		end
-
-		if ts_found == false then
-			#MAY NOT BE CORRECT
-			@timestamp = @timestamp_list[-1]
-		end
-
+		verif_timestamp = check_timestamp_input(@input_timestamp, BACKEND_URL)
+		@timestamp = verif_timestamp[:timestamp]
+		@timestamp_list = verif_timestamp[:timestamp_list]
 		query_timestamp = @timestamp[:url]
-
+		
 		#===================================
 		
 		#Then get the list of hashtags
@@ -143,32 +120,9 @@ class MatrixController < ApplicationController
 			@full_scale = true
 		end
 
-		#FIRST, we get timestamps
-		#Get timestamp list
-		timestamp_req_params = {:method => "timestamps"}
-		timestamp_request_data = URL_requester(BACKEND_URL, timestamp_req_params)
-
-		#Now structure this data
-		parsed_timestamps = nil
-		timestamp_request_data.each_line do |response|
-			parsed_timestamps = JSON.parse(response)
-		end
-		
-		@timestamp_list = parse_server_timestamps(parsed_timestamps)
-		
-		ts_found = false
-		@timestamp_list.each do | ts |
-			if ts[:url] == @input_timestamp then
-				ts_found = true
-				@timestamp = ts
-			end
-		end
-
-		if ts_found == false then
-			#MAY NOT BE CORRECT
-			@timestamp = @timestamp_list[-1]
-		end
-
+		verif_timestamp = check_timestamp_input(@input_timestamp, BACKEND_URL)
+		@timestamp = verif_timestamp[:timestamp]
+		@timestamp_list = verif_timestamp[:timestamp_list]
 		query_timestamp = @timestamp[:url]
 		
 
@@ -255,34 +209,10 @@ class MatrixController < ApplicationController
 			@full_scale = true
 		end
 
-		#FIRST, we get timestamps
-		#Get timestamp list
-		timestamp_req_params = {:method => "timestamps"}
-		timestamp_request_data = URL_requester(BACKEND_URL, timestamp_req_params)
-
-		#Now structure this data
-		parsed_timestamps = nil
-		timestamp_request_data.each_line do |response|
-			parsed_timestamps = JSON.parse(response)
-		end
-		
-		@timestamp_list = parse_server_timestamps(parsed_timestamps)
-		
-		ts_found = false
-		@timestamp_list.each do | ts |
-			if ts[:url] == @input_timestamp then
-				ts_found = true
-				@timestamp = ts
-			end
-		end
-
-		if ts_found == false then
-			#MAY NOT BE CORRECT
-			@timestamp = @timestamp_list[-1]
-		end
-
+		verif_timestamp = check_timestamp_input(@input_timestamp, BACKEND_URL)
+		@timestamp = verif_timestamp[:timestamp]
+		@timestamp_list = verif_timestamp[:timestamp_list]
 		query_timestamp = @timestamp[:url]
-		
 
 		#==========================================
 		#Now get the list of hashtags

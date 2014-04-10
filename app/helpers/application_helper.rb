@@ -1,6 +1,39 @@
 module ApplicationHelper
 	require 'open-uri'
 	require 'date'
+
+
+
+	def check_timestamp_input(input_timestamp, backend_url)
+		#FIRST, we get timestamps
+		#Get timestamp list
+		timestamp_req_params = {:method => "timestamps"}
+		timestamp_request_data = URL_requester(backend_url, timestamp_req_params)
+
+		#Now structure this data
+		parsed_timestamps = nil
+		timestamp_request_data.each_line do |response|
+			parsed_timestamps = JSON.parse(response)
+		end
+		
+		@timestamp_list = parse_server_timestamps(parsed_timestamps)
+		
+		ts_found = false
+		@timestamp_list.each do | ts |
+			if ts[:url] == input_timestamp then
+				ts_found = true
+				@timestamp = ts
+			end
+		end
+
+		if ts_found == false then
+			#MAY NOT BE CORRECT
+			@timestamp = @timestamp_list[-1]
+		end
+
+		{:timestamp => @timestamp,
+		:timestamp_list => @timestamp_list}
+	end
 	
 	def parse_factor_list(factor_list)
 		parsed_data = ""

@@ -6,23 +6,13 @@ svg {
   font-size: 14px;
 }
 
-/*.graph-container 
-{
-    height:600px;
-}
-.graph-container > svg
-{
-    height: 600px;
-}
-*/
 .foreground path {
   fill: none;
   stroke-opacity: .5;
-  stroke-width: 1.5px;
+  stroke-width: 1.6px;
 }
 
 .foreground path.line-fade {
-  stroke: #000;
   stroke-opacity: .05;
 }
 
@@ -35,19 +25,8 @@ svg {
   stroke-width: 2px;
 }
 
-.setosa {
-  stroke: #800;
-}
 .line-l{
-  stroke:#800;
-}
-
-.versicolor {
-  stroke: #080;
-}
-
-.virginica {
-  stroke: #008;
+  stroke:#2171b5;
 }
 
 .brush .extent {
@@ -63,7 +42,6 @@ svg {
 }
 
 .axis text {
-  text-shadow: 0 1px 0 #fff;
   cursor: move;
 }
 
