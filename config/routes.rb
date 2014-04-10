@@ -12,12 +12,16 @@ Webapp::Application.routes.draw do
 
   get "donut/boro_devices"
 
+
+  get "bubble/hashtag"
+
   #Parameter routes
   get "street_map/two_factor/:factor_one/:factor_two" => "street_map#two_factor"
 
 
   #Default routes
   get "donut" => "donut#boro_devices"
+  get "bubble" => "bubble#hashtag"
   get "street_map" => "street_map#one_factor"
   get "parallel" => "parallel#boroughs"
   get "matrix" => "matrix#hashtag"

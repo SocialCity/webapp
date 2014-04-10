@@ -1,0 +1,35 @@
+// Place all the styles related to the bubble controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+	circle {
+		fill: #e0e0e0;
+	}
+	.activ_arc_path{
+		/*fill:#deebf7;*/
+		fill:#66c2a5;
+	}
+	.pleas_arc_path{
+		/*fill:#9ecae1;*/
+		fill:#fc8d62;
+	}
+	.image_arc_path{
+		/*fill:#3182bd;*/
+		fill:#8da0cb;
+	}
+
+	.key-color#activ_arc_path{
+		background-color:#66c2a5;
+	}
+	.key-color#pleas_arc_path{
+		background-color:#fc8d62;
+	}
+	.key-color#image_arc_path{
+		background-color:#8da0cb;
+	}
+	.activ_arc{
+		stroke:black;
+		stroke-width:1px;
+		fill:none;
+	}

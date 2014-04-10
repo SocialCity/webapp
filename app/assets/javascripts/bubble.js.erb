@@ -1,0 +1,210 @@
+var base_url_regions = "/assets/";
+
+$(document).ready(function() {
+    data_list = Array();
+    data_list = gon.word_data;
+
+    console.log(data_list);
+
+    if(gon.bubble)
+    {
+        setup_bubble(data_list);
+    }
+})
+
+function setup_bubble(data_list)
+{
+    var width = 900,
+    height = 600;
+
+    var svg = d3.select('.graph-container')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height);
+
+    var layer = svg.append('svg:g');
+
+    data_list.forEach(function(d)
+    {
+        d["pleas"] = parseFloat(d["pleas"]);
+        d["activ"] = parseFloat(d["activ"]);
+        d["image"] = parseFloat(d["image"]);
+        d["freq"] = parseInt(d["freq"]);
+        d["value"] = d["freq"];
+    })
+
+
+    pleas_layout = d3.layout.pie()
+                        .sort(null)
+                        .value(function(d)
+                        {
+                            return d['pleas'];
+                        })
+                        .startAngle(0)
+                        .endAngle(2*Math.PI/3);
+    activ_layout = d3.layout.pie()
+                        .sort(null)
+                        .value(function(d)
+                        {
+                            return d['activ'];
+                        })
+                        .startAngle(2*Math.PI/3)
+                        .endAngle(4*Math.PI/3);
+    image_layout = d3.layout.pie()
+                        .sort(null)
+                        .value(function(d)
+                        {
+                            return d['image'];
+                        })
+                        .startAngle(4*Math.PI/3)
+                        .endAngle(2*Math.PI);
+
+    var layout = d3.layout.pack()
+                    .sort(null)
+                    .size([width, height]);
+    layout.nodes(t(data_list)).slice(1);
+
+
+    var activ_arcs = layer.selectAll('.activ_arc')
+                        .data(activ_layout(data_list))
+                        .enter()
+                        .append('svg:g')
+                        .attr('transform', function(d){
+                            return 'translate(' + d.data.x + ',' + d.data.y + ')';
+                        })
+                        .attr('class', 'activ_arc');
+
+    var inner_r_pc = 0.05, outer_r_pc = 0.5;
+    activ_arcs.append("svg:path")
+                .attr("d", function(d, i)
+                {
+                    var startA = 0;
+                    var endA = 2*Math.PI;
+
+                    var inner_r = d['data']['r'] - d['data']['r']*inner_r_pc;
+                    var outer_r = d['data']['r'] - d['data']['r']*outer_r_pc;
+                    var arc_1 = d3.svg.arc();
+                    arc_1.innerRadius(inner_r)
+                        .outerRadius(outer_r)
+                        .startAngle(startA)
+                        .endAngle(endA);
+
+                    return arc_1();
+                })
+                .attr('class', 'activ_arc');
+
+    activ_arcs.append("svg:path")
+                .attr("d", function(d, i)
+                {
+                    var startA = 0;
+                    var endA = (d['data']['image']/3) * 2/3*Math.PI;
+
+                    var inner_r = d['data']['r'] - d['data']['r']*inner_r_pc;
+                    var outer_r = d['data']['r'] - d['data']['r']*outer_r_pc;
+                    var arc_1 = d3.svg.arc();
+
+                    arc_1.innerRadius(inner_r)
+                        .outerRadius(outer_r)
+                        .startAngle(startA)
+                        .endAngle(endA);
+                    //console.log(arc_1);
+                    return arc_1();
+                })
+                .attr('class', 'activ_arc_path');
+
+    activ_arcs.append("svg:path")
+                .attr("d", function(d, i)
+                {
+                    var startA = 2 / 3 * Math.PI;
+                    var endA = (d['data']['image']/3) * 2/3*Math.PI +  2/3 * Math.PI;
+
+                    var inner_r = d['data']['r'] - d['data']['r']*inner_r_pc;
+                    var outer_r = d['data']['r'] - d['data']['r']*outer_r_pc;
+                    var arc_1 = d3.svg.arc();
+                    arc_1.innerRadius(inner_r)
+                        .outerRadius(outer_r)
+                        .startAngle(startA)
+                        .endAngle(endA);
+                    return arc_1();
+                })
+                .attr('class', 'pleas_arc_path');
+
+    activ_arcs.append("svg:path")
+                .attr("d", function(d, i)
+                {
+                    var startA = 4 / 3 * Math.PI;
+                    var endA = (d['data']['image']/3) * 2/3*Math.PI +  4/3 * Math.PI;
+
+                    var inner_r = d['data']['r'] - d['data']['r']*inner_r_pc;
+                    var outer_r = d['data']['r'] - d['data']['r']*outer_r_pc;
+                    var arc_1 = d3.svg.arc();
+
+                    arc_1.innerRadius(inner_r)
+                        .outerRadius(outer_r)
+                        .startAngle(startA)
+                        .endAngle(endA);
+                    return arc_1();
+                })
+                .attr('class', 'image_arc_path');
+
+    // bubbles.append('svg:text')
+    //         .attr('text-anchor', 'middle')
+    //         .text(function(d){
+    //             return d["word"].substring(0, d.r / 5);
+    //         });
+
+    //on hover hide it!
+
+    var bubbles = layer.selectAll('.bubble-circ')
+                        .data(layout.nodes(t(data_list)).slice(1))
+                        .enter()
+                        .append('svg:g')
+                        .attr('class', 'bubble-circ')
+                        .attr('data-id', function(d, i)
+                        {
+                            return i;
+                        })
+                        .attr('transform', function(d)
+                        {
+                            return 'translate(' + d.x + ',' + d.y + ')'; 
+                        });
+
+    bubbles.append('svg:circle')
+            .attr('r', function(d){
+                return d.r;
+            });
+
+    bubbles.append('svg:text')
+            .attr('text-anchor', 'middle')
+            .text(function(d){
+                return d["word"].substring(0, d.r / 5);
+            });
+
+
+
+    //Plot all activ, then pleas, then image
+    //We don't need separate pie calcs, we need
+    //Separate arcs, which we can return in a function
+
+    function t(d)
+    {
+        return {children: d};
+    }
+    $('.bubble-circ').click(function(){
+        if($(this).css("opacity") == 1)
+            $(this).fadeTo(0.5, 0);
+        else
+            $(this).fadeTo(0.5, 1);
+    })
+    $('.bubble-circ').hover(function(){
+        var data_id = $(this).attr('data-id');
+        $('#info-word').empty().append(data_list[data_id]['word']);
+        $('#info-activ').empty().append(data_list[data_id]['activ']);
+        $('#info-pleas').empty().append(data_list[data_id]['pleas']);
+        $('#info-freq').empty().append(data_list[data_id]['freq']);
+        $('#info-image').empty().append(data_list[data_id]['image']);
+    },
+    function(){
+
+    })
+}
