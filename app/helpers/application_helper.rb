@@ -145,9 +145,9 @@ module ApplicationHelper
 		else
 			raise "Invalid REST Method"
 		end
-		puts request_url
+		puts URI.encode(request_url)
 		begin
-			request = open(request_url) 
+			request = open(URI.encode(request_url)) 
 		rescue StandardError => e
 			raise ActionController::RoutingError.new("REST Error - #{e.message} - #{request_url}")
 		end

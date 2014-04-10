@@ -22,7 +22,7 @@ function setup_bubble(data_list)
     .attr('width', width)
     .attr('height', height);
 
-    var layer = svg.append('svg:g');
+    
 
     data_list.forEach(function(d)
     {
@@ -33,6 +33,16 @@ function setup_bubble(data_list)
         d["value"] = d["freq"];
     })
 
+    var zoom = d3.behavior.zoom()
+            .on("zoom", zoomed);
+
+    svg.append("rect")
+      .attr("class", "overlay")
+      .attr("width", width)
+      .attr("height", height)
+      .call(zoom);
+
+    var layer = svg.append('svg:g');
 
     pleas_layout = d3.layout.pie()
                         .sort(null)
@@ -147,10 +157,11 @@ function setup_bubble(data_list)
                 })
                 .attr('class', 'image_arc_path');
 
-    // bubbles.append('svg:text')
+    // activ_arcs.append('svg:text')
     //         .attr('text-anchor', 'middle')
     //         .text(function(d){
-    //             return d["word"].substring(0, d.r / 5);
+
+    //             return d['data']["word"].substring(0, d['data']['r'] / 10);
     //         });
 
     //on hover hide it!
@@ -177,7 +188,8 @@ function setup_bubble(data_list)
     bubbles.append('svg:text')
             .attr('text-anchor', 'middle')
             .text(function(d){
-                return d["word"].substring(0, d.r / 5);
+                if(d.r / 5 > 2)
+                    return d["word"].substring(0, d.r / 5);
             });
 
 
@@ -203,8 +215,11 @@ function setup_bubble(data_list)
         $('#info-pleas').empty().append(data_list[data_id]['pleas']);
         $('#info-freq').empty().append(data_list[data_id]['freq']);
         $('#info-image').empty().append(data_list[data_id]['image']);
+        $('#info-freq').empty().append(data_list[data_id]['freq']);
     },
-    function(){
+    function(){});
 
-    })
+    function zoomed() {
+        layer.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
 }

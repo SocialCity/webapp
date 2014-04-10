@@ -14,6 +14,8 @@ Webapp::Application.routes.draw do
 
 
   get "bubble/hashtag"
+  get "bubble/device"
+  get "bubble/area"
 
   #Parameter routes
   get "street_map/two_factor/:factor_one/:factor_two" => "street_map#two_factor"
