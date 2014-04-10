@@ -4,6 +4,8 @@ Webapp::Application.routes.draw do
 
   get "parallel/boroughs"
   get "parallel/wards"
+  get "parallel/devices"
+  get "parallel/hashtags"
 
   get "matrix/hashtag"
   get "matrix/area"

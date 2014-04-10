@@ -1,0 +1,90 @@
+<div class="col-md-12">
+	<h2> Device Factor Comparison </h2>	
+	<div class="graph-container">
+		<svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='400px'>
+		</svg>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<h3> <small>Visualisation Information </small></h3>
+			<div class="row">
+				<div class="col-md-4">
+					<strong>Current Timestamp</strong>: <%= @timestamp[:human_readable] %>
+					<br/><br/>
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						Available Sample Windows <span class="caret"></span>
+						</button>
+
+						<ul class="dropdown-menu" role="menu" style="max-height: 110px; overflow-y:auto; width:100%;">
+							<% @timestamp_list.reverse.each do |timestamp_sing| %>
+								<li>
+									<a href="<%= root_url %>parallel/devices?timestamp=<%= timestamp_sing[:url]%>">
+										<span  <% if @timestamp[:human_readable] == timestamp_sing[:human_readable] %>
+												class="text-muted"
+											<% end %>>
+										<%= timestamp_sing[:human_readable] %>
+										</span>
+									</a>
+								</li>
+							<% end %>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="row">
+						<div class="col-md-6">
+							<strong>Highlighted Devices</strong>  <span id="para-devs" class="scroll-notif"></span>
+							<div class="scroll-table" style="overflow-y:auto; max-height:150px;">
+								<table class="table table-condensed high-tab" id="para-devs" >
+
+								</table>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-condensed">
+								<tr>
+									<td colspan="2"><strong>Selected Device</strong></td>
+									<td id="para-devs" class="tab-name" colspan="2">&nbsp;</td>
+									
+								</tr>
+								<tr>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[0][:factor_name]%></em><br/><%=@factor_info[0][:measure]%>">Crime Rate</td>
+									<td id="para-devs" class="tab-cr">&nbsp;</td>
+									<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[1][:factor_name]%></em><br/><%=@factor_info[1][:measure]%>">House Price</td>
+									<td id="para-devs" class="tab-hp">&nbsp;</td>
+								</tr>
+								<tr>
+									<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[2][:factor_name]%></em><br/><%=@factor_info[2][:measure]%>">GCSE Score</td>
+									<td id="para-devs" class="tab-gs">&nbsp;</td>
+									<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[3][:factor_name]%></em><br/><%=@factor_info[3][:measure]%>">Trans. Rating</td>
+									<td id="para-devs" class="tab-tr">&nbsp;</td>
+								</tr>
+								<tr>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[4][:factor_name]%></em><br/><%=@factor_info[4][:measure]%>">School Abs.</td>
+									<td id="para-devs" class="tab-sa">&nbsp;</td>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[5][:factor_name]%></em><br/><%=@factor_info[5][:measure]%>">Income Supp.</td>
+									<td id="para-devs" class="tab-is">&nbsp;</td>
+								</tr>
+								<tr>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[6][:factor_name]%></em><br/><%=@factor_info[6][:measure]%>">Unempl. Rate</td>
+									<td id="para-devs" class="tab-ur">&nbsp;</td>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[7][:factor_name]%></em><br/><%=@factor_info[7][:measure]%>">DCOWF</td>
+									<td id="para-devs" class="tab-dc">&nbsp;</td>
+								</tr>
+								<tr>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[8][:factor_name]%></em><br/><%=@factor_info[8][:measure]%>">Delib. Fires</td>
+									<td id="para-devs" class="tab-df">&nbsp;</td>
+									<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[9][:factor_name]%></em><br/><%=@factor_info[9][:measure]%>">Incap. Benef.</td>
+									<td id="para-devs" class="tab-ib">&nbsp;</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		
+	</div>
+</div>

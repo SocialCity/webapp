@@ -6,15 +6,21 @@ var base_url_regions = "/assets/";
 $(document).ready(function() {
 	if(gon.parallel)
     {
-        stats = Array();
-        stats['boroughs'] = gon.feature_groups['boroughs'];
-        stats['wards'] = gon.feature_groups['wards'];
-
-        console.log(stats);
         if(gon.para_boros)
-		    setup_parallel_graph(stats['boroughs']);
-        else
-            setup_parallel_graph(stats['wards']);
+        {
+		    setup_parallel_graph(gon.feature_groups['boroughs']);
+        }
+        else if(gon.wards)
+        {
+            setup_parallel_graph(gon.feature_groups['wards']);
+        }
+        else if(gon.device)
+            setup_parallel_graph(gon.device_data);
+        else if(gon.hashtag)
+        {
+            console.log(gon.hashtag_data);
+            setup_parallel_graph(gon.hashtag_data);
+        }
     }
 	
 })
@@ -258,8 +264,12 @@ function setup_parallel_graph(feat_list)
                 var class_name = "";
                 if(gon.para_boros)
                     class_name = "para-boro";
-                else
+                else if(gon.wards)
                     class_name = "para-ward";
+                else if(gon.device)
+                    class_name = "para-devs";
+                else
+                    class_name = "para-hash";
 
                 $(".scroll-notif#" + class_name).empty();
                 $('.high-tab#' + class_name).empty();
@@ -284,8 +294,12 @@ function setup_parallel_graph(feat_list)
             var class_name = "";
             if(gon.para_boros)
                 class_name = "para-boro";
-            else
+            else if(gon.wards)
                 class_name = "para-ward";
+            else if(gon.device)
+                class_name = "para-devs";
+            else
+                class_name = "para-hash";
 
             $(".tab-name#" + class_name).empty().append(d['name']);
             $(".tab-cr#" + class_name).empty().append(d['factors']['crimeRate'].toPrecision(4));

@@ -29,7 +29,7 @@ class MatrixController < ApplicationController
 		@timestamp = verif_timestamp[:timestamp]
 		@timestamp_list = verif_timestamp[:timestamp_list]
 		query_timestamp = @timestamp[:url]
-		
+
 		#===================================
 		
 		#Then get the list of hashtags
@@ -127,25 +127,10 @@ class MatrixController < ApplicationController
 		
 
 		#==========================================
-		#Now handle boros
-		@boro_list = load_boros()
-
-	 	query_boro = nil
-	 	boro_check = false
-		#Check the boro is valid here
-		@boro_list.each do | boro |
-			puts boro
-			if boro['code'] == @input_boro then
-				boro_check = true
-				@boro_name = boro['name']
-			end
-		end
-		if boro_check then
-			query_boro = @input_boro
-		else
-			query_boro = @boro_list[0]['code']
-			@boro_name = @boro_list[0]['name']
-		end
+		verif_boro = check_boro_input(@input_boro, BACKEND_URL)
+		@boro_list = verif_boro[:boro_list]
+		query_boro = verif_boro[:boro]
+		@boro_name = verif_boro[:boro_name]
 
 
 		#Get data for the chosen hashtag
@@ -182,6 +167,7 @@ class MatrixController < ApplicationController
 			end	
 		end
 		gon.word_data = associated_words
+
 	 end
 
 	 def device
@@ -215,28 +201,10 @@ class MatrixController < ApplicationController
 		query_timestamp = @timestamp[:url]
 
 		#==========================================
-		#Now get the list of hashtags
-		device_req_params = {
-			:method => "deviceList",
-			:time => query_timestamp
-			}
-		device_request_data = URL_requester(BACKEND_URL, device_req_params)
 
-		#Now structure this data
-		parsed_devices = nil
-		device_request_data.each_line do |response|
-			parsed_devices = JSON.parse(response)
-		end
-		@device_list = parsed_devices
-
-		query_device = nil
-
-		#Check the hashtag is valid here
-		if parsed_devices.include?(@input_device) then
-			query_device = @input_device
-		else
-			query_device = parsed_devices[0]
-		end
+		verif_device = check_device_input(@input_device, query_timestamp, BACKEND_URL)
+		query_device = verif_device[:device]
+		@device_list = verif_device[:device_list]
 
 		#Get data for the chosen hashtag
 		req_params = { :method => "deviceWords",
@@ -291,31 +259,7 @@ class MatrixController < ApplicationController
 
 		#FIRST, we get timestamps
 		#Get timestamp list
-		timestamp_req_params = {:method => "timestamps"}
-		timestamp_request_data = URL_requester(BACKEND_URL, timestamp_req_params)
-
-		#Now structure this data
-		parsed_timestamps = nil
-		timestamp_request_data.each_line do |response|
-			parsed_timestamps = JSON.parse(response)
-		end
-		
-		@timestamp_list = parse_server_timestamps(parsed_timestamps)
-		
-		ts_found = false
-		@timestamp_list.each do | ts |
-			if ts[:url] == @input_timestamp then
-				ts_found = true
-				@timestamp = ts
-			end
-		end
-
-		if ts_found == false then
-			#MAY NOT BE CORRECT
-			@timestamp = @timestamp_list[-1]
-		end
-
-		query_timestamp = @timestamp[:url]
+		check_timestamp_input(@input_hashtag, BACKEND_URL)
 
 		#===================================
 		

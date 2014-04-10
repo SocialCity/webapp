@@ -3,6 +3,75 @@ module ApplicationHelper
 	require 'date'
 
 
+	def get_device_list(query_timestamp, backend_url)
+		device_req_params = {
+			:method => "deviceList",
+			:time 	=> query_timestamp
+		}
+		device_request_data = URL_requester(backend_url, device_req_params)
+
+		#Now structure this data
+		parsed_devices = nil
+		device_request_data.each_line do |response|
+			parsed_devices = JSON.parse(response)
+		end
+		device_list = parsed_devices
+	end
+
+	def get_hashtag_list(query_timestamp, backend_url)
+		device_req_params = {
+			:method => "hashTagList",
+			:time 	=> query_timestamp
+		}
+		hashtag_request_data = URL_requester(backend_url, device_req_params)
+
+		#Now structure this data
+		parsed_hashtags = nil
+		hashtag_request_data.each_line do |response|
+			parsed_hashtags = JSON.parse(response)
+		end
+		hashtag_list = parsed_hashtags
+	end
+
+	def check_boro_input(input_boro, backend_url)
+		boro_list = load_boros()
+
+	 	query_boro = nil
+	 	boro_check = false
+		#Check the boro is valid here
+		boro_list.each do | boro |
+			puts boro
+			if boro['code'] == @input_boro then
+				boro_check = true
+				boro_name = boro['name']
+			end
+		end
+		if boro_check then
+			query_boro = input_boro
+		else
+			query_boro = boro_list[0]['code']
+			boro_name = boro_list[0]['name']
+		end
+
+		{:boro_list => boro_list,
+			:boro_name => boro_name,
+			:boro => query_boro}
+	end
+
+	def check_device_input(input_device, query_timestamp, backend_url)
+		device_list = get_device_list(query_timestamp, backend_url)
+
+		query_device = nil
+
+		#Check the hashtag is valid here
+		if parsed_devices.include?(input_device) then
+			query_device = input_device
+		else
+			query_device = parsed_devices[0]
+		end
+		{:device_list => device_list,
+		:device => query_device}
+	end
 
 	def check_timestamp_input(input_timestamp, backend_url)
 		#FIRST, we get timestamps
@@ -110,7 +179,7 @@ module ApplicationHelper
 				request_url += params[:time].to_s 			+ "/"
 			end
 		when "hashTagFactors"
-			request_url += params[:tag_1].to_s 				+ "/"			+ "/"
+			request_url += params[:tag_1].to_s 				+ "/"
 			if params.has_key?(:time)
 				request_url += params[:time].to_s 			+ "/"
 			end
@@ -202,6 +271,58 @@ module ApplicationHelper
 			processed_ts << time_h
 		end
 		processed_ts
+	end
+
+	def non_map_collator(parsed_data, is_device)
+		features 	= Array.new
+
+		#Whilst we are structuring etc, we want to produce a min/max list of values
+		min_max_vals = Hash.new
+		puts parsed_data
+
+		parsed_data.each do |location_group|
+			feature_group 					= Hash.new
+			if is_device
+				feature_group["name"] 		= location_group['locations']['ward0']
+			else
+				feature_group["name"] 		= location_group['location'][0]
+			end
+			feature_group["factors"] 		= Hash.new
+
+
+			#Add in the value of each factor to the location list
+			fill_min_max_hash = false
+			if(min_max_vals.length == 0)
+				fill_min_max_hash = true
+			end
+			#puts location_group
+			location_group.each do |key, value|
+				if key != "locations" and key != "location" and key != "_id" then
+					feature_group["factors"][key] = value
+
+					if fill_min_max_hash
+						min_max_vals[key] = Hash.new
+						min_max_vals[key]['min'] = value
+						min_max_vals[key]['max'] = value
+					else
+						if min_max_vals[key]['min'] > value
+							min_max_vals[key]['min'] = value
+						end
+						if min_max_vals[key]['max'] < value
+							min_max_vals[key]['max'] = value
+						end
+					end
+					#puts key
+				end
+			end
+			features.push(feature_group)
+		end
+
+		features.each do |feature|
+			feature['min_max'] = min_max_vals
+		end
+		puts features
+		features
 	end
 
 	
