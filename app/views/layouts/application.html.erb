@@ -35,8 +35,22 @@
 				  	</li>
 				  	<li>
 				  		<a href="<%=root_url%>street_map">Area Social Factors</a>
-
 				  	</li>
+				  	<li>
+				  		<a href="<%=root_url%>donut">Area-Device Breakdown</a>
+				  	</li>
+
+				  	<li class="dropdown dropdown-stack">
+						<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>bubble">
+						Frequency Comparison <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
+							<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/hashtag">Hashtag</a></li>
+							<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/area">Area</a></li>
+							<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/device">Device</a></li>
+						</ul>
+				  	</li>
+
 				  	<li class="dropdown dropdown-stack">
 				  		<!-- <a href="<%=root_url%>matrix">Matrix Visualisation</a> -->
 							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>parallel">
@@ -50,44 +64,30 @@
 							</ul>
 				  	</li>
 
-
 				  	<li class="dropdown dropdown-stack">
 				  		<!-- <a href="<%=root_url%>matrix">Matrix Visualisation</a> -->
 							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>matrix">
-							Sentiment Matrices  <span class="caret"></span>
+							Related Word Matrices  <span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/hashtag">Hashtags</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/area">Boroughs</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/area">Area</a></li>
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/device">Devices</a></li>
 							</ul>
 				  	</li>
 
-				  	<li>
-				  		<a href="<%=root_url%>donut">Area-Device Breakdown</a>
-				  	</li>
-
 				  	<li class="dropdown dropdown-stack">
 							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>matrix">
-							Aggregate Matrix <span class="caret"></span>
+							Summary Matrices <span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/aggr_hashtag">Hashtag</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/area">Borough</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/device">Device</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/aggr_area">Area</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/aggr_device">Device</a></li>
 							</ul>
 				  	</li>
 
-				  	<li class="dropdown dropdown-stack">
-							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>bubble">
-							Frequency Comparison <span class="caret"></span>
-							</a>
-							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/hashtag">Hashtag</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/area">Borough</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/device">Device</a></li>
-							</ul>
-				  	</li>
+
 				</ul>
 			</div>	
 

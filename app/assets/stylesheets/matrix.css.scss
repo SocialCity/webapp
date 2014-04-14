@@ -84,6 +84,12 @@ svg{
 
 /* AGGREGATION STYLES */
 
+.aggr-circle {
+	stroke:#9ecae1;
+	stroke:1.5px;
+	fill:#4292c6;
+}
+
 .aggr-grp-1
 {
 	fill:#b2182b;
@@ -117,3 +123,32 @@ svg{
 {
 	fill:#2166ac;	
 }
+
+#aggr-key-1
+{
+	background-color:#b2182b;
+}
+
+#aggr-key-2
+{
+	background-color:#ef8a62;
+}
+
+
+#aggr-key-3
+{
+	background-color:#fddbc7;	
+}
+
+
+#aggr-key-4
+{
+	background-color:#d1e5f0;	
+}
+
+
+#aggr-key-5
+{
+	background-color:#67a9cf;	
+}
+

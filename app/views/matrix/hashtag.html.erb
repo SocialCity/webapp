@@ -58,8 +58,8 @@
 			<input type="checkbox" onclick='window.location.replace("<%=root_url%>matrix/hashtag?tag=<%=@hashtag%>&timestamp=<%=@timestamp[:url]%>&full_scale=<%= @full_scale == true ? 'false' : 'true' %>")' <%= @full_scale ? "checked='true'" : ""%>> Full-Width Scale?
 		</label>
 	</div>
-
 	<em>Hover over a bubble to see stats below</em>
+	<br/><br/>
 	<div class="row">
 		<div class="col-md-8">
 			<table class="table table-condensed" id="info-table">

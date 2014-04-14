@@ -178,21 +178,39 @@ function setup_aggregation_matrix(words)
       .attr("height", height)
       .call(zoom);
 
+	var r_scale = d3.scale.linear()
+			.domain(d3.extent(words, function(d){
+				return d['freq'];
+			}))
+			.range([6, 20]);
+
     //Order matters here!
     //We have to make sure the zoom overlay
     //Is behind the circles/axes
     var layer = svg.append('svg:g');
 
-	x_scale = d3.scale.linear()
+    if(gon.full_scale)
+	{
+		x_scale = d3.scale.linear()
+				.domain([1,3])
+				.range([padding, width-padding]);
+		y_scale = d3.scale.linear()
+				.domain([3,1])
+				.range([padding, height-padding]);
+	}
+    else
+    {
+		x_scale = d3.scale.linear()
 				.domain(d3.extent(words, function(d){
 					return d['activ'];
 				}))
 				.range([padding, width-padding]);
-	y_scale = d3.scale.linear()
+		y_scale = d3.scale.linear()
 				.domain(d3.extent(words, function(d){
 					return d['pleas'];
 				}))
 				.range([height-padding, padding]);
+	}
 	// x_scale = d3.scale.linear()
 	// 			.domain([1,3])
 	// 			.range([padding, width-padding]);
@@ -278,7 +296,7 @@ function setup_aggregation_matrix(words)
 			$('#info-activ').empty().append(d['activ']);
 			$('#info-pleas').empty().append(d['pleas']);
 			$('#info-image').empty().append(d['image']);
-			return "<span class='tip-tooltip'>Hashtag: " + d['word'] + "</span>";
+			return "<span class='tip-tooltip'> " + d['word'] + "</span>";
       	}	
     });
 

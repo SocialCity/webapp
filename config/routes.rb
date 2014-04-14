@@ -11,6 +11,8 @@ Webapp::Application.routes.draw do
   get "matrix/area"
   get "matrix/device"
   get "matrix/aggr_hashtag"
+  get "matrix/aggr_device"
+  get "matrix/aggr_area"
 
   get "donut/boro_devices"
 

@@ -1,5 +1,5 @@
 <div class="col-md-8">
-	<span class="h2"> Hashtag Summary Matrix </span>	<span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is a plot of all observed hashtags for a given sample window. Each bubble is a hashtag, sized based on imagery."></span>	
+	<span class="h2"> Device Summary Matrix </span>	<span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is a plot of all observed devices that have tweeted over a given sample window. Each bubble is a device, sized based on imagery."></span>	
 	<div class="graph-container">
 		<!-- <svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
 		</svg> -->
@@ -32,7 +32,7 @@
 	<br />
 	<div class="checkbox">
 		<label>
-			<input type="checkbox" onclick='window.location.replace("<%=root_url%>matrix/aggr_hashtag?&timestamp=<%=@timestamp[:url]%>&full_scale=<%= @full_scale == true ? 'false' : 'true' %>")' <%= @full_scale ? "checked='true'" : ""%>> Full-Width Scale?
+			<input type="checkbox" onclick='window.location.replace("<%=root_url%>matrix/aggr_device?&timestamp=<%=@timestamp[:url]%>&full_scale=<%= @full_scale == true ? 'false' : 'true' %>")' <%= @full_scale ? "checked='true'" : ""%>> Full-Width Scale?
 		</label>
 	</div>
 	<em>Hover over a bubble to see stats below</em>
