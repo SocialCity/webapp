@@ -4,7 +4,9 @@
 
 
 	.bubble-circ {
-		fill: #e0e0e0;
+		stroke:#9ecae1;
+		stroke:1.5px;
+		fill:#4292c6;
 	}
 	.activ_arc_path{
 		/*fill:#deebf7;*/
@@ -34,8 +36,7 @@
 		fill:none;
 	}
 	.bubble-text{
-		stroke:black;
 		stroke-width:0;
-		fill:black;
+		fill:#e9e9e9;
 		shape-rendering: crispEdges;
 	}

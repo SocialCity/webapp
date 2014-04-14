@@ -259,7 +259,11 @@ class MatrixController < ApplicationController
 
 		#FIRST, we get timestamps
 		#Get timestamp list
-		check_timestamp_input(@input_hashtag, BACKEND_URL)
+		verif_timestamp = check_timestamp_input(@input_timestamp, BACKEND_URL)
+		@timestamp = verif_timestamp[:timestamp]
+		@timestamp_list = verif_timestamp[:timestamp_list]
+		query_timestamp = @timestamp[:url]
+
 
 		#===================================
 		

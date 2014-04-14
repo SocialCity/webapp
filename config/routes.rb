@@ -21,6 +21,8 @@ Webapp::Application.routes.draw do
   get "bubble/device"
   get "bubble/area"
 
+  get 'application/intro'
+
   #Parameter routes
   get "street_map/two_factor/:factor_one/:factor_two" => "street_map#two_factor"
 
@@ -32,7 +34,7 @@ Webapp::Application.routes.draw do
   get "parallel" => "parallel#boroughs"
   get "matrix" => "matrix#hashtag"
   
-  root 'summary#area'
+  root 'application#intro'
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

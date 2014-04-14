@@ -52,9 +52,11 @@ function setup_boro_donut(data_list)
    						return color_scale(d.data['device']);
    					})
    					.attr('class', 'donut_arc');
+
    	arc_groups.append("svg:path")
    				.attr("d", arc)
    				.attr('class', 'donut_arc_path');
+
    	arc_groups.append("svg:text")
    				.attr('transform', function(d) {
    					return 'translate(' + arc.centroid(d) + ')';

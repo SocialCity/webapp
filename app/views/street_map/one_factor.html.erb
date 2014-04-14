@@ -1,5 +1,5 @@
 <div class="col-md-8">
-	<h2> One-Factor Map Comparison </h2>	
+	<span class="h2"> Social Factor Map </span> <span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is a map coloured based on how each borough is ranked for a given <em>social factor</em>. <br/>A range of years and social factors are accessible in the sidebar. Hover over a borough to get more information, or scroll on the map to zoom."></span>	
 	<div class="map-container">
 
 	</div>
@@ -31,7 +31,7 @@
 			<br/><br/>
 			<div class="btn-group">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-				Choose year <span class="caret"></span>
+				Choose dataset year <span class="caret"></span>
 				</button>
 
 				<ul class="dropdown-menu" role="menu">
@@ -61,7 +61,7 @@
 				<div class="col-md-8">
 					<table class="table table-condensed">
 						<tr>
-							<th>Value</th>
+							<th>Ranking Group</th>
 							<th>&nbsp;</th>
 						</tr>
 						<% @rank_values.sort_by{|k, v| k}.each do | rank, val | %>
@@ -80,6 +80,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12">
+					<strong>Highlighted Borough Information </strong><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="Hover over a factor name for more information about that factor"></span>	
 					<table class="table table-condensed">
 						<tr>
 							<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[0][:factor_name]%></em><br/><%=@factor_info[0][:measure]%>">Crime Rate</td>

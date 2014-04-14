@@ -22,4 +22,8 @@ class ApplicationController < ActionController::Base
     def general_error
 		raise ActionController::RoutingError.new('REST Error')
 	end
+
+	def intro
+		
+	end
 end

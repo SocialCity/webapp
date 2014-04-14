@@ -1,14 +1,22 @@
 <div class="col-md-12">
-	<h2> Borough Stats Comparison </h2>	
-	<div class="graph-container">
-		<svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='400px'>
-		</svg>
+	<span class="h2"> Borough Social Factors </span> <span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is a <em>parallel co-ordinate</em> plot of the social factors of all boroughs. Each line represents a borough, with its position on each scale representing its own value for that factor. "></span>
+	<br/><br/>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-10">
+			<div class="graph-container">
+				<svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='400px'>
+				</svg>
+			</div>
+		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 			<h3> <small>Visualisation Information </small></h3>
 			<div class="row">
 				<div class="col-md-4">
+					<strong>How to use </strong><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<strong><em>Click and drag</em></strong> on a scale to highlight only lines passing through that window (you can do this on multiple lines at once), and click elsewhere on the scale to clear a window. <br/> <strong><em>Hover</em></strong> over a line to get more information about that borough.<br/><strong><em>Change</em></strong> the displayed dataset year using the button below.<br/>
+					<strong><em>Hover</em></strong> over the factors in the table below for the units and full names of each factor."></span>
+					<br/><br/>
 					<div class="btn-group">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 						Choose year <span class="caret"></span>

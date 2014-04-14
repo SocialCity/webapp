@@ -78,10 +78,10 @@ module ApplicationHelper
 		query_device = nil
 
 		#Check the hashtag is valid here
-		if parsed_devices.include?(input_device) then
+		if device_list.include?(input_device) then
 			query_device = input_device
 		else
-			query_device = parsed_devices[0]
+			query_device = device_list[0]
 		end
 		{:device_list => device_list,
 		:device => query_device}
@@ -90,7 +90,7 @@ module ApplicationHelper
 	def check_timestamp_input(input_timestamp, backend_url)
 		#FIRST, we get timestamps
 		#Get timestamp list
-		@timestamp_list = get_timestamp_list
+		@timestamp_list = get_timestamp_list(backend_url)
 		
 		ts_found = false
 		@timestamp_list.each do | ts |

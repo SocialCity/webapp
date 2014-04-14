@@ -1,6 +1,7 @@
 class SummaryController < ApplicationController
 	include ApplicationHelper
 
+
 	def area
 		gon.sentiment = true
 		boro_code = "00AA"
@@ -47,8 +48,18 @@ class SummaryController < ApplicationController
 
 
 		sentiment_data = Array.new
-		gon.num_timestamps = (@timestamp_list.size/2).floor + 1
-		@timestamp_list[0..(@timestamp_list.size/2).floor].each do | time_window |
+		
+		num_timestamps = 12
+		if @timestamp_list.size < 12
+			num_timestamps = @timestamp_list.size
+		end
+		puts "*"*100
+		gon.num_timestamps = num_timestamps
+		num_timestamps = -num_timestamps
+		puts num_timestamps
+		puts "*"*100
+		@timestamp_list[(num_timestamps-1)..-1].each do | time_window |
+			puts "yis"
 			req_params = {
 				:method => "areaSentiment",
 				:borough_code => query_boro,

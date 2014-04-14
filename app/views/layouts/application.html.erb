@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>SocialCity Visualisation Dashboard</title>
+	<title>Citylife Visualisation Dashboard</title>
 	<link href='http://fonts.googleapis.com/css?family=Metrophobic' rel='stylesheet' type='text/css'>
 	<%= include_gon %>
 	<%= stylesheet_link_tag    "application", media: "all" %>
@@ -19,7 +19,7 @@
 		<nav class="navbar navbar-default navbar-fixed-top" id="top-nav" role="navigation">
 		<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
-			<a class="navbar-brand" href="http://github.com/SocialCity">SocialCity</a>
+			<a class="navbar-brand" href="http://github.com/SocialCity">Citylife</a>
 			</div>
 		</div>
 	</div>
@@ -28,9 +28,9 @@
 		<div class="row fill-height">
 			<div class="col-sm-2 col-md-2 sidebar">
 				<ul class="nav nav-stacked">
-				  	<li class="active"><a href="<%=root_url%>summary/area">Home</a></li>
+				  	<li class="active"><a href="<%=root_url%>">Home</a></li>
 				  	<li>
-				  		<a href="<%=root_url%>street_map">Area Summary</a>
+				  		<a href="<%=root_url%>summary/area">Area Summary</a>
 
 				  	</li>
 				  	<li>
@@ -40,7 +40,7 @@
 				  	<li class="dropdown dropdown-stack">
 				  		<!-- <a href="<%=root_url%>matrix">Matrix Visualisation</a> -->
 							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>parallel">
-							Parallel Factors <span class="caret"></span>
+							Multi-Factor Comparison <span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>parallel/boroughs">Boroughs</a></li>
@@ -54,7 +54,7 @@
 				  	<li class="dropdown dropdown-stack">
 				  		<!-- <a href="<%=root_url%>matrix">Matrix Visualisation</a> -->
 							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>matrix">
-							Related Words <span class="caret"></span>
+							Sentiment Matrices  <span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>matrix/hashtag">Hashtags</a></li>
@@ -64,7 +64,7 @@
 				  	</li>
 
 				  	<li>
-				  		<a href="<%=root_url%>donut">Device Breakdown</a>
+				  		<a href="<%=root_url%>donut">Area-Device Breakdown</a>
 				  	</li>
 
 				  	<li class="dropdown dropdown-stack">
@@ -80,11 +80,11 @@
 
 				  	<li class="dropdown dropdown-stack">
 							<a id="dLabel" role="button" class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="<%=root_url%>bubble">
-							Sentiment Chart <span class="caret"></span>
+							Frequency Comparison <span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu dropdown-stack" role="menu" aria-labelledby="dLabel">
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/hashtag">Hashtag</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/">Borough</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/area">Borough</a></li>
 								<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=root_url%>bubble/device">Device</a></li>
 							</ul>
 				  	</li>
