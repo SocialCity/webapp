@@ -1,0 +1,71 @@
+<div class="col-md-12">
+	<h2>Here's what we know about <%=@boro_name%>...</h2>
+	<div class="row">
+		<div class="col-md-12">
+			<em>Want to see a different borough?</em>
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					Click here... <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<% @boro_list.each do |code, name| %>
+						<li><a href="<%=root_url%>summary/area?borough=<%=code%>"><%=name%></a></li>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<br/></br/>
+	<div class="row" style="height:100%; overflow-y:scroll;">
+		<div class="col-md-offset-1 col-md-11">
+			<h3 style="display:inline;">Latest Social Factors </h3><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="right" data-content="Each blue box represents the value of that factor for this borough relative to the maximum observed (the grey box). These factors are from a static, 2012 dataset."></span>
+			<div id="area-stats">
+			</div>
+		</div>
+	</div>
+	</br/>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-8">
+			<h3 style="display:inline;">Average Sentiment </h3><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="right" data-content="Plot of average hashtag sentiment observed in this borough. The graph runs to the most recent values being on the right, with the x-scale being in negative hours."></span>
+			<div id="area-sentiment-line">
+			</div>
+		</div>
+		<div class="col-md-1" style="height:100%;">
+			<table class="table table-condensed" style="margin-top:150px;">
+				<tr>
+					<td>Activation</td>
+					<td id="activ-key">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Pleasantness</td>
+					<td id="pleas-key">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Imagery</td>
+					<td id="image-key">&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	</br/>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-8">
+			<h3 style="display:inline;">Hashtag Frequency </h3><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="right" data-content="Bubble chart of the previous 12 sampled hours. Each bubble represents a hashtag and is sized based on relative frequency. Hover over a bubble to see the full hashtag and its frequency."></span>
+			<div id="area-hashtags">
+			</div>
+		</div>
+		<div class="col-md-1" style="height:100%;">
+			
+		</div>
+	</div>
+	</br/>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-8">
+			<h3 style="display:inline;">Devices Usage </h3><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="right" data-content="Plot of device frequency observed over the previous 12 hours. Only devices with more than 100 occurences are shown. Hover over a bar to see the full device name and frequency."></span>
+			<div id="area-device-bar">
+			</div>
+		</div>
+		<div class="col-md-1" style="height:100%;">
+		</div>
+	</div>
+</div>

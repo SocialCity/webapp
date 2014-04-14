@@ -3,7 +3,7 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 
-	circle {
+	.bubble-circ {
 		fill: #e0e0e0;
 	}
 	.activ_arc_path{
@@ -32,4 +32,10 @@
 		stroke:black;
 		stroke-width:1px;
 		fill:none;
+	}
+	.bubble-text{
+		stroke:black;
+		stroke-width:0;
+		fill:black;
+		shape-rendering: crispEdges;
 	}

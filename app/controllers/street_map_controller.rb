@@ -19,7 +19,7 @@ class StreetMapController < ApplicationController
 		
 		factor_info_params = { :method => "factorList"}
 		@factor_info = parse_factor_list(URL_requester(BACKEND_URL, factor_info_params))
-		puts @factor_info
+		gon.factor_info = @factor_info
 
 		gon.feature_groups = Hash.new
 

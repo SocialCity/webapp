@@ -1,0 +1,523 @@
+$(document).ready(function(){
+
+	if(gon.sentiment)
+	{
+		plot_area_stats(gon.feature_groups['borough'], gon.factor_info);
+		plot_sentiment_line(gon.sentiment_data);
+		plot_area_bubble(gon.hashtag_data);
+		plot_area_bar(gon.device_data);
+	}
+})
+
+function plot_area_stats(area, factor_list)
+{
+	var width = 900,
+    	height = 500;
+
+    var x_box_pad = 25;
+
+
+    //We want to fit 
+    var box_size = width/(5);
+
+    var svg = d3.select('#area-stats')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height);
+
+    var layer = svg.append('svg:g');
+
+    var area_scales = {};
+    for(min_max in area['min_max'])
+    {
+    	var tmp = [area['min_max'][min_max]['min'], area['min_max'][min_max]['max']];
+    	area_scales[min_max] = d3.scale.linear()
+    								.domain(tmp)
+    								.range([30, (box_size-x_box_pad)]);
+    }
+    console.log(factor_list);
+
+    var min_max = area['min_max'];
+    console.log(min_max);
+   	factor_val_arr = new Array(factor_list.length);
+   	for(factor in area['factors'])
+   	{
+   		factor_val_arr[get_factor_num(factor)] = area['factors'][factor];
+   	}
+
+   	console.log(factor_val_arr); 
+   	//Allows us to adjust the position so they are centered horizontally
+   	var position_adjust = (box_size-x_box_pad)/2;	
+   	var side_pad = 25;
+	layer.selectAll('.area-scale-box')
+		.data(factor_val_arr)
+		.enter()
+		.append('svg:rect')
+		.attr('x', function(d, i){
+			if(i < (factor_val_arr.length/2))
+				return (i * box_size) + side_pad;
+			else
+				return (i-Math.round(factor_val_arr.length/2))*box_size + side_pad;
+		})
+		.attr('y', function(d, i){
+			if(i < (factor_val_arr.length/2))
+			{
+				return (height/4) - position_adjust;
+			}
+			else
+				return (3*height/4) - position_adjust;
+		})
+		.attr('width', function(d, i){
+			var factor_id = get_factor_id(i);
+			return area_scales[factor_id](min_max[factor_id]['max']);
+		})
+		.attr('height', function(d, i){
+			var factor_id = get_factor_id(i);
+			return area_scales[factor_id](min_max[factor_id]['max']);
+		})
+		.attr('class', 'area-scale-box');
+
+		//In the x and y, we need to not only work out the 
+		//overall position but also the differentce between the current
+		//and max entry to centre the box
+		layer.selectAll('.area-stat-box')
+			.data(factor_val_arr)
+			.enter()
+			.append('svg:rect')
+			.attr('x', function(d, i){
+				var factor_id = get_factor_id(i);
+				var full_box_size =  area_scales[factor_id](min_max[factor_id]['max']);
+				var this_box_size = area_scales[factor_id](d);
+				var overall_pos = 0;
+
+				if(i < (factor_val_arr.length/2))
+				{
+					overall_pos = (i * box_size) + side_pad;
+				}
+				else
+				{
+					overall_pos = (i-Math.round(factor_val_arr.length/2))*box_size + side_pad;
+				}
+				return overall_pos + (full_box_size- this_box_size)/2;
+			})
+			.attr('y', function(d, i){
+				var factor_id = get_factor_id(i);
+				var full_box_size =  area_scales[factor_id](min_max[factor_id]['max']);
+				var this_box_size = area_scales[factor_id](d);
+				var overall_pos = 0;
+				if(i < (factor_val_arr.length/2))
+				{
+					overall_pos = (height/4) - position_adjust;
+				}
+				else
+					overall_pos = (3*height/4) - position_adjust;
+				
+				return overall_pos + (full_box_size- this_box_size)/2;
+			})
+			.attr('width', function(d, i){
+				var factor_id = get_factor_id(i);
+				return area_scales[factor_id](d);
+			})
+			.attr('height', function(d, i){
+				var factor_id = get_factor_id(i);
+				return area_scales[get_factor_id(i)](d);
+			})
+			.attr('class', 'area-stat-box');
+
+
+			//Now put labels on under the boxes
+			layer.selectAll('.factor-label')
+				.data(factor_val_arr)
+				.enter()
+				.append("svg:g")
+		        .attr("class", "factor-label")
+		        .append("foreignObject")
+		        .attr("text-anchor", "middle")
+		        // .attr("y", -40)
+		        // .attr("x", -40)
+		        .attr('x', function(d, i){
+					if(i < (factor_val_arr.length/2))
+						return (i * box_size) + side_pad;
+					else
+						return (i-Math.round(factor_val_arr.length/2))*box_size + side_pad;
+				})
+				.attr('y', function(d, i){
+					if(i < (factor_val_arr.length/2))
+					{
+						return (height/4) - position_adjust + box_size - 20;
+					}
+					else
+						return (3*height/4) - position_adjust + box_size - 20;
+				})
+		        .attr("width", 100)
+		        .attr("height", 40)
+		        .append("xhtml:p")
+		        .html(function(d, i){
+		        	var factor_name = factor_list[i]['factor_name'];
+		            //Handle line splits properly
+		            if(factor_name.length > 10)
+		            {
+		                var temp_end = factor_name.slice(10);
+		                var parts = factor_name.split(" ");
+		                var return_line = "";
+		                var current_line = parts[0];
+		                for(var i = 1; i < parts.length; i++)
+		                {
+		                    if(current_line.length > 10)
+		                    {
+		                        if(return_line.length > 0)
+		                            return_line += '<br/>';
+		                        return_line += current_line;
+		                        current_line = parts[i];
+		                    }
+		                    else
+		                        current_line += " " + parts[i];
+		                }
+		                if(current_line.length > 0)
+		                {
+		                    if(return_line.length > 0)
+		                        return_line += "<br/>";
+		                    return_line += current_line;
+		                }
+		                return return_line;
+		            }
+		            else
+		                return factor_name;
+		        });
+
+			layer.selectAll('.factor-val-label')
+					.data(factor_val_arr)
+					.enter()
+					.append('svg:text')
+			        .attr('x', function(d, i){
+			        	var x_pad = 0;
+						if(i < (factor_val_arr.length/2))
+							x_pad =  (i * box_size) + side_pad;
+						else
+							x_pad = (i-Math.round(factor_val_arr.length/2))*box_size + side_pad;
+						return x_pad+5;
+					})
+					.attr('y', function(d, i){
+						var y_pad = 0;
+						if(i < (factor_val_arr.length/2))
+						{
+							y_pad =  (height/4) - position_adjust + box_size - 20;
+						}
+						else
+							y_pad =  (3*height/4) - position_adjust + box_size - 20;
+						return y_pad - 12;
+					})
+					.text(function(d, i)
+					{
+						return d;
+					})
+					.attr('class', function(d, i){
+						var factor_id = get_factor_id(i);
+						var full_box_size =  area_scales[factor_id](min_max[factor_id]['max']);
+						var this_box_size = area_scales[factor_id](d);
+						if((full_box_size-this_box_size)/2 < 10)
+							return 'factor-val-label-light';
+						else
+							return 'factor-val-label-dark';
+					});
+
+
+
+
+   	// });
+
+    //For each type of stat draw a rect - do a foreach on the scales maybe?
+
+    
+}
+
+function plot_sentiment_line(data)
+{
+	var width = 600,
+     	height = 300;
+    var y_pad = 50,
+    	x_pad = 50;
+
+    console.log(data);
+
+   	var svg = d3.select('#area-sentiment-line')
+	    .append('svg')
+	    .attr('width', width)
+	    .attr('height', height);
+
+    var layer = svg.append('svg:g');
+    console.log(gon.num_timestamps);
+
+    var x_scale = d3.scale.linear()
+					.domain([gon.num_timestamps,1])
+					.range([x_pad, width-x_pad]);
+
+    var y_scale = d3.scale.linear()
+    					.domain([1,3])
+    					.range([height-y_pad, y_pad]);
+    var line = d3.svg.line()
+    				.x(function(d, i){
+    					return x_scale(i+1);
+    				})
+    				.y(function(d, i){
+    					return y_scale(d);
+    				});
+
+    layer.selectAll('.sentiment-line')
+    		.data(data)
+    		.enter()
+    		.append('svg:path')
+    		.attr('d', function(d)
+    		{
+    			return line(d['list']);
+    		})
+    		.attr('class', 'sentiment-line')
+    		.attr('id', function(d){
+    			return d['type'] + "-line";
+    		});
+
+    var x_axis = d3.svg.axis()
+					.scale(x_scale)
+					.orient('bottom')
+					.ticks(gon.num_timestamps)
+					.tickFormat(function(d){
+						return "-"+d*6+"h";
+					});
+	var y_axis = d3.svg.axis()
+					.scale(y_scale)
+					.orient('left');
+					//.ticks(3);
+
+	layer.append('svg:g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0,' + (height-y_pad) + ')')
+		.call(x_axis);
+
+	layer.append('svg:g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(' + x_pad + ',0)')
+		.call(y_axis);
+
+	layer.append('svg:text')
+		.attr('transform', 'translate(' + (width/2 - 10) + ',' + (height-15)+ ')')
+		.text('Day');
+	layer.append('svg:text')
+		.attr('transform', 'translate(' + 0 + ',' + (y_pad - 20) + ')')
+		.text('Sentiment Value');
+
+}
+
+function get_factor_id(factor_id)
+{
+    switch(factor_id)
+    {
+        case 0:  return "crimeRate";  break;
+        case 1:   return "housePrice"; break;
+        case 2:   return "GCSEScore"; break;
+        case 3:   return "transportRating"; break;
+        case 4:   return "schoolAbscences"; break;
+        case 5:   return "incomeSupport"; break;
+        case 6:   return "unemploymentRate"; break;
+        case 7:   return "childInNoWorkHouse"; break;
+        case 8:   return "deliberateFires"; break;
+        case 9:   return "incapacityBenefit"; break;
+    }
+}
+function get_factor_num(factor_id)
+{
+    switch(factor_id)
+    {
+       	case "crimeRate": 			return 0;  break;
+        case "housePrice": 			return 1; break;
+        case "GCSEScore": 			return 2; break;
+        case "transportRating": 	return 3; break;
+        case "schoolAbscences": 	return 4; break;
+        case "incomeSupport": 		return 5; break;
+        case "unemploymentRate": 	return 6; break;
+        case "childInNoWorkHouse": 	return 7; break;
+        case "deliberateFires": 	return 8; break;
+        case "incapacityBenefit": 	return 9; break;
+    }
+}
+
+function plot_area_bubble(data_list)
+{
+    var width = 900,
+    height = 600;
+
+    var svg = d3.select('#area-hashtags')
+	    .append('svg')
+	    .attr('width', width)
+	    .attr('height', height);
+
+   
+    data_list.forEach(function(d)
+    {
+        d["freq"] = parseInt(d["freq"]);
+        d["value"] = d["freq"];
+    })
+
+    svg.append("rect")
+      .attr("class", "overlay")
+      .attr("width", width)
+      .attr("height", height);
+
+    var layer = svg.append('svg:g');
+
+    var layout = d3.layout.pack()
+                    .sort(null)
+                    .size([width, height])
+                    .padding(1.5);;
+    layout.nodes(t(data_list)).slice(1);
+
+    var bubbles = layer.selectAll('.hashtag-circ')
+                        .data(layout.nodes(t(data_list)).slice(1))
+                        .enter()
+                        .append('svg:g')
+                        .attr('class', 'hashtag-circ')
+                        .attr('data-id', function(d, i)
+                        {
+                            return i;
+                        })
+                        .attr('transform', function(d)
+                        {
+                            return 'translate(' + d.x + ',' + d.y + ')'; 
+                        });
+
+    bubbles.append('svg:circle')
+            .attr('r', function(d){
+                return d.r;
+            });
+
+    bubbles.append('svg:text')
+            .attr('text-anchor', 'middle')
+            .attr('class', 'bub-hashtag-text')
+            .attr('dy', '1px')
+            .text(function(d){
+                if(d.r / 5 > 3)
+                    return d["word"].substring(0, d.r / 5);
+            });
+
+
+
+    //Plot all activ, then pleas, then image
+    //We don't need separate pie calcs, we need
+    //Separate arcs, which we can return in a function
+
+    function t(d)
+    {
+        return {children: d};
+    }
+    $('.hashtag-circ').tipsy({ 
+        gravity: 'w', 
+        html: true, 
+        title: function() {
+			var d = this.__data__;
+			console.log(d);
+			return "<span class='tip-tooltip'>Tag: " + d['word'] + "<br /> Freq.: " + d['freq']+ "</span>";
+      	}	
+    });
+}
+
+function plot_area_bar(data_list)
+{
+	var width = 900,
+     	height = 600;
+    var y_pad = 50,
+    	x_pad = 5;
+    var axis_pad = 50;
+    var bar_width = (width - x_pad) / (data_list.length+1);
+
+    console.log(data_list);
+
+   	var svg = d3.select('#area-device-bar')
+	    .append('svg')
+	    .attr('width', width)
+	    .attr('height', height);
+
+
+    var layer = svg.append('svg:g');
+
+    var y_scale = d3.scale.linear()
+    					.domain([0, d3.max(data_list, function(d){
+    						return d['freq'];
+    					})])
+    					.range([height-y_pad, y_pad]);
+
+
+    layer.selectAll('.device-bar')
+    		.data(data_list)
+    		.enter()
+    		.append('svg:rect')
+    		.attr('x', function(d, i){
+    			return axis_pad + i*(bar_width);
+    		})
+    		.attr('y', function(d){
+    			return y_scale(d['freq']);
+    		})
+    		.attr('width', function(d){
+    			return bar_width - x_pad;
+    		})
+    		.attr('height', function(d){
+    			return (height-y_pad)-y_scale(d['freq']);
+    		})
+    		.attr('class', 'device-bar');
+
+    layer.selectAll('.device-bar-text')
+    		.data(data_list)
+    		.enter()
+    		.append('svg:text')
+    		.attr('x', function(d, i){
+    			return axis_pad + i*(bar_width) + bar_width/4;
+    		})
+    		.attr('y', function(d){
+    			return height-5;
+    		})
+    		.text(function(d){
+    			var split_arr = d['code'].split('_');
+    			return split_arr[split_arr.length-1].slice(0, 8);
+    		})
+    		.attr('transform', function(d,i){
+    			return 'rotate(-45, '+(axis_pad + i*(bar_width) + bar_width/4)+','+(height-5)+')';
+    			
+    		})
+    		.attr('class', 'device-bar-text');
+
+ //    var x_axis = d3.svg.axis()
+	// 				.scale(x_scale)
+	// 				.orient('bottom')
+	// 				.ticks(gon.num_timestamps)
+	// 				.tickFormat(function(d){
+	// 					return "-"+d*6+"h";
+	// 				});
+	var y_axis = d3.svg.axis()
+					.scale(y_scale)
+					.orient('left');
+
+	// layer.append('svg:g')
+	// 	.attr('class', 'axis')
+	// 	.attr('transform', 'translate(0,' + (height-y_pad) + ')')
+	// 	.call(x_axis);
+	
+	layer.append('svg:g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(' + axis_pad + ',0)')
+		.call(y_axis);
+
+	// layer.append('svg:text')
+	// 	.attr('transform', 'translate(' + (width/2 - 10) + ',' + (height-15)+ ')')
+	// 	.text('Day');
+	layer.append('svg:text')
+		.attr('transform', 'translate(' + 0 + ',' + (y_pad - 20) + ')')
+		.text('Number of Devices');
+
+	    $('.device-bar').tipsy({ 
+        gravity: 'w', 
+        html: true, 
+        title: function() {
+			var d = this.__data__;
+			console.log(d);
+			return "<span class='tip-tooltip'>Device: " + d['code'] + "<br /> Freq.: " + d['freq']+ "</span>";
+      	}	
+    });
+}

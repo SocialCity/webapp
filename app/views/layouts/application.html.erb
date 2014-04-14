@@ -10,7 +10,7 @@
 	<%= csrf_meta_tags %>
 	<script>
 	$(document).ready(function(){
-		$('td').popover();
+		$('*').popover();
 	});
 	</script>
 </head>
@@ -28,7 +28,11 @@
 		<div class="row fill-height">
 			<div class="col-sm-2 col-md-2 sidebar">
 				<ul class="nav nav-stacked">
-				  	<li class="active"><a href="">Home</a></li>
+				  	<li class="active"><a href="<%=root_url%>summary/area">Home</a></li>
+				  	<li>
+				  		<a href="<%=root_url%>street_map">Area Summary</a>
+
+				  	</li>
 				  	<li>
 				  		<a href="<%=root_url%>street_map">Area Social Factors</a>
 

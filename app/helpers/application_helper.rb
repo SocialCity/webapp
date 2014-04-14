@@ -2,6 +2,19 @@ module ApplicationHelper
 	require 'open-uri'
 	require 'date'
 
+	def get_timestamp_list(backend_url)
+		timestamp_req_params = {:method => "timestamps"}
+		timestamp_request_data = URL_requester(backend_url, timestamp_req_params)
+
+		#Now structure this data
+		parsed_timestamps = nil
+		timestamp_request_data.each_line do |response|
+			parsed_timestamps = JSON.parse(response)
+		end
+		
+		timestamp_list = parse_server_timestamps(parsed_timestamps)
+	end
+
 
 	def get_device_list(query_timestamp, backend_url)
 		device_req_params = {
@@ -38,9 +51,10 @@ module ApplicationHelper
 
 	 	query_boro = nil
 	 	boro_check = false
+	 	boro_name = ""
 		#Check the boro is valid here
 		boro_list.each do | boro |
-			puts boro
+			#puts boro
 			if boro['code'] == @input_boro then
 				boro_check = true
 				boro_name = boro['name']
@@ -76,16 +90,7 @@ module ApplicationHelper
 	def check_timestamp_input(input_timestamp, backend_url)
 		#FIRST, we get timestamps
 		#Get timestamp list
-		timestamp_req_params = {:method => "timestamps"}
-		timestamp_request_data = URL_requester(backend_url, timestamp_req_params)
-
-		#Now structure this data
-		parsed_timestamps = nil
-		timestamp_request_data.each_line do |response|
-			parsed_timestamps = JSON.parse(response)
-		end
-		
-		@timestamp_list = parse_server_timestamps(parsed_timestamps)
+		@timestamp_list = get_timestamp_list
 		
 		ts_found = false
 		@timestamp_list.each do | ts |
@@ -321,7 +326,7 @@ module ApplicationHelper
 		features.each do |feature|
 			feature['min_max'] = min_max_vals
 		end
-		puts features
+		#puts features
 		features
 	end
 

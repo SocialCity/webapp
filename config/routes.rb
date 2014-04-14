@@ -14,6 +14,8 @@ Webapp::Application.routes.draw do
 
   get "donut/boro_devices"
 
+  get "summary/area"
+
 
   get "bubble/hashtag"
   get "bubble/device"
@@ -30,7 +32,7 @@ Webapp::Application.routes.draw do
   get "parallel" => "parallel#boroughs"
   get "matrix" => "matrix#hashtag"
   
-  root 'street_map#one_factor'
+  root 'summary#area'
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
