@@ -16,6 +16,16 @@ Webapp::Application.routes.draw do
 
   get "donut/boro_devices"
 
+  get "rawdata/area_factors"
+  get "rawdata/device_factors"
+  get "rawdata/hashtag_factors"
+  get "rawdata/area_sentiment"
+  get "rawdata/hashtag_sentiment"
+  get "rawdata/device_sentiment"
+  get "rawdata/area_assoc"
+  get "rawdata/hashtag_assoc"
+  get "rawdata/device_assoc"
+
   get "summary/area"
 
 
@@ -35,6 +45,8 @@ Webapp::Application.routes.draw do
   get "street_map" => "street_map#one_factor"
   get "parallel" => "parallel#boroughs"
   get "matrix" => "matrix#hashtag"
+  get "rawdata" => "rawdata#area_factors"
+  get "summary" => "summary#area"
   
   root 'application#intro'
   

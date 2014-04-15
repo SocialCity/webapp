@@ -1,0 +1,65 @@
+<div class="col-md-12">
+	<span class="h2"> Device Factor Data </span><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is the raw data for social factors averaged over devices. Factors are averaged based on where they are observed tweeting. Change the sample window below."></span>	
+	<br/><br/>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-3">
+			<strong>Current Timestamp</strong>: <%= @timestamp[:human_readable] %>
+		</div>
+		<div class="col-md-2">
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Available Sample Windows <span class="caret"></span>
+				</button>
+
+				<ul class="dropdown-menu" role="menu" style="max-height: 300px; overflow-y:auto; width:100%;">
+					<% @timestamp_list.reverse.each do |timestamp_sing| %>
+						<li>
+							<a href="<%= root_url %>rawdata/device_factors?timestamp=<%= timestamp_sing[:url]%>">
+								<span  <% if @timestamp[:human_readable] == timestamp_sing[:human_readable] %>
+										class="text-muted"
+									<% end %>>
+								<%= timestamp_sing[:human_readable] %>
+								</span>
+							</a>
+						</li>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<br/>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-10">
+		<table class="table table-striped table-bordered">
+			<tr>
+				<td>Device Name</td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[0][:factor_name]%></em><br/><%=@factor_info[0][:measure]%>"><abbr>Crime Rate</abbr></td>
+				<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[1][:factor_name]%></em><br/><%=@factor_info[1][:measure]%>"><abbr>House Price</abbr></td>
+				<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[2][:factor_name]%></em><br/><%=@factor_info[2][:measure]%>"><abbr>GCSE Score</abbr></td>
+				<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[3][:factor_name]%></em><br/><%=@factor_info[3][:measure]%>"><abbr>Trans. Rating</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[4][:factor_name]%></em><br/><%=@factor_info[4][:measure]%>"><abbr>School Abs.</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[5][:factor_name]%></em><br/><%=@factor_info[5][:measure]%>"><abbr>Income Supp.</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[6][:factor_name]%></em><br/><%=@factor_info[6][:measure]%>"><abbr>Unempl. Rate</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[7][:factor_name]%></em><br/><%=@factor_info[7][:measure]%>"><abbr>DCOWF</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[8][:factor_name]%></em><br/><%=@factor_info[8][:measure]%>"><abbr>Delib. Fires</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[9][:factor_name]%></em><br/><%=@factor_info[9][:measure]%>"><abbr>Incap. Benef.</abbr></td>
+			</tr>
+			<% @device_data.each do |device| %>
+				<tr>
+					<td><%=device['name']%></td>
+					<td><%=device['factors']['crimeRate'].to_f.round(2)%></td>
+					<td><%=number_to_currency(device['factors']['housePrice'], unit: "£")%></td>
+					<td><%=device['factors']['GCSEScore'].to_f.round(2)%></td>
+					<td><%=device['factors']['transportRating'].to_f.round(2)%></td>
+					<td><%=device['factors']['schoolAbscences'].to_f.round(2)%></td>
+					<td><%=device['factors']['incomeSupport'].to_f.round(2)%></td>
+					<td><%=device['factors']['unemploymentRate'].to_f.round(2)%></td>
+					<td><%=device['factors']['childInNoWorkHouse'].to_f.round(2)%></td>
+					<td><%=device['factors']['deliberateFires'].to_f.round(2)%></td>
+					<td><%=device['factors']['incapacityBenefit'].to_f.round(2)%></td>
+				</tr>
+			<% end %>
+		</table>	
+	</div>
+</div>
+

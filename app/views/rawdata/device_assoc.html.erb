@@ -1,0 +1,92 @@
+<div class="col-md-12">
+	<span class="h2"> Device Associated Word Data </span><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is the raw data for associated words for the given device. Change the sample window below and selected device below."></span>
+	<br/><br/>
+	<div class="row">
+		<div class="col-md-offset-2 col-md-4">
+			<strong>Current Device</strong>: <%= @device %>
+		</div>
+		<div class="col-md-4">
+			<strong>Current Timestamp</strong>: <%= @timestamp[:human_readable] %>
+		</div>
+	</div>
+			<br/>
+	<div class="row">
+		<div class="col-md-offset-2 col-md-4">
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Available Devices <span class="caret"></span>
+				</button>
+
+				<ul class="dropdown-menu" role="menu" style="height: 300px; overflow-y:auto;">
+					<% @device_list.sort.each do |device_sing| %>
+						<li>
+							<a href="<%= root_url %>rawdata/device_assoc?device=<%= device_sing%>&timestamp=<%= @timestamp[:url] %>">
+								<span  <% if @device == device_sing %>
+										class="text-muted"
+									<% end %>>
+								<%= device_sing %>
+								</span>
+							</a>
+						</li>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Available Sample Windows <span class="caret"></span>
+				</button>
+
+				<ul class="dropdown-menu" role="menu" style="max-height: 300px; overflow-y:auto; width:100%;">
+					<% @timestamp_list.reverse.each do |timestamp_sing| %>
+						<li>
+							<a href="<%= root_url %>rawdata/device_assoc?device=<%=@device%>&timestamp=<%= timestamp_sing[:url]%>">
+								<span  <% if @timestamp[:human_readable] == timestamp_sing[:human_readable] %>
+										class="text-muted"
+									<% end %>>
+								<%= timestamp_sing[:human_readable] %>
+								</span>
+							</a>
+						</li>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+	<br />
+
+	<div class="row">
+		<div class="col-md-offset-2 col-md-8">
+		<table class="table table-striped table-bordered">
+			<tr>
+				<th>Associated Words</td>	
+				<th data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="This ranges from 1 (passive) to 3 (active)."><abbr>Activation</abbr></th>
+				<th data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="This ranges from 1 (unpleasant) to 3 (pleasant)."><abbr>Pleasantness</abbr></th>
+				<th data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="This ranges from 1 (hard to form a mental picture) to 3 (easy to form a mental picture)."><abbr>Imagery</abbr></th>
+				<th data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="One of <em>verb</em>, <em>noun</em>, <em>adjective</em>, <em>category</em> (user-defined 'watch words') or <em>DAL</em> (Dictionary of Affective Language)."><abbr>Type</abbr></th>
+				<th data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="The number of tweets observed"><abbr>Frequency</abbr></th>
+			</tr>
+			<% @word_data.each do |word| %>
+				<tr>
+					<td><%=word[:word]%></td>
+					<td><%=word[:activ]%></td>
+					<td><%=word[:pleas]%></td>
+					<td><%=word[:image]%></td>
+					<td>
+						<% case word[:type]
+							 when "verb" %>Verb
+							<% when "Catagories" %>Category
+							<% when "nouns" %>Noun
+							<% when "adjective" %>Adjective
+							<% when "DAL" %>DAL
+						<% end %>
+					</td>
+					<td><%=word[:freq]%></td>
+				</tr>
+			<% end %>
+		</table>	
+	</div>
+</div>
+

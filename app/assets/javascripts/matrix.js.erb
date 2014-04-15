@@ -1,13 +1,14 @@
 var base_url_regions = "/assets/";
 
 $(document).ready(function() {
-	word_data = Array();
-	word_data = gon.word_data;
 
-	console.log(word_data);
 
 	if(gon.matrix)
 	{
+		word_data = Array();
+		word_data = gon.word_data;
+
+		console.log(word_data);
 		if(gon.word_assoc)
     		setup_matrix(word_data);
    		else if(gon.aggregation)

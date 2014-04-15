@@ -1,0 +1,65 @@
+<div class="col-md-12">
+	<span class="h2"> Area Factor Data </span><span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is the raw data for social factors of all boroughs. Change the dataset year below."></span>
+	<br/><br/>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-2">
+			<strong>Current Year</strong>: <%= @year %>
+		</div>
+		<div class="col-md-2">
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Choose dataset year <span class="caret"></span>
+				</button>
+
+				<ul class="dropdown-menu" role="menu">
+					<%  for year in [2008, 2009, 2010, 2011, 2012] %>
+						<li>
+							<a href="<%= root_url %>rawdata/area_factors?year=<%=year%>">
+								<span  <% if year == @year %>
+										class="text-muted"
+									<% end %>>
+								<%= year %>
+								</span>
+							</a>
+						</li>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<br/>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-10">
+		<table class="table table-striped table-bordered">
+			<tr>
+				<td>Borough Name</td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="<em><%=@factor_info[0][:factor_name]%></em><br/><%=@factor_info[0][:measure]%>"><abbr>Crime Rate</abbr></td>
+				<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[1][:factor_name]%></em><br/><%=@factor_info[1][:measure]%>"><abbr>House Price</abbr></td>
+				<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[2][:factor_name]%></em><br/><%=@factor_info[2][:measure]%>"><abbr>GCSE Score</abbr></td>
+				<td  data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[3][:factor_name]%></em><br/><%=@factor_info[3][:measure]%>"><abbr>Trans. Rating</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[4][:factor_name]%></em><br/><%=@factor_info[4][:measure]%>"><abbr>School Abs.</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[5][:factor_name]%></em><br/><%=@factor_info[5][:measure]%>"><abbr>Income Supp.</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[6][:factor_name]%></em><br/><%=@factor_info[6][:measure]%>"><abbr>Unempl. Rate</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[7][:factor_name]%></em><br/><%=@factor_info[7][:measure]%>"><abbr>DCOWF</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[8][:factor_name]%></em><br/><%=@factor_info[8][:measure]%>"><abbr>Delib. Fires</abbr></td>
+				<td data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="top" data-content="<em><%=@factor_info[9][:factor_name]%></em><br/><%=@factor_info[9][:measure]%>"><abbr>Incap. Benef.</abbr></td>
+			</tr>
+			<% @boroughs.each do |borough| %>
+				<tr>
+					<td><%=borough['name']%></td>
+					<td><%=borough['factors']['crimeRate']%></td>
+					<td><%=number_to_currency(borough['factors']['housePrice'], unit: "£")%></td>
+					<td><%=borough['factors']['GCSEScore']%></td>
+					<td><%=borough['factors']['transportRating']%></td>
+					<td><%=borough['factors']['schoolAbscences']%></td>
+					<td><%=borough['factors']['incomeSupport']%></td>
+					<td><%=borough['factors']['unemploymentRate']%></td>
+					<td><%=borough['factors']['childInNoWorkHouse']%></td>
+					<td><%=borough['factors']['deliberateFires']%></td>
+					<td><%=borough['factors']['incapacityBenefit']%></td>
+				</tr>
+			<% end %>
+		</table>	
+	</div>
+</div>
+

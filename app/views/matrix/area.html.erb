@@ -1,5 +1,5 @@
 <div class="col-md-8">
-	<span class="h2"> Borough Associated Words </span>	<span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is a plot of all observed associated words for a given borough. Each bubble is a word, sized based on frequency."></span>
+	<span class="h2"> Area Associated Words </span>	<span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover" data-placement="bottom" data-content="This is a plot of all observed associated words for a given borough. Each bubble is a word, sized based on frequency."></span>
 	<div class="graph-container">
 		<!-- <svg id="parallel" xmlns='http://www.w3.org/2000/svg' width='100%' height='680px'>
 		</svg> -->
@@ -7,7 +7,7 @@
 </div>
 <div class="col-md-4">
 	<h3> <small>Visualisation Information </small></h3> 
-	<br />
+
 	<strong>Current Borough</strong>: <%= @boro_name %>
 	<br/>
 	<strong>Current Timestamp</strong>: <%= @timestamp[:human_readable] %>
@@ -31,8 +31,7 @@
 			<% end %>
 		</ul>
 	</div>
-	<br />
-	<br />
+	<br />	<br />
 	<div class="btn-group">
 		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 		Available Areas <span class="caret"></span>
@@ -51,6 +50,11 @@
 				</li>
 			<% end %>
 		</ul>
+	</div>
+	<div class="btn-group">
+		<a href="<%= root_url %>rawdata/area_assoc?code=<%=@boro_code%>&timestamp=<%= @timestamp[:url] %>"role="button" class="btn btn-default">
+			Go to raw data
+		</a>
 	</div>
 	<br/>
 	<div class="checkbox">

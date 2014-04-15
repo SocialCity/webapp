@@ -30,6 +30,12 @@
 		</ul>
 	</div>
 	<br /><br />
+	<div class="btn-group">
+		<a href="<%= root_url %>rawdata/area_sentiment?timestamp=<%= @timestamp[:url] %>"role="button" class="btn btn-default">
+			Go to raw data
+		</a>
+	</div>
+	<br/>
 	<div class="checkbox">
 		<label>
 			<input type="checkbox" onclick='window.location.replace("<%=root_url%>matrix/aggr_area?&timestamp=<%=@timestamp[:url]%>&full_scale=<%= @full_scale == true ? 'false' : 'true' %>")' <%= @full_scale ? "checked='true'" : ""%>> Full-Width Scale?

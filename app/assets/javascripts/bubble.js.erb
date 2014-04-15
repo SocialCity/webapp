@@ -1,13 +1,14 @@
 var base_url_regions = "/assets/";
 
 $(document).ready(function() {
-    data_list = Array();
-    data_list = gon.word_data;
 
-    console.log(data_list);
 
     if(gon.bubble)
     {
+            data_list = Array();
+        data_list = gon.word_data;
+
+        console.log(data_list);
         setup_bubble(data_list);
     }
 })
