@@ -58,7 +58,7 @@ class SummaryController < ApplicationController
 		num_timestamps = -num_timestamps
 		puts num_timestamps
 		puts "*"*100
-		@timestamp_list[-(num_timestamps-1)..-1].each do | time_window |
+		@timestamp_list[(-(num_timestamps+1))..-1].each do | time_window |
 			puts "yis"
 			req_params = {
 				:method => "areaSentiment",
